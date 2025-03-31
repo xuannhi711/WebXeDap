@@ -1,0 +1,76 @@
+﻿@model WebXeDap.Models.ShoppingCart
+
+<section class="pt-5 pb-5">
+    <div class="container">
+        <div class="row w-100">
+            <div class="col-lg-12 col-md-12 col-12">
+                <h2 class="display-5 mb-2 text-center">Giỏ Hàng</h2>
+                <p class="mb-5 text-center">
+                    <i class="text-danger font-weight-bold">@Model.Items.Count()</i> sản phẩm trong giỏ hàng
+                </p>
+                <table id="shoppingCart" class="table table-condensed table-responsive">
+                    <thead>
+                        <tr>
+                            <th style="width:50%">Sản phẩm</th>
+                            <th style="width:12%">Màu sắc</th>
+                            <th style="width:12%">Giá</th>
+                            <th style="width:10%">Số lượng</th>
+                            <th style="width:16%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td data-th="Product">
+                                    <div class="row">
+                                        <div class="col-md-3 text-left">
+                                            <img src="@item.HinhAnh" alt="@item.MaSP" class="img-fluid d-none d-md-block rounded mb-2 shadow">
+                                        </div>
+                                        <div class="col-md-9 text-left mt-sm-2">
+                                            <h4>@item.MaSP</h4>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Hiển thị tên màu -->
+                                <td data-th="Màu sắc">@item.Mau</td>
+
+                                <td data-th="Price">@item.DonGia.ToString("N0") VND</td>
+                               
+                                <td data-th="Quantity">
+                                
+                                    <div class="input-group">
+                                        <a asp-action="GiamSL" asp-route-productId="@item.MaSP" class="btn btn-outline-secondary btn-sm">-</a>
+                                        <input type="text" class="form-control text-center" value="@item.SoLuong" readonly />
+                                        <a asp-action="TangSL" asp-route-productId="@item.MaSP" class="btn btn-outline-secondary btn-sm">+</a>
+                                    </div>
+                                </td>
+                                <td class="actions">
+                                    <form asp-action="RemoveFromCart" method="post">
+                                        <input type="hidden" name="MaSP" value="@item.MaSP" />
+                                        <button type="submit" class="btn btn-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="box-total-right float-right text-right">
+                    <h4>Tổng tiền:</h4>
+                    <h1>@Model.Items.Sum(item => item.DonGia * item.SoLuong).ToString("N0") VND</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4 d-flex align-items-center">
+            <div class="col-sm-6 order-md-2">
+                <a asp-controller="ShoppingCart" asp-action="Checkout" class="btn-right btn btn-danger mb-4 btn-lg pl-5 pr-5">Mua Hàng</a>
+            </div>
+            <div class="col-sm-6 mb-3 mb-m-1 order-md-1 text-md-left">
+                <a href="shop.html">
+                    <i class="fas fa-arrow-left mr-2"></i> Tiếp tục mua hàng
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

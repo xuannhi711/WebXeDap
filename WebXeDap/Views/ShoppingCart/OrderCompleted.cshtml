@@ -1,0 +1,40 @@
+﻿@model WebXeDap.Models.Hoadon
+
+<div class="container py-4">
+    <h2 class="text-center">Order Completed</h2>
+    <p>Thank you for your purchase! Your order has been successfully completed.</p>
+
+    <h4>Order Details</h4>
+    <ul>
+        <li><strong>Order ID:</strong> @Model.MaHD</li>
+        <li><strong>Order Date:</strong> @Model.NgayLapHD.ToString("dd/MM/yyyy")</li>
+        <li><strong>Total Amount:</strong> @Model.TongTien.ToString("N0") đ</li>
+        <li><strong>Delivery Address:</strong> @Model.DiaChiGiaoHang</li>
+        <li><strong>Notes:</strong> @Model.GhiChu</li>
+    </ul>
+
+    <h4>Order Items</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Color</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Chitiethoadons)
+            {
+                <tr>
+                    <td>@item.Sanpham?.TenSP</td>
+                    <td>@item.Mausac</td>
+                    <td>@item.SoLuong</td>
+                    <td>@item.DonGia.ToString("N0") đ</td>
+                    <td>@(item.DonGia * item.SoLuong).ToString("N0") đ</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

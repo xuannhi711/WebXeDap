@@ -1,0 +1,115 @@
+﻿@model WebXeDap.Models.Sanpham
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Sanpham</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaSP" />
+            <div class="form-group">
+                <label asp-for="TenSP" class="control-label"></label>
+                <input asp-for="TenSP" class="form-control" />
+                <span asp-validation-for="TenSP" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaMua" class="control-label"></label>
+                <input asp-for="GiaMua" class="form-control" />
+                <span asp-validation-for="GiaMua" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaBan" class="control-label"></label>
+                <input asp-for="GiaBan" class="form-control" />
+                <span asp-validation-for="GiaBan" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaKhuyenMai" class="control-label"></label>
+                <input asp-for="GiaKhuyenMai" class="form-control" />
+                <span asp-validation-for="GiaKhuyenMai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SoLuongTon" class="control-label"></label>
+                <input asp-for="SoLuongTon" class="form-control" />
+                <span asp-validation-for="SoLuongTon" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaLoai" class="control-label"></label>
+                <select asp-for="MaLoai" class="form-control" asp-items="ViewBag.MaLoai"></select>
+                <span asp-validation-for="MaLoai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaNCC" class="control-label"></label>
+                <select asp-for="MaNCC" class="form-control" asp-items="ViewBag.MaNCC"></select>
+                <span asp-validation-for="MaNCC" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaKM" class="control-label"></label>
+                <select asp-for="MaKM" class="form-control" asp-items="ViewBag.MaKM"></select>
+                <span asp-validation-for="MaKM" class="text-danger"></span>
+            </div>
+            <!-- Upload hình ảnh mới -->
+            <div class="form-group">
+                <label>Thêm hình ảnh mới</label>
+                <input type="file" name="Images" multiple class="form-control" />
+            </div>
+
+            <!-- Danh sách ảnh hiện có -->
+         <div class="form-group">
+        <label>Ảnh hiện có:</label>
+        <div id="image-list">
+            @foreach (var anh in Model.Anhs)  
+            {
+                <div class="img-wrapper" style="display:inline-block; margin:10px;">
+                            <img src="@anh.Url" style="width:100px; height:auto;" />
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteImage(@anh.Id, this)">Xóa</button>
+                </div>
+            }
+        </div>
+    </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+@section Scripts {
+    <script>
+        function deleteImage(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa ảnh này không?")) {
+                return;
+            }
+
+            fetch('/Admin/SanPham/DeleteImage/' + id, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    const element = document.getElementById('img-' + id);
+                    if (element) {
+                        element.remove(); // Xóa thẻ div khỏi giao diện
+                    }
+                    alert('Đã xóa ảnh thành công');
+                } else {
+                    alert('Không thể xóa ảnh');
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+                alert('Đã xảy ra lỗi khi xóa ảnh');
+            });
+        }
+    </script>
+}

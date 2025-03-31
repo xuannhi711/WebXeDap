@@ -1,0 +1,18 @@
+@media (max-width: 780px) {
+    /* ??t l?i các thu?c tính Bootstrap cho ch? ?? mobile */
+    .navbar-expand-lg {
+        flex-wrap: wrap;
+    }
+
+    /* ?i?u ch?nh các y?u t? khác theo yêu c?u */
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Ví d?: ?n m?t s? thành ph?n trên mobile */
+    .desktop-only {
+        display: none;
+    }
+}
+ 

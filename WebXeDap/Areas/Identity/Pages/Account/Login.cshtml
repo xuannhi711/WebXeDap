@@ -1,0 +1,70 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<section class="vh-100" style="background-color: #508bfc;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+                        <h3 class="mb-5">Sign in</h3>
+
+                        <form id="account" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="Input.Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" />
+                                <label asp-for="Input.Email" class="form-label">Email</label>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="Input.Password" type="password" class="form-control form-control-lg" autocomplete="current-password" aria-required="true" />
+                                <label asp-for="Input.Password" class="form-label">Password</label>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-check d-flex justify-content-start mb-4">
+                                <input class="form-check-input" asp-for="Input.RememberMe" />
+                                <label class="form-check-label ms-2" asp-for="Input.RememberMe">
+                                    Remember password
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+
+                            <hr class="my-4">
+
+                            <a asp-page="./ForgotPassword" class="d-block">Forgot your password?</a>
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="d-block">Register as a new user</a>
+                            <a asp-page="./ResendEmailConfirmation" class="d-block">Resend email confirmation</a>
+                        </form>
+
+                        @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                        {
+                            <hr class="my-4">
+                            <h5>Or sign in with:</h5>
+                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-lg btn-block btn-primary my-2" name="provider" value="@provider.Name">
+                                        <i class="fab @(provider.Name.ToLower() == "google" ? "fa-google" : "fa-facebook-f") me-2"></i>
+                                        Sign in with @provider.DisplayName
+                                    </button>
+                                }
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

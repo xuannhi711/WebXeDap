@@ -1,0 +1,53 @@
+﻿@model IEnumerable<WebXeDap.Models.Hoadon>
+
+@{
+    ViewData["Title"] = "Danh Sách Hóa Đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="my-3">Danh Sách Hóa Đơn</h2>
+<a asp-controller="Hoadon" asp-action="DonHangMoi" class="btn btn-warning btn-sm">Đơn Hàng Mới</a>
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Ngày Lập</th>
+            <th>Tổng Tiền</th>
+            <th>Địa Chỉ Giao Hàng</th>
+            <th>Ghi Chú</th>
+            <th>Trạng Thái</th>
+            <th>Khách Hàng</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NgayLapHD.ToString("dd/MM/yyyy")</td>
+                <td>@item.TongTien.ToString("N0") VNĐ</td>
+                <td>@item.DiaChiGiaoHang</td>
+                <td>@item.GhiChu</td>
+                <td>
+                    <span class="badge @(item.TrangThai == "Đang chờ" ? "bg-warning" : "bg-success")">
+                        @item.TrangThai
+                    </span>
+                </td>
+                <td>@(item.ApplicationUser?.UserName ?? "Khách")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.MaHD" class="btn btn-primary btn-sm">Chi tiết</a>
+
+                    @if (item.TrangThai == "Đang chờ")
+                    {
+                        <a asp-action="Duyet" asp-route-id="@item.MaHD" class="btn btn-success btn-sm"
+                           onclick="return confirm('Bạn có chắc chắn duyệt hóa đơn này?')">
+                            Duyệt
+                        </a>
+                    }
+
+                    <a asp-action="Edit" asp-route-id="@item.MaHD" class="btn btn-warning btn-sm">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.MaHD" class="btn btn-danger btn-sm">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

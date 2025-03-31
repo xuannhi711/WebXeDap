@@ -1,0 +1,123 @@
+﻿@model WebXeDap.Models.Sanpham
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+
+        <!-- Hình ảnh sản phẩm -->
+        <div class="col-lg-6">
+            <div class="border rounded shadow-sm p-3 bg-white">
+                <div class="position-relative mb-3 d-flex justify-content-center align-items-center overflow-hidden rounded"
+                     style="height: 500px; background: #f8f9fa;">
+                    <img id="mainImage" src="@Model.Anhs?.FirstOrDefault()?.Url"
+                         alt="@Model.TenSP"
+                         class="img-fluid">
+                </div>
+
+                <!-- Hình ảnh nhỏ -->
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    @foreach (var anh in Model.Anhs ?? new List<WebXeDap.Models.Anh>())
+                    {
+                        <img src="@anh.Url" alt="Ảnh phụ"
+                             class="thumbnail-img"
+                             onclick="document.getElementById('mainImage').src='@anh.Url'">
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Chi tiết sản phẩm -->
+        <div class="col-lg-6">
+            <div class="border rounded shadow-sm p-4 bg-white">
+                <h1 class="mb-3">@Model.TenSP</h1>
+
+                <!-- Giá bán -->
+                <div class="d-flex align-items-center mb-3">
+                    <h2 class="text-danger fw-bold me-3">@Model.GiaMua.ToString("N0") đ</h2>
+                    <del class="text-muted fs-5">@Model.GiaBan.ToString("N0") đ</del>
+                </div>
+
+                <!-- Chọn màu sắc -->
+                <h5 class="fw-bold">Màu sắc</h5>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    @foreach (var mau in Model.Mau ?? new List<WebXeDap.Models.Mau>())
+                    {
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input" type="radio" name="SelectedMau" id="mau_@mau.Id"
+                                   value="@mau.TenMau" onchange="updateSelectedMau('@mau.TenMau')" hidden>
+                            <label for="mau_@mau.Id" class="color-box" style="background-color: @mau.TenMau;"></label>
+                            <span class="ms-2">@mau.TenMau</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Input ẩn để gửi tên màu -->
+                <input type="hidden" name="mau" id="SelectedMau" value="@((Model.Mau != null && Model.Mau.Count > 0) ? Model.Mau.First().TenMau : "Mặc định")">
+                <!-- Chọn số lượng -->
+                <div class="input-group my-3" style="width: 150px;">
+                    <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(-1)">−</button>
+                    <input type="text" id="SoLuong" class="form-control text-center" value="1" readonly>
+                    <button class="btn btn-outline-secondary" type="button" onclick="changeQuantity(1)">+</button>
+                </div>
+
+                <!-- Nút thêm vào giỏ hàng -->
+                <form asp-controller="ShoppingCart" asp-action="AddToCart" asp-route-masp="@Model.MaSP" method="post">
+                    <input type="hidden" name="sl" id="HiddenSoLuong" value="1">
+                    <input type="hidden" name="mau" id="HiddenSelectedMau" value="@((Model.Mau != null && Model.Mau.Count > 0) ? Model.Mau.First().TenMau : "Mặc định")">
+
+                    <button type="submit" class="btn btn-primary w-100">Thêm vào giỏ hàng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    .color-box {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    input:checked + .color-box {
+        border-color: black;
+        box-shadow: 0 0 5px black;
+    }
+
+    .thumbnail-img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid #ddd;
+        padding: 5px;
+        border-radius: 8px;
+        transition: 0.2s;
+    }
+
+        .thumbnail-img:hover {
+            transform: scale(1.1);
+            border-color: #007bff;
+        }
+</style>
+
+<!-- JavaScript -->
+<script>
+    function changeQuantity(value) {
+        let qtyInput = document.getElementById('SoLuong');
+        let hiddenInput = document.getElementById('HiddenSoLuong');
+        let newValue = Math.max(1, parseInt(qtyInput.value) + value);
+        qtyInput.value = hiddenInput.value = newValue;
+    }
+
+    function updateSelectedMau(colorName) {
+        document.getElementById("HiddenSelectedMau").value = colorName;
+    }
+</script>

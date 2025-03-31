@@ -1,0 +1,131 @@
+﻿@model IEnumerable<WebXeDap.Models.Sanpham>
+
+@{
+    ViewData["Title"] = "Danh sách xe đạp";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int numOfquanity = 1;
+}
+
+<!-- Bộ lọc sản phẩm -->
+<div class="container my-4 <strong class="me-3">
+    Chọn theo tiêu chí:</strong>
+    <div class="d-flex align-items-center">
+       
+
+        <!-- Bộ lọc giá -->
+        <div class="dropdown me-2">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                Lọc Theo Giá
+            </button>
+            <ul class="dropdown-menu p-3">
+                <li><a class="dropdown-item filter-price" data-min="0" data-max="3000000" href="#">Dưới 3 Triệu</a></li>
+                <li><a class="dropdown-item filter-price" data-min="3000000" data-max="6000000" href="#">Từ 3 - 6 Triệu</a></li>
+                <li><a class="dropdown-item filter-price" data-min="6000000" data-max="10000000" href="#">Từ 6 - 10 Triệu</a></li>
+                <li><a class="dropdown-item filter-price" data-min="10000000" data-max="15000000" href="#">Từ 10 - 15 Triệu</a></li>
+                <li><a class="dropdown-item filter-price" data-min="15000000" data-max="1000000000" href="#">Trên 15 Triệu</a></li>
+                <li class="text-center mt-2"><small>Hoặc chọn mức giá phù hợp</small></li>
+                <li class="px-3">
+                    <input type="number" id="minPrice" class="form-control mb-2" placeholder="Giá thấp nhất">
+                    <input type="number" id="maxPrice" class="form-control mb-2" placeholder="Giá cao nhất">
+                    <button class="btn btn-success w-100" id="customPriceFilter">LỌC</button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Bộ lọc danh mục -->
+        <select class="form-select me-2" id="filterCategory">
+            <option value="">Danh Mục</option>
+            @foreach (var loai in ViewBag.DanhMuc)
+            {
+                <option value="@loai.MaLoai">@loai.TenLoai</option>
+            }
+        </select>
+
+        <!-- Bộ lọc hãng -->
+        <select class="form-select" id="filterBrand">
+            <option value="">Hãng</option>
+            @foreach (var brand in ViewBag.Brands)
+            {
+                <option value="@brand.MaNCC">@brand.TenNCC (@brand.MaNCC)</option>
+            }
+        </select>
+    </div>
+</div>
+
+<!-- Danh sách sản phẩm -->
+<div class="row px-xl-5 pb-3" id="productList">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+            <div class="card product-item border-0 mb-4 shadow-sm">
+                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0" style="aspect-ratio: 4/3; height: auto;">
+                    <img class="img-fluid w-100 h-100" src="@(item?.Anhs?.FirstOrDefault()?.Url ?? "/images/no-image.png")" alt="@item.TenSP" style="object-fit: cover;">
+                </div>
+
+                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                    <h6 class="text-truncate mb-3">@item.TenSP</h6>
+                    <div class="d-flex justify-content-center">
+                        <h6 class="text-danger fw-bold">@item.GiaBan đ</h6>
+                        <h6 class="text-muted ms-2"><del>@item.GiaMua đ</del></h6>
+                    </div>
+                </div>
+
+                <div class="card-footer d-flex justify-content-between bg-light border">
+                    <!-- View Details Button -->
+                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@item.MaSP"
+                       class="btn btn-link text-primary text-decoration-none p-0">
+                        <i class="fas fa-eye me-1"></i> Xem chi tiết
+                    </a>
+
+
+                    <!-- Add to Cart Button -->
+                    <form asp-controller="ShoppingCart" asp-action="AddToCart"
+                          method="post" class="d-inline">
+                        <input type="hidden" name="MaSP" value="@item.MaSP">
+                        <input type="hidden" name="Mau" value="@((item.Mau != null && item.Mau.Any()) ? item.Mau.First().TenMau : "Mặc định")">
+                        <input type="hidden" name="SoLuong" value="@numOfquanity">
+                        <button type="submit" class="btn btn-sm btn-link text-success text-decoration-none p-0">
+                            <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
+                        </button>
+                    </form>
+
+
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Bộ lọc theo giá
+        document.querySelectorAll(".filter-price").forEach(function (el) {
+            el.addEventListener("click", function (e) {
+                e.preventDefault();
+                let min = this.getAttribute("data-min");
+                let max = this.getAttribute("data-max");
+                window.location.href = `/SanPham/Index?minPrice=${min}&maxPrice=${max}`;
+            });
+        });
+
+        document.getElementById("customPriceFilter").addEventListener("click", function () {
+            let min = document.getElementById("minPrice").value || 0;
+            let max = document.getElementById("maxPrice").value || 1000000000;
+            window.location.href = `/SanPham/Index?minPrice=${min}&maxPrice=${max}`;
+        });
+
+        // Bộ lọc danh mục
+        document.getElementById("filterCategory").addEventListener("change", function () {
+            let category = this.value;
+            window.location.href = `/SanPham/Index?category=${category}`;
+        });
+
+        // Bộ lọc hãng
+        document.getElementById("filterBrand").addEventListener("change", function () {
+            let brand = this.value;
+            window.location.href = `/SanPham/Index?brand=${brand}`;
+        });
+    });
+</script>

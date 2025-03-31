@@ -1,0 +1,107 @@
+﻿@model WebXeDap.Models.ShoppingCart
+@{
+    ViewData["Title"] = "Checkout";
+    var totalAmount = Model.Items?.Sum(item => item.DonGia * item.SoLuong) ?? 0;
+}
+
+<div class="container py-4">
+    <h2 class="text-center mb-4">Checkout</h2>
+    <div class="row">
+        <!-- Danh sách sản phẩm trong giỏ hàng -->
+        <div class="col-md-8">
+            <h4>Your Cart</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Color</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.MaSP</td>
+                                <td>@item.Mau</td>
+                                <td>@item.SoLuong</td>
+                                <td>@item.DonGia.ToString("N0") đ</td>
+                                <td>@(item.DonGia * item.SoLuong).ToString("N0") đ</td>
+                                <td>
+                                    <a asp-action="RemoveFromCart" asp-route-MaSP="@item.MaSP" class="btn btn-danger btn-sm">Remove</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">Your cart is empty.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Tóm tắt đơn hàng -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Order Summary
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Total Amount</h5>
+                    <p class="card-text">@totalAmount.ToString("N0") đ</p>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a asp-action="Index" class="btn btn-secondary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Thông tin đơn hàng -->
+    <h4>Order Information</h4>
+    <form asp-action="Checkout" method="post">
+        <div class="row">
+            <!-- Thông tin người nhận -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="DiaChiGiaoHang" class="form-label">Địa chỉ nhận hàng</label>
+                    <input type="text" class="form-control" id="DiaChiGiaoHang" name="DiaChiGiaoHang" required>
+                </div>
+                <div class="mb-3">
+                    <label for="PhoneNumber" class="form-label">Số điện thoại</label>
+                    <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber" required>
+                </div>
+                <div class="mb-3">
+                    <label for="GhiChu" class="form-label">Ghi chú</label>
+                    <textarea class="form-control" id="GhiChu" name="GhiChu" rows="3"></textarea>
+                </div>
+            </div>
+            <!-- Chọn hình thức thanh toán -->
+            <div class="col-md-6">
+                <h5>Payment Method</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentCOD" value="COD" checked>
+                    <label class="form-check-label" for="paymentCOD">
+                        Đặt Hàng COD (Thanh toán khi nhận hàng)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="PaymentMethod" id="paymentVNPAY" value="VNPAY">
+                    <label class="form-check-label" for="paymentVNPAY">
+                        Thanh Toán VNPAY (Thanh toán trực tuyến)
+                    </label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Place Order</button>
+    </form>
+</div>

@@ -1,0 +1,62 @@
+﻿@model IEnumerable<WebXeDap.Models.Hoadon>
+
+@{
+    ViewData["Title"] = "Đơn Hàng Mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="my-3">Đơn Hàng Mới</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning">@TempData["Warning"]</div>
+}
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Ngày Lập</th>
+            <th>Tổng Tiền</th>
+            <th>Địa Chỉ Giao Hàng</th>
+            <th>Ghi Chú</th>
+            <th>Trạng Thái</th>
+            <th>Khách Hàng</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.NgayLapHD.ToString("dd/MM/yyyy")</td>
+                <td>@item.TongTien.ToString("N0") VNĐ</td>
+                <td>@item.DiaChiGiaoHang</td>
+                <td>@item.GhiChu</td>
+                <td>
+                    <span class="badge @(item.TrangThai.Contains("Đã thanh toán") || item.TrangThai.Contains("Đã duyệt") ? "bg-success" : "bg-warning")">
+                        @item.TrangThai
+                    </span>
+                </td>
+                <td>@(item.ApplicationUser?.UserName ?? "Khách")</td>
+                <td>
+                    @if (!item.TrangThai.Contains("Đã thanh toán") && !item.TrangThai.Contains("Đã duyệt"))
+                    {
+                        <a asp-action="XacNhan" asp-route-id="@item.MaHD" class="btn btn-success btn-sm"
+                           onclick="return confirm('Bạn có chắc chắn duyệt hóa đơn này?')">
+                            Xác nhận
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Không cần xác nhận</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
