@@ -1,60 +1,52 @@
 ﻿@model IEnumerable<WebXeDap.Models.Khuyenmai>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách khuyến mãi";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TenKhuyenMai)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MoTa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GiamGia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NgayBatDau)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NgayKetThuc)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TenKhuyenMai)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MoTa)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GiamGia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NgayBatDau)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NgayKetThuc)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MaKM">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MaKM">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MaKM">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Danh sách khuyến mãi</h2>
+        <a class="btn btn-primary" asp-action="Create">+ Thêm khuyến mãi</a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Tên khuyến mãi</th>
+                <th>Mô tả</th>
+                <th>Giảm giá (%)</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th class="text-center" style="width: 180px;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Không có khuyến mãi nào.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.TenKhuyenMai</td>
+                        <td>@item.MoTa</td>
+                        <td>@item.GiamGia%</td>
+                        <td>@item.NgayBatDau.ToString("dd/MM/yyyy")</td>
+                        <td>@item.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.MaKM">Sửa</a>
+                            <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.MaKM">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

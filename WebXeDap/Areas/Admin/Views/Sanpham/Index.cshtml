@@ -1,78 +1,50 @@
 ﻿@model IEnumerable<WebXeDap.Models.Sanpham>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh sách sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="text-center">Danh sách sản phẩm</h1>
 
-<p>
-    <a asp-action="Add">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<div class="mb-3">
+    <a asp-action="Add" class="btn btn-primary">Thêm sản phẩm mới</a>
+</div>
+
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TenSP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GiaMua)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GiaBan)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GiaKhuyenMai)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoLuongTon)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Loai)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nhacungcap)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Khuyenmai)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.TenSP)</th>
+            <th>@Html.DisplayNameFor(model => model.GiaMua)</th>
+            <th>@Html.DisplayNameFor(model => model.GiaBan)</th>
+            <th>@Html.DisplayNameFor(model => model.GiaKhuyenMai)</th>
+            <th>@Html.DisplayNameFor(model => model.SoLuongTon)</th>
+            <th>@Html.DisplayNameFor(model => model.TGBH)</th>
+            <th>@Html.DisplayNameFor(model => model.Loai)</th>
+            <th>@Html.DisplayNameFor(model => model.Nhacungcap)</th>
+            <th>@Html.DisplayNameFor(model => model.Khuyenmai)</th>
+            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TenSP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GiaMua)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GiaBan)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GiaKhuyenMai)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SoLuongTon)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Loai.MaLoai)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nhacungcap.MaNCC)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Khuyenmai.MaKM)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MaSP">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MaSP">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MaSP">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.TenSP)</td>
+                <td>@Html.DisplayFor(modelItem => item.GiaMua)</td>
+                <td>@Html.DisplayFor(modelItem => item.GiaBan)</td>
+                <td>@Html.DisplayFor(modelItem => item.GiaKhuyenMai)</td>
+                <td>@Html.DisplayFor(modelItem => item.SoLuongTon)</td>
+                <td>@Html.DisplayFor(modelItem => item.TGBH)</td>
+                <td>@Html.DisplayFor(modelItem => item.Loai.MaLoai)</td>
+                <td>@Html.DisplayFor(modelItem => item.Nhacungcap.MaNCC)</td>
+                <td>@Html.DisplayFor(modelItem => item.Khuyenmai.MaKM)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.MaSP" class="btn btn-warning btn-sm">Sửa</a> |
+                    <a asp-action="Details" asp-route-id="@item.MaSP" class="btn btn-info btn-sm">Chi tiết</a> |
+                    <a asp-action="Delete" asp-route-id="@item.MaSP" class="btn btn-danger btn-sm" onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?')">Xóa</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

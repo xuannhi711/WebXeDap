@@ -7,6 +7,7 @@ namespace WebXeDap.Repositories
         Task<IEnumerable<Hoadon>> GetAllAsync();
         Task<Hoadon> GetByIdAsync(int maHD);
         Task AddAsync(Hoadon hoadon);
-        Task UpdateAsync(Hoadon hoadon);
+        Task UpdateAsync(Hoadon hoadon); Task<IEnumerable<Hoadon>> GetByUserIdAsync(string userId);
+       
     }
 }

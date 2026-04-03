@@ -1,0 +1,96 @@
+﻿@model WebXeDap.Models.Sanpham
+
+@{
+    ViewData["Title"] = "Display";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">Thông tin Sản phẩm</h1>
+
+<div class="container">
+    <h4>Chi tiết sản phẩm</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TenSP)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TenSP)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.GiaMua)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.GiaMua)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.GiaBan)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.GiaBan)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.GiaKhuyenMai)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.GiaKhuyenMai)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.SoLuongTon)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.SoLuongTon)
+                </dd> <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TGBH)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TGBH)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Loai)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Loai.MaLoai)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Nhacungcap)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Nhacungcap.MaNCC)
+                </dd>
+
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Khuyenmai)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Khuyenmai.MaKM)
+                </dd>
+            </dl>
+        </div>
+
+        <div class="col-md-6">
+            <h5>Ảnh sản phẩm</h5>
+            <div class="row">
+                @foreach (var image in Model.Anhs)
+                {
+                    <div class="col-md-4 mb-3">
+                        <img src="@image.Url" alt="@Model.TenSP" class="img-fluid rounded" />
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.MaSP">Sửa</a>
+        <a class="btn btn-secondary" asp-action="Index">Quay lại danh sách</a>
+    </div>
+</div>

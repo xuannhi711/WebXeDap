@@ -1,0 +1,27 @@
+﻿@model WebXeDap.Models.VNPay.PaymentResponseModel
+
+@{
+    ViewData["Title"] = "Chi tiết giao dịch";
+}
+
+<div class="container mt-5 text-center">
+    <div class="alert alert-success" role="alert">
+        ✅ Thanh toán thành công! Cảm ơn bạn đã mua hàng.
+    </div>
+
+    <h3 class="mb-4">Chi tiết giao dịch</h3>
+
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <p><strong>Mã đơn hàng:</strong> @Model?.OrderId</p>
+            <p><strong>Mã giao dịch:</strong> @Model?.TransactionId</p>
+            <p><strong>Phương thức thanh toán:</strong> @Model?.PaymentMethod</p>
+            <p><strong>Mô tả đơn hàng:</strong> @Model?.OrderDescription</p>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">🏠 Về trang chủ</a>
+        <a href="@Url.Action("DonHang", "Hoadon")" class="btn btn-secondary">📋 Xem đơn hàng</a>
+    </div>
+</div>

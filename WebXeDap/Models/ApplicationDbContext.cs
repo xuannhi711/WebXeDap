@@ -18,6 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Chitiethoadon> Chitiethoadons { get; set; }
     public DbSet<Baohanh> Baohanhs { get; set; } 
     public DbSet<Anh> Anhs { get; set; }
+    public DbSet<tintuc> tintuc { get; set; }
     public DbSet<Mau> Maus { get; set; }
     public DbSet<Feedback> Feedback { get; set; }
 

@@ -9,27 +9,43 @@
 <!-- Carousel Section -->
 <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
-        <div class="carousel-item active" style="height: 410px;">
-            <img class="img-fluid w-100" src="img/Poster-1.jpg" alt="Image">
-            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                <div class="p-3" style="max-width: 700px;">
-                    <h4 class="text-light text-uppercase font-weight-medium mb-3">- Sáng Tạo -</h4>
-                    <h3 class="display-4 text-white font-weight-semi-bold mb-4">Trẻ Trung Năng Động</h3>
-                    <a href="#" class="btn btn-light py-2 px-3">Shop Now</a>
+        @{
+            var posters = ViewBag.Posters as List<WebXeDap.Models.tintuc>;
+            bool isFirst = true;
+        }
+        @if (posters != null && posters.Any())
+        {
+            foreach (var item in posters)
+            {
+                <div class="carousel-item @(isFirst ? "active" : "")" style="height: 410px;">
+                    <img src="@Url.Content(item.hinhanh)" class="img-fluid w-100" alt="poster" />
+
+
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div class="p-3" style="max-width: 700px;">
+                            <h4 class="text-light text-uppercase font-weight-medium mb-3">- Sáng Tạo -</h4>
+                            <h3 class="display-4 text-white font-weight-semi-bold mb-4">Trẻ Trung Năng Động</h3>
+                            <a href="#" class="btn btn-light py-2 px-3">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+                isFirst = false;
+            }
+        }
+        else
+        {
+            <div class="carousel-item active" style="height: 410px;">
+                <img class="img-fluid w-100" src="~/img/default.jpg" alt="Default Image">
+                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                    <div class="p-3" style="max-width: 700px;">
+                        <h4 class="text-light text-uppercase font-weight-medium mb-3">Không có poster</h4>
+                        <h3 class="display-4 text-white font-weight-semi-bold mb-4">Vui lòng thêm ảnh poster</h3>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="carousel-item" style="height: 410px;">
-            <img class="img-fluid w-100" src="img/Poster-2.jpg" alt="Image">
-            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                <div class="p-3" style="max-width: 700px;">
-                    <h4 class="text-light text-uppercase font-weight-medium mb-3">Nhiệt Tình</h4>
-                    <h3 class="display-4 text-white font-weight-semi-bold mb-4">Đồng Hành Cùng Bạn</h3>
-                    <a href="#" class="btn btn-light py-2 px-3">Shop Now</a>
-                </div>
-            </div>
-        </div>
+        }
     </div>
+
     <a class="carousel-control-prev" href="#header-carousel" data-bs-slide="prev">
         <div class="btn btn-dark" style="width: 45px; height: 45px;">
             <span class="carousel-control-prev-icon mb-n2"></span>
@@ -42,6 +58,7 @@
     </a>
 </div>
 
+
 <!-- Title Section -->
 <div class="text-center mb-4">
     <h2 class="section-title px-5"><span class="px-2">Danh sách xe đạp</span></h2>
@@ -51,8 +68,19 @@
 <div class="row px-xl-5 pb-3">
     @foreach (var item in Model)
     {
+        var discountPercentage = item.Khuyenmai != null ? item.Khuyenmai.GiamGia : 0;
+
         <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
-            <div class="card product-item border-0 mb-4 shadow-sm">
+            <div class="card product-item border-0 mb-4 shadow-sm position-relative">
+                <!-- Discount Badge -->
+                @if (discountPercentage > 0)
+                {
+                    <div class="position-absolute top-0 end-0 bg-danger text-white p-1" style="z-index: 1;">
+                        -@(Convert.ToInt32(discountPercentage))%
+                    </div>
+                }
+
+
                 <!-- Product Image -->
                 <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0" style="aspect-ratio: 4/3; height: auto;">
                     <img class="img-fluid w-100 h-100" src="@(item?.Anhs?.FirstOrDefault()?.Url ?? "/images/no-image.png")" alt="@item.TenSP" style="object-fit: cover;">
@@ -65,8 +93,8 @@
 
                     <!-- Price -->
                     <div class="d-flex justify-content-center">
-                        <h6 class="text-danger fw-bold">@item.GiaMua đ</h6>
-                        <h6 class="text-muted ms-2"><del>@item.GiaBan đ</del></h6>
+                        <h6 class="text-danger fw-bold">@item.GiaKhuyenMai.ToString("N0") đ</h6>
+                        <h6 class="text-muted ms-2"><del>@item.GiaBan.ToString("N0") đ</del></h6>
                     </div>
                 </div>
 
@@ -78,7 +106,6 @@
                         <i class="fas fa-eye me-1"></i> Xem chi tiết
                     </a>
 
-
                     <!-- Add to Cart Button -->
                     <form asp-controller="ShoppingCart" asp-action="AddToCart"
                           method="post" class="d-inline">
@@ -89,11 +116,9 @@
                             <i class="fas fa-shopping-cart me-1"></i> Thêm vào giỏ
                         </button>
                     </form>
-
-
-
                 </div>
             </div>
         </div>
     }
 </div>
+

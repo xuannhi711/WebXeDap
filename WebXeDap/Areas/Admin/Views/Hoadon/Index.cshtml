@@ -6,7 +6,20 @@
 }
 
 <h2 class="my-3">Danh Sách Hóa Đơn</h2>
-<a asp-controller="Hoadon" asp-action="DonHangMoi" class="btn btn-warning btn-sm">Đơn Hàng Mới</a>
+
+<form method="get" asp-action="Index">
+    <div class="input-group mb-3">
+        <input type="text" name="searchMaHD" class="form-control" placeholder="Tìm kiếm mã đơn hàng..." value="@ViewData["CurrentFilterMaHD"]" />
+        <input type="date" name="startDate" class="form-control" value="@ViewData["CurrentStartDate"]" />
+        <input type="date" name="endDate" class="form-control" value="@ViewData["CurrentEndDate"]" />
+        <button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+    </div>
+</form>
+
+<a asp-controller="Hoadon" asp-action="DonHangMoi" class="btn btn-warning btn-sm">
+    Đơn Hàng Mới <span class="badge bg-danger">@ViewData["NewOrderCount"]</span>
+</a>
+
 <table class="table table-bordered">
     <thead class="table-dark">
         <tr>

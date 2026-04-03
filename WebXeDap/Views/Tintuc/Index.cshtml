@@ -1,0 +1,30 @@
+﻿@model IEnumerable<WebXeDap.Models.tintuc>
+
+@{
+    ViewData["Title"] = "Tin Tức";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <h2 class="mb-4 text-center">Tin Tức Mới Nhất</h2>
+
+    <div class="row">
+        @foreach (var tin in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@(!string.IsNullOrEmpty(tin.hinhanh) ? tin.hinhanh : "/images/default.jpg")"
+                         class="card-img-top"
+                         alt="Ảnh tin tức"
+                         style="height: 200px; object-fit: cover;" />
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@tin.tieude</h5>
+                        <p class="card-text text-truncate">@tin.noidung</p>
+                        <a href="@Url.Action("Details", "Tintuc", new { id = tin.id })" class="btn btn-outline-primary mt-auto">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,39 @@
+﻿@model IEnumerable<WebXeDap.Models.Baohanh>
+@{
+    ViewData["Title"] = "Danh Sách Bảo Hành";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-primary">Danh Sách Bảo Hành</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã HĐ</th>
+                        <th>Mã SP</th>
+                        <th class="text-center">Thời Hạn</th>
+                        <th>Điều Kiện Bảo Hành</th>
+                        <th>Ngày Tạo</th>
+                        <th>Hết Hạn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bh in Model)
+                    {
+                        <tr>
+                            <td>@bh.MaHD</td>
+                            <td>@bh.MaSP</td>
+                            <td class="text-center">@bh.ThoiHanBaoHanh tháng</td>
+                            <td>@bh.DieuKienBaoHanh</td>
+                            <td>@bh.NgayTaoBaoHanh.ToString("dd/MM/yyyy")</td>
+                            <td class="text-danger">@bh.NgayHetHanBaoHanh.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

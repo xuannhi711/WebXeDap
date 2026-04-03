@@ -1,4 +1,4 @@
-using System.Diagnostics;
+ï»¿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebXeDap.Models;
@@ -9,26 +9,25 @@ namespace WebXeDap.Controllers;
 public class HomeController : Controller
 { private readonly ISanphamRepository _sanphamRepository;
     private readonly ILogger<HomeController> _logger;
-    private readonly ILoaiRepository _loaiRepository;   
-
-    public HomeController(ILogger<HomeController> logger, ISanphamRepository sanphamRepository, ILoaiRepository loaiRepository)
+    private readonly ILoaiRepository _loaiRepository;
+    private readonly ApplicationDbContext _context;
+    public HomeController(ILogger<HomeController> logger, ISanphamRepository sanphamRepository, ILoaiRepository loaiRepository, ApplicationDbContext context)
     {
         _logger = logger;
         _sanphamRepository = sanphamRepository;
         _loaiRepository = loaiRepository;
+        _context = context;
     }
 
     public async Task<IActionResult> Index(string? danhMucId, string? search)
     {
         var sanphams = await _sanphamRepository.GetAllAsync();
 
-        // L?c theo danh m?c n?u có
         if (!string.IsNullOrEmpty(danhMucId))
         {
             sanphams = sanphams.Where(sp => sp.MaLoai == danhMucId).ToList();
         }
 
-        // L?c theo t? khóa tìm ki?m
         if (!string.IsNullOrEmpty(search))
         {
             sanphams = sanphams.Where(sp =>
@@ -40,6 +39,13 @@ public class HomeController : Controller
         }
 
         ViewBag.DanhMuc = await _loaiRepository.GetAllAsync();
+
+        // ThÃªm: láº¥y danh sÃ¡ch poster tá»« tintuc
+        var posters = await _context.tintuc
+            .Where(t => t.tieude.ToLower() == "poster" && t.hinhanh != null)
+            .ToListAsync();
+        ViewBag.Posters = posters;
+
         return View(sanphams);
     }
 

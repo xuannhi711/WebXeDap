@@ -1,33 +1,48 @@
 ﻿@model WebXeDap.Models.Loai
 
 @{
-    ViewData["Title"] = "Thêm Loại";
+    ViewData["Title"] = "Thêm loại sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Thêm Loại Sản Phẩm</h2>
+<section class="py-4">
+    <div class="container">
+        <h2 class="mb-4 text-primary">
+            <i class="fas fa-folder-plus me-2"></i>Thêm Loại Sản Phẩm Mới
+        </h2>
 
-<form asp-action="Add" asp-area="Admin" method="post">
-    <div class="form-group">
-        <label asp-for="MaLoai" class="control-label"></label>
-        <input asp-for="MaLoai" class="form-control" />
-        <span asp-validation-for="MaLoai" class="text-danger"></span>
+        <form asp-action="Add" asp-area="Admin" method="post" class="shadow p-4 rounded bg-white border">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="MaLoai" class="form-label fw-semibold">Mã loại <span class="text-danger">*</span></label>
+                <input asp-for="MaLoai" class="form-control" placeholder="VD: L01" />
+                <span asp-validation-for="MaLoai" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TenLoai" class="form-label fw-semibold">Tên loại <span class="text-danger">*</span></label>
+                <input asp-for="TenLoai" class="form-control" placeholder="VD: Xe Đạp Thể Thao" />
+                <span asp-validation-for="TenLoai" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MoTa" class="form-label fw-semibold">Mô tả</label>
+                <textarea asp-for="MoTa" class="form-control" rows="3" placeholder="Thêm mô tả nếu cần..."></textarea>
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" asp-area="Admin" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-1"></i> Thêm mới
+                </button>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label asp-for="TenLoai" class="control-label"></label>
-        <input asp-for="TenLoai" class="form-control" />
-        <span asp-validation-for="TenLoai" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="MoTa" class="control-label"></label>
-        <textarea asp-for="MoTa" class="form-control"></textarea>
-        <span asp-validation-for="MoTa" class="text-danger"></span>
-    </div>
-    <div class="form-group mt-3">
-        <input type="submit" value="Thêm" class="btn btn-success" />
-        <a asp-action="Index" asp-area="Admin"    class="btn btn-secondary">Quay lại</a>
-    </div>
-</form>
+</section>
 
 @section Scripts {
     @{

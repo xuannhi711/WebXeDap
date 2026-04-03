@@ -192,6 +192,9 @@ namespace WebXeDap.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
@@ -266,13 +269,15 @@ namespace WebXeDap.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MaHD")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("MaHD")
+                        .HasColumnType("int");
 
                     b.Property<string>("MaSP")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("NgayHetHanBaoHanh")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("NgayTaoBaoHanh")
                         .HasColumnType("datetime2");
@@ -280,12 +285,9 @@ namespace WebXeDap.Migrations
                     b.Property<int>("ThoiHanBaoHanh")
                         .HasColumnType("int");
 
-                    b.Property<int>("chitiethoadonId")
-                        .HasColumnType("int");
-
                     b.HasKey("MaBaoHanh");
 
-                    b.HasIndex("chitiethoadonId");
+                    b.HasIndex("MaHD");
 
                     b.ToTable("Baohanhs");
                 });
@@ -414,7 +416,6 @@ namespace WebXeDap.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TrangThai")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -526,9 +527,6 @@ namespace WebXeDap.Migrations
                     b.Property<decimal>("GiaBan")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("GiaKhuyenMai")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<decimal>("GiaMua")
                         .HasColumnType("decimal(18,2)");
 
@@ -547,7 +545,14 @@ namespace WebXeDap.Migrations
                     b.Property<int>("SoLuongTon")
                         .HasColumnType("int");
 
+                    b.Property<int>("TGBH")
+                        .HasColumnType("int");
+
                     b.Property<string>("TenSP")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("mota")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -560,6 +565,33 @@ namespace WebXeDap.Migrations
                     b.HasIndex("MaNCC");
 
                     b.ToTable("Sanphams");
+                });
+
+            modelBuilder.Entity("WebXeDap.Models.tintuc", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<string>("hinhanh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ngaytao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("noidung")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("tieude")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("tintuc");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -626,13 +658,13 @@ namespace WebXeDap.Migrations
 
             modelBuilder.Entity("WebXeDap.Models.Baohanh", b =>
                 {
-                    b.HasOne("WebXeDap.Models.Chitiethoadon", "chitiethoadon")
+                    b.HasOne("WebXeDap.Models.Hoadon", "Hoadon")
                         .WithMany()
-                        .HasForeignKey("chitiethoadonId")
+                        .HasForeignKey("MaHD")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("chitiethoadon");
+                    b.Navigation("Hoadon");
                 });
 
             modelBuilder.Entity("WebXeDap.Models.Chitiethoadon", b =>

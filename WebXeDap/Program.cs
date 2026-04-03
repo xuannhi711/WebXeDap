@@ -56,7 +56,10 @@ builder.Services.AddScoped<INhacungcapRepository, EFNhacungcapRepository>();
 builder.Services.AddScoped<ISanphamRepository, EFSanphamRepository>();
 builder.Services.AddScoped<IKhuyenmaiRepository, EFKhuyenmaiRepository>();
 builder.Services.AddScoped<IHoaDonRepository, EFHoaDonRepository>();
+builder.Services.AddScoped<IBaohanhRepository, BaohanhRepository>();
 builder.Services.AddScoped<IVNPayServices, VNPayService>();
+builder.Services.AddScoped<INguoiDungRepository, EFNguoiDungRepository>();
+builder.Services.AddScoped<ITintucRepository, TintucRepository> ();
 
 
 

@@ -1,115 +1,158 @@
 ﻿@model WebXeDap.Models.Sanpham
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Chỉnh sửa sản phẩm</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" asp-area="Admin" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="MaSP" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<h4>Sanpham</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="MaSP" />
-            <div class="form-group">
-                <label asp-for="TenSP" class="control-label"></label>
-                <input asp-for="TenSP" class="form-control" />
-                <span asp-validation-for="TenSP" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GiaMua" class="control-label"></label>
-                <input asp-for="GiaMua" class="form-control" />
-                <span asp-validation-for="GiaMua" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GiaBan" class="control-label"></label>
-                <input asp-for="GiaBan" class="form-control" />
-                <span asp-validation-for="GiaBan" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GiaKhuyenMai" class="control-label"></label>
-                <input asp-for="GiaKhuyenMai" class="form-control" />
-                <span asp-validation-for="GiaKhuyenMai" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SoLuongTon" class="control-label"></label>
-                <input asp-for="SoLuongTon" class="form-control" />
-                <span asp-validation-for="SoLuongTon" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaLoai" class="control-label"></label>
-                <select asp-for="MaLoai" class="form-control" asp-items="ViewBag.MaLoai"></select>
-                <span asp-validation-for="MaLoai" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaNCC" class="control-label"></label>
-                <select asp-for="MaNCC" class="form-control" asp-items="ViewBag.MaNCC"></select>
-                <span asp-validation-for="MaNCC" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaKM" class="control-label"></label>
-                <select asp-for="MaKM" class="form-control" asp-items="ViewBag.MaKM"></select>
-                <span asp-validation-for="MaKM" class="text-danger"></span>
-            </div>
-            <!-- Upload hình ảnh mới -->
-            <div class="form-group">
-                <label>Thêm hình ảnh mới</label>
-                <input type="file" name="Images" multiple class="form-control" />
-            </div>
-
-            <!-- Danh sách ảnh hiện có -->
-         <div class="form-group">
-        <label>Ảnh hiện có:</label>
-        <div id="image-list">
-            @foreach (var anh in Model.Anhs)  
-            {
-                <div class="img-wrapper" style="display:inline-block; margin:10px;">
-                            <img src="@anh.Url" style="width:100px; height:auto;" />
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteImage(@anh.Id, this)">Xóa</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="TenSP" class="form-label">Tên sản phẩm</label>
+                            <input asp-for="TenSP" class="form-control" />
+                            <span asp-validation-for="TenSP" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="GiaMua" class="form-label">Giá mua</label>
+                            <input asp-for="GiaMua" class="form-control" type="number" />
+                            <span asp-validation-for="GiaMua" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="GiaBan" class="form-label">Giá bán</label>
+                            <input asp-for="GiaBan" class="form-control" type="number" />
+                            <span asp-validation-for="GiaBan" class="text-danger"></span>
+                        </div>     <div class="mb-3">
+                            <label asp-for="SoLuongTon" class="form-label">Số lượng tồn</label>
+                            <input asp-for="SoLuongTon" class="form-control" type="number" />
+                            <span asp-validation-for="SoLuongTon" class="text-danger"></span>
+                        </div>  
+                        <div class="mb-3">
+                            <label asp-for="mota" class="form-label">Mô tả</label>
+                            <input asp-for="mota" class="form-control"/>
+                            <span asp-validation-for="mota" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="TGBH" class="control-label"></label>
+                            <input asp-for="TGBH" class="form-control" />
+                            <span asp-validation-for="TGBH" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="MaLoai" class="form-label">Loại sản phẩm</label>
+                            <select asp-for="MaLoai" class="form-select" asp-items="ViewBag.MaLoai"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="MaNCC" class="form-label">Nhà cung cấp</label>
+                            <select asp-for="MaNCC" class="form-select" asp-items="ViewBag.MaNCC"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="MaKM" class="form-label">Khuyến mãi</label>
+                            <select asp-for="MaKM" class="form-select" asp-items="ViewBag.MaKM"></select>
+                        </div>
+                    </div>
                 </div>
-            }
+
+                <!-- Mục chọn màu -->
+                <div class="mb-3">
+                    <label class="form-label">Chọn màu</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var mau in new[] { "Đỏ", "Cam", "Vàng", "Xanh lá cây", "Xanh dương", "Tím", "Hồng", "Nâu", "Xám", "Trắng", "Đen", "Cyan" })
+                        {
+                            var colorCode = mau switch
+                            {
+                                "Đỏ" => "#FF0000",
+                                "Cam" => "#FFA500",
+                                "Vàng" => "#FFFF00",
+                                "Xanh lá cây" => "#008000",
+                                "Xanh dương" => "#0000FF",
+                                "Tím" => "#800080",
+                                "Hồng" => "#FFC0CB",
+                                "Nâu" => "#A52A2A",
+                                "Xám" => "#808080",
+                                "Trắng" => "#FFFFFF",
+                                "Đen" => "#000000",
+                                "Cyan" => "#00FFFF",
+                                _ => "#000000"
+                            };
+                            <label class="d-flex align-items-center">
+                                <input type="checkbox" name="SelectedColors" value="@mau (@colorCode)"
+                                @(Model.Mau.Any(m => m.TenMau.Contains(mau)) ? "checked" : "") />
+                                <div class="color-box" style="background-color: @colorCode;"></div>
+                                @mau
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Thêm ảnh sản phẩm</label>
+                    <input type="file" name="Images" class="form-control" multiple />
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                </div>
+            </form>
         </div>
     </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+    <h4 class="mt-4">Ảnh sản phẩm:</h4>
+    <div class="d-flex flex-wrap gap-3">
+        @foreach (var image in Model.Anhs)
+        {
+            <div class="position-relative" id="image-@image.Id">
+                <img src="@image.Url" alt="@Model.TenSP" class="img-thumbnail" width="150" />
+                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="deleteImage(@image.Id)">X</button>
             </div>
-        </form>
+        }
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
-        function deleteImage(id) {
-            if (!confirm("Bạn có chắc chắn muốn xóa ảnh này không?")) {
-                return;
-            }
-
-            fetch('/Admin/SanPham/DeleteImage/' + id, {
-                method: 'POST'
-            })
-            .then(response => {
-                if (response.ok) {
-                    const element = document.getElementById('img-' + id);
-                    if (element) {
-                        element.remove(); // Xóa thẻ div khỏi giao diện
+        function deleteImage(imageId) {
+            if (confirm("Bạn có chắc chắn muốn xóa ảnh này không?")) {
+                $.ajax({
+                    url: '@Url.Action("DeleteImage", "SanPham", new { area = "Admin" })',
+                    type: 'POST',
+                    data: { id: imageId },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload(); // Reload the page after successful deletion
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Đã xảy ra lỗi khi xóa ảnh.");
                     }
-                    alert('Đã xóa ảnh thành công');
-                } else {
-                    alert('Không thể xóa ảnh');
-                }
-            })
-            .catch(error => {
-                console.error('Lỗi:', error);
-                alert('Đã xảy ra lỗi khi xóa ảnh');
-            });
+                });
+            }
         }
     </script>
 }
+
+<style>
+    .color-box {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #000;
+        margin-left: 5px;
+    }
+</style>
+

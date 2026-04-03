@@ -1,0 +1,30 @@
+﻿@model WebXeDap.Models.VNPay.PaymentResponseModel
+
+@{
+    ViewData["Title"] = "Thanh toán thất bại";
+}
+
+<div class="container mt-4 text-center">
+    <div id="alertBox" class="alert alert-danger">
+        <strong>❌ Thanh toán thất bại!</strong>
+        <p>Đã có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p><strong>Mã đơn hàng:</strong> @Model?.OrderId</p>
+            <p><strong>Mã giao dịch:</strong> @Model?.TransactionId</p>
+            <p><strong>Phương thức thanh toán:</strong> @Model?.PaymentMethod</p>
+            <p><strong>Mô tả lỗi:</strong> @Model?.VnPayResponseCode</p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="/" class="btn btn-primary">🏠 Về trang chủ</a>
+        <a href="/ThanhToan" class="btn btn-warning">🔄 Thử lại</a>
+    </div>
+</div>
+
+<script>
+    setTimeout(() => document.getElementById('alertBox')?.classList.add("fade"), 3000);
+</script>

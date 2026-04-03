@@ -39,5 +39,12 @@ namespace WebXeDap.Repositories
             _context.Hoadon.Update(hoadon);
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<Hoadon>> GetByUserIdAsync(string userId)
+        {
+            return await _context.Hoadon.Include(h => h.Chitiethoadons)
+                                        .Where(h => h.UserId == userId)
+                                        .ToListAsync();
+        }
+  
     }
 }

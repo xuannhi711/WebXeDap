@@ -1,0 +1,54 @@
+﻿@model IEnumerable<WebXeDap.Models.ApplicationUser>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Danh Sách Nhân Viên và Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Danh Sách Nhân Viên và Admin</h1>
+
+<div class="form-group">
+    <a asp-controller="User" asp-action="Index" class="btn btn-primary">Tất cả tài khoản</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên Đầy Đủ</th>
+            <th>Email</th>
+            <th>Địa Chỉ</th>
+            <th>Ngày Sinh</th>
+            <th>Ngày Tạo</th>
+            <th>Quyền</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.Address</td>
+                <td>@user.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                <td>@user.CreatedDate.ToString("dd/MM/yyyy")</td>
+                <td>
+                    @foreach (var role in await UserManager.GetRolesAsync(user))
+                    {
+                        <span class="badge bg-success">@role</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-info">Xem</a>
+                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary">Quay Lại</a>
+</div>

@@ -1,0 +1,55 @@
+﻿@model IEnumerable<WebXeDap.Models.tintuc>
+
+@{
+    ViewData["Title"] = "Danh sách tin tức";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Danh sách Tin Tức</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">➕ Thêm tin tức mới</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>STT</th>
+            <th>Tiêu đề</th>
+            <th>Nội dung</th>
+            <th>Hình ảnh</th>
+            <th>Ngày tạo</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center">Không có tin tức nào.</td>
+            </tr>
+        }
+        else
+        {
+            int stt = 1;
+            foreach (var tin in Model)
+            {
+                <tr>
+                    <td>@(stt++)</td>
+                    <td>@tin.tieude</td>
+                    <td>@tin.noidung</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(tin.hinhanh))
+                        {
+                            <img src="@tin.hinhanh" style="max-height:80px;" />
+                        }
+                    </td>
+                    <td>@tin.ngaytao?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@tin.id" class="btn btn-sm btn-warning">Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@tin.id" class="btn btn-sm btn-danger"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa tin tức này không?')">Xóa</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

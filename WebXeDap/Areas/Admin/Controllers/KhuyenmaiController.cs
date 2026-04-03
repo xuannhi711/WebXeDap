@@ -16,14 +16,14 @@ namespace WebXeDap.Areas.Admin.Controllers
             _khuyenmaiRepository = khuyenmaiRepository;
         }
 
-        // Index
+   
         public async Task<IActionResult> Index()
         {
             var list = await _khuyenmaiRepository.GetAllAsync();
             return View(list);
         }
 
-        // Details
+
         public async Task<IActionResult> Details(string id)
         {
             var km = await _khuyenmaiRepository.GetByIdAsync(id);
@@ -32,13 +32,13 @@ namespace WebXeDap.Areas.Admin.Controllers
             return View(km);
         }
 
-        // Create GET
+     
         public IActionResult Create()
         {
             return View();
         }
 
-        // Create POST
+ 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Khuyenmai khuyenmai)
@@ -51,7 +51,6 @@ namespace WebXeDap.Areas.Admin.Controllers
             return View(khuyenmai);
         }
 
-        // Edit GET
         public async Task<IActionResult> Edit(string id)
         {
             var km = await _khuyenmaiRepository.GetByIdAsync(id);
@@ -60,7 +59,7 @@ namespace WebXeDap.Areas.Admin.Controllers
             return View(km);
         }
 
-        // Edit POST
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, Khuyenmai khuyenmai)
@@ -75,7 +74,7 @@ namespace WebXeDap.Areas.Admin.Controllers
             return View(khuyenmai);
         }
 
-        // Delete GET
+
         public async Task<IActionResult> Delete(string id)
         {
             var km = await _khuyenmaiRepository.GetByIdAsync(id);
@@ -84,7 +83,7 @@ namespace WebXeDap.Areas.Admin.Controllers
             return View(km);
         }
 
-        // Delete POST
+
         [HttpPost, ActionName("DeleteConfirmed")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string MaKM)

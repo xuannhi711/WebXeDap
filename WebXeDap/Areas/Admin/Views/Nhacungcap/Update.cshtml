@@ -1,45 +1,52 @@
 ﻿@model WebXeDap.Models.Nhacungcap
 
 @{
-    ViewData["Title"] = "Update";
+    ViewData["Title"] = "Cập nhật nhà cung cấp";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Update</h1>
+<section class="py-4">
+    <div class="container">
+        <h2 class="mb-4 text-primary">
+            <i class="fas fa-edit me-2"></i>Cập Nhật Thông Tin Nhà Cung Cấp
+        </h2>
 
-<h4>Nhacungcap</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Update">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Update" method="post" class="shadow p-4 rounded bg-white border">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             <input type="hidden" asp-for="MaNCC" />
-            <div class="form-group">
-                <label asp-for="TenNCC" class="control-label"></label>
-                <input asp-for="TenNCC" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="TenNCC" class="form-label fw-semibold">Tên nhà cung cấp <span class="text-danger">*</span></label>
+                <input asp-for="TenNCC" class="form-control" placeholder="Nhập tên nhà cung cấp" />
                 <span asp-validation-for="TenNCC" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="SDT" class="control-label"></label>
-                <input asp-for="SDT" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="SDT" class="form-label fw-semibold">Số điện thoại</label>
+                <input asp-for="SDT" class="form-control" placeholder="Nhập số điện thoại liên hệ" />
                 <span asp-validation-for="SDT" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DiaChi" class="control-label"></label>
-                <input asp-for="DiaChi" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="DiaChi" class="form-label fw-semibold">Địa chỉ</label>
+                <input asp-for="DiaChi" class="form-control" placeholder="Nhập địa chỉ nhà cung cấp" />
                 <span asp-validation-for="DiaChi" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Lưu thay đổi
+                </button>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+</section>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

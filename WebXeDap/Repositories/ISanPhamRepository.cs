@@ -8,7 +8,7 @@
         Task AddAsync(Sanpham sanpham);
         Task UpdateAsync(Sanpham sanpham);
         Task DeleteAsync(string maSP);
-        Task AddAnhAsync(Anh  Image);
+        Task AddAnhAsync(Anh  Image); Task AddMauAsync(Mau mau);
     }
 
 }

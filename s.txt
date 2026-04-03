@@ -1,0 +1,103 @@
+import 'dart:convert';
+
+import 'package:datkham_fontend/views/BenhNhan/app_widget.dart';
+import 'package:datkham_fontend/views/screens/main_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:datkham_fontend/models/user.dart';
+import 'package:http/http.dart' as http;
+import 'package:datkham_fontend/global_variables.dart';
+import 'package:datkham_fontend/services/manage_http_response.dart';
+import 'package:datkham_fontend/views/authentication_screens/login_screen.dart';
+
+class AuthController {
+  Future<void> signUpUsers({
+    required context,
+    required String fullName,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      User user = User(
+        id: '',
+        fullName: fullName,
+        email: email,
+        password: password,
+        role: 'benh_nhan',
+        token: '',
+      );
+      http.Response response = await http.post(
+        Uri.parse('$uri/api/Signup'),
+        body: user.toJson(),
+
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      manageHttpResponse(
+        response: response,
+        context: context,
+        onSuccess: () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginSceen()),
+            (route) => false, // loại bỏ tất cả các route trước đó
+          );
+          showSnackBar(context, "Account has been created for you");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  Future<void> signInUsers({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      http.Response response = await http.post(
+        Uri.parse("$uri/api/Signin"),
+        body: jsonEncode({'email': email, 'password': password}),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+      );
+
+      manageHttpResponse(
+        response: response,
+        context: context,
+        onSuccess: () {
+          // 👉 Giải mã response thành đối tượng User
+          User user = User.fromJson(jsonDecode(response.body));
+
+          // 👉 Tùy theo role mà chuyển đến layout tương ứng
+          Widget destination;
+
+          switch (user.role) {
+            // case 'admin':
+            //   destination = AdminLayoutScreen(user: user);
+            //   break;
+            case 'benh_nhan':
+              destination = Main_BenhNhan(user: user);
+              break;
+            case 'bac_si':
+              destination = MianScreen();
+              break;
+            default:
+              showSnackBar(context, 'Vai trò không xác định: ${user.role}');
+              return;
+          }
+
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => destination),
+            (route) => false,
+          );
+
+          showSnackBar(context, "Đăng nhập thành công!");
+        },
+      );
+    } catch (e) {
+      print("Đăng nhập thất bại: $e");
+    }
+  }
+}

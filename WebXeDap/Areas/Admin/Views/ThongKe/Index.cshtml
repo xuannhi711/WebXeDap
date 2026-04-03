@@ -1,0 +1,55 @@
+﻿@model List<WebXeDap.Areas.Admin.Controllers.ThongKeController.DailyRevenueData>
+
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card flex-fill w-100 draggable">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Thống kê doanh thu</h5>
+    </div>
+    <div class="card-body py-3">
+        <form method="get" asp-action="Index" asp-controller="ThongKe" asp-area="Admin" class="mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="startDate">Ngày bắt đầu</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label for="endDate">Ngày kết thúc</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label for="reportType">Loại thống kê</label>
+                    <select id="reportType" name="reportType" class="form-control" required>
+                        <option value="daily">Theo ngày</option>
+                        <option value="monthly">Theo tháng</option>
+                        <option value="yearly">Theo năm</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Xuất thống kê</button>
+        </form>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Số lượng bán ra</th>
+                    <th>Doanh thu (VND)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@item.TotalQuantity</td>
+                        <td>@item.TotalRevenue.ToString("N0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

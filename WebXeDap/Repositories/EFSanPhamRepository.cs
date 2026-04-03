@@ -61,5 +61,10 @@ namespace WebXeDap.Repositories
             _context.Anhs.Add(Image);
             await _context.SaveChangesAsync();
         }
+        public async Task AddMauAsync(Mau mau)
+        {
+            _context.Maus.Add(mau);
+            await _context.SaveChangesAsync();
+        }
     }
 }

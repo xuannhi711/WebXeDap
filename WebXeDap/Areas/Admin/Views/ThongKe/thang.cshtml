@@ -1,0 +1,80 @@
+﻿@model List<WebXeDap.Areas.Admin.Controllers.ThongKeController.DailyRevenueData>
+
+@{
+    ViewData["Title"] = "Doanh thu tháng này";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card flex-fill w-100 draggable">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Doanh thu tháng này</h5>
+    </div>
+    <div class="card-body py-3">
+        <div class="mt-4">
+            <canvas id="revenueChart" width="400" height="200"></canvas>
+        </div>
+
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Số lượng bán ra</th>
+                    <th>Doanh thu (VND)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@item.TotalQuantity</td>
+                        <td>@item.TotalRevenue.ToString("N0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+            var chartData = {
+                labels: @Html.Raw(Json.Serialize(Model.Select(m => m.Date.ToString("dd/MM")))),
+                datasets: [{
+                    label: 'Doanh thu (VND)',
+                    data: @Html.Raw(Json.Serialize(Model.Select(m => m.TotalRevenue))),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            };
+
+            var revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Ngày'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Doanh thu (VND)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

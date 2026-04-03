@@ -1,0 +1,68 @@
+﻿@model WebXeDap.Models.tintuc
+
+@{
+    ViewData["Title"] = "Chỉnh sửa Tin Tức";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">Chỉnh sửa Tin Tức</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" enctype="multipart/form-data" method="post">
+                        <input type="hidden" asp-for="id" />
+
+                        <div class="form-group mb-3">
+                            <label for="tieude" class="form-label">Tiêu đề</label>
+                            <input asp-for="tieude" class="form-control" placeholder="Nhập tiêu đề tin tức..." />
+                            <span asp-validation-for="tieude" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="noidung" class="form-label">Nội dung</label>
+                            <textarea asp-for="noidung" id="noidung" class="form-control" rows="10" placeholder="Nhập nội dung tin tức..."></textarea>
+                            <span asp-validation-for="noidung" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Hình ảnh hiện tại</label><br />
+                            @if (!string.IsNullOrEmpty(Model.hinhanh))
+                            {
+                                <img src="@Model.hinhanh" alt="Hình ảnh hiện tại" class="img-thumbnail mb-2" style="max-height: 200px;" />
+                            }
+                            else
+                            {
+                                <p class="text-muted">Chưa có hình ảnh</p>
+                            }
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="form-label">Chọn hình ảnh mới (nếu muốn thay)</label>
+                            <input type="file" name="Image" class="form-control" />
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="danhsach" class="btn btn-secondary">Quay lại</a>
+                            <button type="submit" class="btn btn-warning">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#noidung'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+}

@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Quản lý Tin Tức";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Quản lý Tin Tức & Poster</h2>
+
+    <div class="row justify-content-center gap-4">
+        <!-- Poster -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-image fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title fw-bold">Poster</h5>
+                    <p class="card-text text-muted">
+                        Quản lý danh sách Poster hiển thị ở trang chủ.
+                    </p>
+                    <a href="@Url.Action("Add", "Tintuc", new { type = "poster" })" class="btn btn-outline-primary w-100">
+                        Thêm Poster
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tin tức -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-newspaper fa-3x text-success mb-3"></i>
+                    <h5 class="card-title fw-bold">Tin Tức</h5>
+                    <p class="card-text text-muted">
+                        Thêm mới các tin tức liên quan đến sản phẩm, khuyến mãi...
+                    </p>
+                    <a href="@Url.Action("danhsach", "Tintuc", new { type = "tintuc" })" class="btn btn-outline-success w-100">
+                        Quản lý Tin Tức
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

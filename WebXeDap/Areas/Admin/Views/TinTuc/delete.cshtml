@@ -1,0 +1,12 @@
+﻿@model WebXeDap.Models.tintuc
+
+<h2>Bạn có chắc chắn muốn xóa tin tức này?</h2>
+<div>
+    <strong>@Model.tieude</strong><br />
+    <img src="@Model.hinhanh" style="max-height: 150px;" /><br />
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="id" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

@@ -5,69 +5,142 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="text-center">Create Product</h1>
 
-<h4>Sanpham</h4>
+<h4 class="text-center">Add New Sanpham</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row justify-content-center">
+    <div class="col-md-8">
         <form asp-action="Add" asp-area="Admin" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
             <div class="form-group">
-                <label asp-for="MaSP" class="control-label"></label>
-                <input asp-for="MaSP" class="form-control" />
+                <label asp-for="MaSP" class="control-label">Mã sản phẩm</label>
+                <input asp-for="MaSP" class="form-control" placeholder="Nhập mã sản phẩm" />
                 <span asp-validation-for="MaSP" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="TenSP" class="control-label"></label>
-                <input asp-for="TenSP" class="form-control" />
+                <label asp-for="TenSP" class="control-label">Tên sản phẩm</label>
+                <input asp-for="TenSP" class="form-control" placeholder="Nhập tên sản phẩm" />
                 <span asp-validation-for="TenSP" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="GiaMua" class="control-label"></label>
-                <input asp-for="GiaMua" class="form-control" />
+                <label asp-for="GiaMua" class="control-label">Giá mua</label>
+                <input asp-for="GiaMua" class="form-control" placeholder="Nhập giá mua" />
                 <span asp-validation-for="GiaMua" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="GiaBan" class="control-label"></label>
-                <input asp-for="GiaBan" class="form-control" />
+                <label asp-for="GiaBan" class="control-label">Giá bán</label>
+                <input asp-for="GiaBan" class="form-control" placeholder="Nhập giá bán" />
                 <span asp-validation-for="GiaBan" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="GiaKhuyenMai" class="control-label"></label>
-                <input asp-for="GiaKhuyenMai" class="form-control" />
-                <span asp-validation-for="GiaKhuyenMai" class="text-danger"></span>
+                <label asp-for="mota" class="control-label">Mô tả</label>
+                <input asp-for="mota" class="form-control" placeholder="Nhập mô tả" />
+                <span asp-validation-for="mota" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SoLuongTon" class="control-label"></label>
-                <input asp-for="SoLuongTon" class="form-control" />
+                <label asp-for="SoLuongTon" class="control-label">Số lượng tồn</label>
+                <input asp-for="SoLuongTon" class="form-control" placeholder="Nhập số lượng tồn" />
                 <span asp-validation-for="SoLuongTon" class="text-danger"></span>
+            </div><div class="form-group">
+                <label asp-for="TGBH" class="control-label"></label>
+                <input asp-for="TGBH" class="form-control" />
+                <span asp-validation-for="TGBH" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MaLoai" class="control-label"></label>
-                <select asp-for="MaLoai" class ="form-control" asp-items="ViewBag.MaLoai"></select>
+                <label asp-for="MaLoai" class="control-label">Loại sản phẩm</label>
+                <select asp-for="MaLoai" class="form-control" asp-items="ViewBag.MaLoai">
+                    <option value="">Chọn loại sản phẩm</option>
+                </select>
             </div>
+
             <div class="form-group">
-                <label asp-for="MaNCC" class="control-label"></label>
-                <select asp-for="MaNCC" class ="form-control" asp-items="ViewBag.MaNCC"></select>
+                <label asp-for="MaNCC" class="control-label">Nhà cung cấp</label>
+                <select asp-for="MaNCC" class="form-control" asp-items="ViewBag.MaNCC">
+                    <option value="">Chọn nhà cung cấp</option>
+                </select>
             </div>
+
             <div class="form-group">
-                <label asp-for="MaKM" class="control-label"></label>
-                <select asp-for="MaKM" class ="form-control" asp-items="ViewBag.MaKM"></select>
+                <label asp-for="MaKM" class="control-label">Khuyến mãi</label>
+                <select asp-for="MaKM" class="form-control" asp-items="ViewBag.MaKM">
+                    <option value="">Chọn khuyến mãi</option>
+                </select>
             </div>
+
+            <!-- Mục chọn màu -->
             <div class="form-group">
-                <input type="submit" value="Add" class="btn btn-primary" />
+                <label>Chọn màu</label>
+                <div class="color-options">
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Đỏ (#FF0000)" />
+                        <div class="color-box" style="background-color: #FF0000;"></div> Đỏ
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Cam (#FFA500)" />
+                        <div class="color-box" style="background-color: #FFA500;"></div> Cam
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Vàng (#FFFF00)" />
+                        <div class="color-box" style="background-color: #FFFF00;"></div> Vàng
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Xanh lá cây (#008000)" />
+                        <div class="color-box" style="background-color: #008000;"></div> Xanh lá cây
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Xanh dương (#0000FF)" />
+                        <div class="color-box" style="background-color: #0000FF;"></div> Xanh dương
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Tím (#800080)" />
+                        <div class="color-box" style="background-color: #800080;"></div> Tím
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Hồng (#FFC0CB)" />
+                        <div class="color-box" style="background-color: #FFC0CB;"></div> Hồng
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Nâu (#A52A2A)" />
+                        <div class="color-box" style="background-color: #A52A2A;"></div> Nâu
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Xám (#808080)" />
+                        <div class="color-box" style="background-color: #808080;"></div> Xám
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Trắng (#FFFFFF)" />
+                        <div class="color-box" style="background-color: #FFFFFF;"></div> Trắng
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Đen (#000000)" />
+                        <div class="color-box" style="background-color: #000000;"></div> Đen
+                    </label>
+                    <label>
+                        <input type="checkbox" name="SelectedColors" value="Xanh da trời (Cyan) (#00FFFF)" />
+                        <div class="color-box" style="background-color: #00FFFF;"></div> Xanh da trời (Cyan)
+                    </label>
+                </div>
             </div>
+
             <div class="form-group">
                 <label>Thêm ảnh sản phẩm</label>
                 <input type="file" name="Images" class="form-control" multiple />
+            </div>
+
+            <div class="form-group text-center">
+                <input type="submit" value="Thêm sản phẩm" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center mt-4">
+    <a asp-action="Index">Quay lại danh sách</a>
 </div>
 
 @section Scripts {
@@ -75,3 +148,45 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+<style>
+    .color-options {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+        .color-options label {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+
+    .color-box {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #000;
+        margin-right: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .row {
+        margin-top: 20px;
+    }
+
+    .col-md-8 {
+        max-width: 800px;
+    }
+</style>

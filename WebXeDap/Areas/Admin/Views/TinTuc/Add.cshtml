@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Quản Lý Poster";
+    var allImages = ViewBag.AllImages as List<WebXeDap.Models.tintuc>;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>🖼️ Quản Lý Poster</h2>
+
+<form asp-action="Add" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label">Chọn ảnh poster</label>
+        <input type="file" name="Image" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm Poster</button>
+</form>
+
+<hr />
+
+<h4>📸 Danh sách poster</h4>
+
+@if (allImages != null && allImages.Count > 0)
+{
+    <div class="row">
+        @foreach (var item in allImages)
+        {
+            <div class="col-md-3 text-center mb-3">
+                <img src="@item.hinhanh" class="img-thumbnail" style="height: 150px; object-fit: cover;" />
+                <form asp-action="DeleteImage" method="post" asp-route-id="@item.id" onsubmit="return confirmDelete();">
+                    <button type="submit" class="btn btn-danger btn-sm mt-2">Xóa</button>
+                </form>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Chưa có ảnh poster nào.</p>
+}
+@section Scripts {
+    <script>
+        function confirmDelete() {
+            return confirm("Bạn có chắc chắn muốn xóa ảnh này không?");
+        }
+    </script>
+}

@@ -16,18 +16,16 @@ namespace WebXeDap.Areas.Controllers
         public SanPhamController(ISanphamRepository sanphamRepositoryt, ApplicationDbContext context)
         {
             _sanphamRepository = sanphamRepositoryt; _context = context;
-
-
         }
 
-        // GET: Sanpham
+   
         public async Task<IActionResult> Index()
         {
             var sanphams = await _sanphamRepository.GetAllAsync();
             return View(sanphams);
         }
 
-        // GET: Sanpham/Details/5
+  
         public async Task<IActionResult> Details(string id)
         {
             if (id == null) return NotFound();
@@ -38,7 +36,7 @@ namespace WebXeDap.Areas.Controllers
             return View(sanpham);
         }
 
-        // GET: Sanpham/Create
+       
         public IActionResult Add()
         {
             LoadDropdowns();
@@ -47,17 +45,29 @@ namespace WebXeDap.Areas.Controllers
 
         // Create POST
         [HttpPost]
-        public async Task<IActionResult> Add(Sanpham product, List<IFormFile> Images)
+        public async Task<IActionResult> Add(Sanpham product, List<IFormFile> Images, List<string> SelectedColors)
         {
             if (ModelState.IsValid)
             {
-                // B1: Lưu sản phẩm vào bảng Product trước
                 await _sanphamRepository.AddAsync(product);
+
+                if (SelectedColors != null && SelectedColors.Count > 0)
+                {
+                    foreach (var color in SelectedColors)
+                    {
+                        var mau = new Mau
+                        {
+                            TenMau = color,
+                            MaSP = product.MaSP
+                        };
+                        await _sanphamRepository.AddMauAsync(mau);
+                    }
+                }
 
                 // B2: Kiểm tra có ảnh không, nếu có thì lưu
                 if (Images != null && Images.Count > 0)
                 {
-                    var imagePaths = await SaveImages(Images); // Lưu vào thư mục và trả về danh sách đường dẫn
+                    var imagePaths = await SaveImages(Images); 
 
                     foreach (var path in imagePaths)
                     {
@@ -66,18 +76,18 @@ namespace WebXeDap.Areas.Controllers
                             MaSP = product.MaSP,
                             Url = path
                         };
-                       
 
                         await _sanphamRepository.AddAnhAsync(productImage);
                     }
                 }
-             
+
                 return RedirectToAction(nameof(Index));
             }
 
             LoadDropdowns();
             return View(product);
         }
+
         private async Task<List<string>> SaveImages(List<IFormFile> images)
         {
             List<string> savedPaths = new List<string>();
@@ -86,19 +96,17 @@ namespace WebXeDap.Areas.Controllers
             {
                 if (image != null && image.Length > 0)
                 {
-                    // Tạo tên file duy nhất
+                  
                     var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
 
                     // Đường dẫn thư mục wwwroot/images
                     var savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", uniqueFileName);
 
-                    // Tạo file và copy dữ liệu
                     using (var stream = new FileStream(savePath, FileMode.Create))
                     {
                         await image.CopyToAsync(stream);
                     }
 
-                    // Thêm đường dẫn tương đối vào list để lưu DB
                     savedPaths.Add("/images/" + uniqueFileName);
                 }
             }
@@ -106,7 +114,6 @@ namespace WebXeDap.Areas.Controllers
             return savedPaths;
         }
 
-        // GET: /Admin/Sanpham/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -120,9 +127,8 @@ namespace WebXeDap.Areas.Controllers
             return View(sanpham);
         }
 
-        // POST: /Admin/Sanpham/Edit/5
         [HttpPost]
-        public async Task<IActionResult> Edit(string id, Sanpham sanpham, List<IFormFile> Images)
+        public async Task<IActionResult> Edit(string id, Sanpham sanpham, List<string> SelectedColors, List<IFormFile> Images)
         {
             if (id != sanpham.MaSP) return NotFound();
 
@@ -130,9 +136,25 @@ namespace WebXeDap.Areas.Controllers
             {
                 try
                 {
+
                     await _sanphamRepository.UpdateAsync(sanpham);
 
-                    // Thêm ảnh mới
+
+                    var existingColors = _context.Maus.Where(m => m.MaSP == sanpham.MaSP).ToList();
+                    _context.Maus.RemoveRange(existingColors);
+                    if (SelectedColors != null && SelectedColors.Count > 0)
+                    {
+                        foreach (var color in SelectedColors)
+                        {
+                            var mau = new Mau
+                            {
+                                TenMau = color,
+                                MaSP = sanpham.MaSP
+                            };
+                            await _sanphamRepository.AddMauAsync(mau);
+                        }
+                    }
+
                     if (Images != null && Images.Count > 0)
                     {
                         var imagePaths = await SaveImages(Images);
@@ -161,25 +183,25 @@ namespace WebXeDap.Areas.Controllers
             return View(sanpham);
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> DeleteImage(int id)  // id = Id của bảng Anh
+        public async Task<IActionResult> DeleteImage(int id)
         {
-            var image = _context.Anhs.FirstOrDefault(x => x.Id == id);
+            var image = await _context.Anhs.FindAsync(id);
             if (image == null)
                 return Json(new { success = false, message = "Ảnh không tồn tại" });
 
-            // Xóa file vật lý nếu muốn
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", image.Url.TrimStart('/'));
             if (System.IO.File.Exists(filePath))
+            {
                 System.IO.File.Delete(filePath);
+            }
 
             _context.Anhs.Remove(image);
             await _context.SaveChangesAsync();
 
             return Json(new { success = true });
         }
-        // GET: Sanpham/Delete/5
+
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null) return NotFound();
@@ -190,7 +212,6 @@ namespace WebXeDap.Areas.Controllers
             return View(sanpham);
         }
 
-        // POST: Sanpham/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -199,7 +220,6 @@ namespace WebXeDap.Areas.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Hàm load dropdown
         private void LoadDropdowns()
         {
             ViewBag.MaLoai = new SelectList(_context.Loais.ToList(), "MaLoai", "TenLoai");
@@ -208,3 +228,4 @@ namespace WebXeDap.Areas.Controllers
         }
     }
 }
+
