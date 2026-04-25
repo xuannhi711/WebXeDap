@@ -125,7 +125,7 @@ namespace WebXeDap.Areas.Identity.Pages.Account
                     // Lấy user và kiểm tra Role
                     var user = await _userManager.FindByEmailAsync(Input.Email);
 
-                    if (await _userManager.IsInRoleAsync(user, SD.Role_Admin))
+                    if (await _userManager.IsInRoleAsync(user, USER_ROLES.ADMIN))
                     {
                         return RedirectToAction("Index", "Home", new { area = "Admin" });
                     }

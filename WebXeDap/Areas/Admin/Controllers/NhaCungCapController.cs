@@ -8,7 +8,7 @@ namespace WebXeDap.Areas.Controllers
 {
 
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = USER_ROLES.ADMIN)]
     public class NhacungcapController : Controller
     {
         private readonly INhacungcapRepository _nhacungcapRepository;

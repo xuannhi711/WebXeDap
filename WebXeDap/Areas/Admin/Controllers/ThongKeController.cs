@@ -7,7 +7,7 @@ using WebXeDap.Models;
 namespace WebXeDap.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = USER_ROLES.ADMIN)]
     public class ThongKeController : Controller
     {
         private readonly ApplicationDbContext _context;

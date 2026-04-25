@@ -6,7 +6,7 @@ using WebXeDap.Repositories;
 namespace WebXeDap.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = USER_ROLES.ADMIN)]
     public class KhuyenmaiController : Controller
     {
         private readonly IKhuyenmaiRepository _khuyenmaiRepository;
