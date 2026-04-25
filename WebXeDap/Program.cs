@@ -12,10 +12,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ------------ identity ------------------------------------------
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-        .AddDefaultTokenProviders()
-        .AddDefaultUI()
-        .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
+    options =>
+    {
+        options.User.RequireUniqueEmail = true;
+    }
+)
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders()
+.AddDefaultUI();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

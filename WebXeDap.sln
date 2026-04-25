@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap", "WebXeDap\WebXeDap.csproj", "{9CDCD78A-B769-47DC-AC96-446F3D328D1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Seeder", "WebXeDap.Seeder\WebXeDap.Seeder.csproj", "{0C9DC756-5728-4334-9D0D-1C173C240013}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9CDCD78A-B769-47DC-AC96-446F3D328D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CDCD78A-B769-47DC-AC96-446F3D328D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CDCD78A-B769-47DC-AC96-446F3D328D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C9DC756-5728-4334-9D0D-1C173C240013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C9DC756-5728-4334-9D0D-1C173C240013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C9DC756-5728-4334-9D0D-1C173C240013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C9DC756-5728-4334-9D0D-1C173C240013}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

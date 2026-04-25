@@ -36,3 +36,9 @@ migrate:
 	@ASPNETCORE_ENVIRONMENT=Development \
 	ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
 	dotnet ef database update --project WebXeDap
+
+.PHONY=seed
+seed:
+	@echo "Seeding admin user..."
+	@CONNECTION_STRING="$(CONNECTION_STRING)" \
+	dotnet run --project WebXeDap.Seeder
