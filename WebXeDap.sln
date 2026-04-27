@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap", "WebXeDap\WebXeD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Seeder", "WebXeDap.Seeder\WebXeDap.Seeder.csproj", "{0C9DC756-5728-4334-9D0D-1C173C240013}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.WebAPI", "WebXeDap.WebAPI\WebXeDap.WebAPI.csproj", "{6CF74BBA-1316-4352-92EB-2FB9667D9225}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0C9DC756-5728-4334-9D0D-1C173C240013}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C9DC756-5728-4334-9D0D-1C173C240013}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C9DC756-5728-4334-9D0D-1C173C240013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CF74BBA-1316-4352-92EB-2FB9667D9225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CF74BBA-1316-4352-92EB-2FB9667D9225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CF74BBA-1316-4352-92EB-2FB9667D9225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CF74BBA-1316-4352-92EB-2FB9667D9225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

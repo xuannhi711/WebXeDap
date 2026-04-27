@@ -13,7 +13,7 @@ $(error MSSQL_SA_PASSWORD is not set. Please set it in the .env file)
 endif
 
 CONNECTION_STRING = Server=$(MSSQL_HOST),$(MSSQL_PORT);Database=$(MSSQL_DB);User Id=$(MSSQL_USER);Password=$(MSSQL_SA_PASSWORD);TrustServerCertificate=True;Encrypt=False
-
+WEBAPI_PROJECT = WebXeDap.WebAPI
 
 .PHONY=db
 db:
@@ -24,21 +24,21 @@ stop-db:
 	@podman compose stop mssql
 
 .PHONY=dev
-dev: db
-	echo "Starting development server..."
+dev:
+	@echo "Starting development server..."
 	@ASPNETCORE_ENVIRONMENT=Development \
 	ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
-	dotnet watch --project WebXeDap run
+	dotnet watch --project $(WEBAPI_PROJECT)
 
 .PHONY=migrate
 migrate:
-	echo "Applying database migrations..."
+	@echo "Applying database migrations..."
 	@ASPNETCORE_ENVIRONMENT=Development \
 	ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
-	dotnet ef database update --project WebXeDap
+	dotnet ef database update --project $(WEBAPI_PROJECT)
 
 .PHONY=seed
 seed:
 	@echo "Seeding admin user..."
 	@CONNECTION_STRING="$(CONNECTION_STRING)" \
-	dotnet run --project WebXeDap.Seeder
+	dotnet run --project $(WEBAPI_PROJECT).Seeder
