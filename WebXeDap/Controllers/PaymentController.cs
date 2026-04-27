@@ -4,31 +4,28 @@ using WebXeDap.Services;
 
 namespace WebXeDap.Controllers
 {
-    public class PaymentController : Controller
-    {
+	public class PaymentController : Controller
+	{
+		private readonly IVNPayServices _vnPayService;
 
-        private readonly IVNPayServices _vnPayService;
-        public PaymentController(IVNPayServices vnPayService)
-        {
+		public PaymentController(IVNPayServices vnPayService)
+		{
+			_vnPayService = vnPayService;
+		}
 
-            _vnPayService = vnPayService;
-        }
+		public IActionResult CreatePaymentUrlVnpay(PaymentInformationModel model)
+		{
+			var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
 
-        public IActionResult CreatePaymentUrlVnpay(PaymentInformationModel model)
-        {
-            var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
+			return Redirect(url);
+		}
 
-            return Redirect(url);
-        }
-        [HttpGet]
-        public IActionResult PaymentCallbackVnpay()
-        {
-            var response = _vnPayService.PaymentExecute(Request.Query);
+		[HttpGet]
+		public IActionResult PaymentCallbackVnpay()
+		{
+			var response = _vnPayService.PaymentExecute(Request.Query);
 
-            return Json(response);
-        }
-
-
-    }
-
+			return Json(response);
+		}
+	}
 }

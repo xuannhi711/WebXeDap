@@ -6,24 +6,28 @@ using WebXeDap.Repositories;
 
 namespace WebXeDap.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = USER_ROLES.ADMIN)]
-    public class HomeController : Controller
-    {
-        private readonly ApplicationDbContext _context;
-        private readonly INguoiDungRepository _nguoiDungRepo;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public HomeController(ApplicationDbContext context, INguoiDungRepository nguoiDungRepo, UserManager<ApplicationUser> userManager)
-        {
-            _context = context; _nguoiDungRepo = nguoiDungRepo;
-            _userManager = userManager;
-        }
+	[Area("Admin")]
+	[Authorize(Roles = USER_ROLES.ADMIN)]
+	public class HomeController : Controller
+	{
+		private readonly ApplicationDbContext _context;
+		private readonly INguoiDungRepository _nguoiDungRepo;
+		private readonly UserManager<ApplicationUser> _userManager;
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+		public HomeController(
+			ApplicationDbContext context,
+			INguoiDungRepository nguoiDungRepo,
+			UserManager<ApplicationUser> userManager
+		)
+		{
+			_context = context;
+			_nguoiDungRepo = nguoiDungRepo;
+			_userManager = userManager;
+		}
 
-       
-    }
+		public IActionResult Index()
+		{
+			return View();
+		}
+	}
 }
