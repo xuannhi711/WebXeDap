@@ -1,6 +1,4 @@
-using WebXeDap.Domain.Common;
-
-namespace WebXeDap.Domain.Models.Catalog;
+namespace WebXeDap.Domain.Models;
 
 public class Product : AuditableEntity
 {

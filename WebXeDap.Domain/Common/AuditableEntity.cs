@@ -1,4 +1,4 @@
-namespace WebXeDap.Domain.Common;
+namespace WebXeDap.Domain.Models;
 
 public abstract class AuditableEntity
 {
