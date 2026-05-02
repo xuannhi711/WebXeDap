@@ -42,3 +42,7 @@ seed:
 	@echo "Seeding admin user..."
 	@CONNECTION_STRING="$(CONNECTION_STRING)" \
 	dotnet run --project $(WEBAPI_PROJECT).Seeder
+
+.PHONY=test
+test:
+	@dotnet test
