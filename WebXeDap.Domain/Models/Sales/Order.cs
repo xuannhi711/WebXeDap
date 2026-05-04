@@ -1,6 +1,6 @@
 namespace WebXeDap.Domain.Models;
 
-public class Order : AuditableEntity
+public class Order : BaseAuditableEntity
 {
 	public int ID { get; set; }
 	public int UserID { get; set; }

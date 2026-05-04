@@ -1,6 +1,6 @@
 namespace WebXeDap.Domain.Models;
 
-public class Product : AuditableEntity
+public class Product : BaseAuditableEntity
 {
 	public int ID { get; set; }
 	public required string Name { get; set; }

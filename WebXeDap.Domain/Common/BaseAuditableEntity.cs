@@ -1,6 +1,6 @@
 namespace WebXeDap.Domain.Models;
 
-public abstract class AuditableEntity
+public abstract class BaseAuditableEntity
 {
 	public DateTime CreatedAt { get; protected set; }
 	public DateTime? UpdatedAt { get; protected set; }
@@ -11,7 +11,8 @@ public abstract class AuditableEntity
 	public bool IsDeleted { get; protected set; }
 	public DateTime? DeletedAt { get; protected set; }
 
-	protected AuditableEntity()
+	// protected để lớp con kế thừa và gọi
+	protected BaseAuditableEntity()
 	{
 		CreatedAt = DateTime.UtcNow;
 	}
