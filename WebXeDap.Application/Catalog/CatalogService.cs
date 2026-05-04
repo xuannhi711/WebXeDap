@@ -1,129 +1,77 @@
 using Microsoft.EntityFrameworkCore;
+using WebXeDap.Application.Catalog.DTOs;
+using WebXeDap.Application.Catalog.Mappings;
+using WebXeDap.Application.Catalog.Models;
 using WebXeDap.Application.Common.Exceptions;
 using WebXeDap.Application.Common.Interfaces;
 using WebXeDap.Application.Common.Models;
-using WebXeDap.Application.Catalog.Mappings;
-using WebXeDap.Application.Catalog.Models;
 using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Catalog;
 
 public sealed class CatalogService
 {
-	private readonly IApplicationDbContext _context;
+	private readonly IApplicationDbContext _ctx;
 	private readonly ICurrentUserService _currentUser;
 
 	public CatalogService(IApplicationDbContext context, ICurrentUserService currentUser)
 	{
-		_context = context;
+		_ctx = context;
 		_currentUser = currentUser;
 	}
 
 	public async Task<int> CreateCategoryAsync(
-		string name,
-		int? parentCategoryId,
+		CreateCategoryRequest req,
 		CancellationToken cancellationToken
 	)
 	{
-		if (string.IsNullOrWhiteSpace(name))
-		{
-			throw new ArgumentException("Category name is required.", nameof(name));
-		}
-
-		Category? parent = null;
-		if (parentCategoryId.HasValue)
-		{
-			parent = await _context.Categories
-				.FirstOrDefaultAsync(c => c.ID == parentCategoryId.Value, cancellationToken);
-
-			if (parent is null)
-			{
-				throw new NotFoundException(nameof(Category), parentCategoryId.Value);
-			}
-		}
-
 		var category = new Category
 		{
-			Name = name.Trim(),
-			ParentCategoryID = parentCategoryId,
-			ParentCategory = parent
+			Name = req.Name.Trim(),
+			ParentCategoryID = req.ParentCategoryID,
 		};
 
-		_context.Categories.Add(category);
-		await _context.SaveChangesAsync(cancellationToken);
+		_ctx.Categories.Add(category);
+		await _ctx.SaveChangesAsync(cancellationToken);
 
 		return category.ID;
 	}
 
 	public async Task UpdateCategoryAsync(
-		int id,
-		string name,
-		int? parentCategoryId,
+		UpdateCategoryRequest req,
 		CancellationToken cancellationToken
 	)
 	{
-		if (id == parentCategoryId)
-		{
-			throw new InvalidOperationException("A category cannot be its own parent.");
-		}
+		var category = await _ctx.Categories
+			.FirstOrDefaultAsync(
+				c => c.ID == req.ID,
+				cancellationToken);
 
-		if (string.IsNullOrWhiteSpace(name))
-		{
-			throw new ArgumentException("Category name is required.", nameof(name));
-		}
+		if (category == null)
+			throw new Exception("Category not found.");
 
-		var category = await _context.Categories
-			.FirstOrDefaultAsync(c => c.ID == id, cancellationToken);
+		category.Name = req.Name;
+		category.ParentCategoryID = req.ParentCategoryID;
 
-		if (category is null)
-		{
-			throw new NotFoundException(nameof(Category), id);
-		}
-
-		Category? parent = null;
-		if (parentCategoryId.HasValue)
-		{
-			parent = await _context.Categories
-				.FirstOrDefaultAsync(c => c.ID == parentCategoryId.Value, cancellationToken);
-
-			if (parent is null)
-			{
-				throw new NotFoundException(nameof(Category), parentCategoryId.Value);
-			}
-		}
-
-		category.Name = name.Trim();
-		category.ParentCategoryID = parentCategoryId;
-		category.ParentCategory = parent;
-
-		await _context.SaveChangesAsync(cancellationToken);
+		await _ctx.SaveChangesAsync(cancellationToken);
 	}
 
-	public async Task DeleteCategoryAsync(int id, CancellationToken cancellationToken)
+	public async Task DeleteCategoryAsync(DeleteCategoryRequest req, CancellationToken cancellationToken)
 	{
-		var category = await _context.Categories
-			.Include(c => c.Children)
-			.Include(c => c.Products)
-			.FirstOrDefaultAsync(c => c.ID == id, cancellationToken);
-
-		if (category is null)
-		{
-			throw new NotFoundException(nameof(Category), id);
-		}
-
-		if (category.Children.Count > 0 || category.Products.Count > 0)
-		{
-			throw new InvalidOperationException("Category is in use and cannot be deleted.");
-		}
-
-		_context.Categories.Remove(category);
-		await _context.SaveChangesAsync(cancellationToken);
+		var category = await _ctx.Categories
+			.FirstOrDefaultAsync(
+				c => c.ID == req.ID,
+				cancellationToken);
+		_ctx.Categories.Remove(category!);
+		await _ctx.SaveChangesAsync(cancellationToken);
 	}
 
-	public async Task<IReadOnlyList<CategoryDto>> GetCategoriesAsync(CancellationToken cancellationToken)
+	public async Task<IReadOnlyList<CategoryDto>> GetCategoriesAsync(
+		CancellationToken cancellationToken
+	)
 	{
-		var categories = await _context.Categories
-			.AsNoTracking()
+		var categories = await _ctx
+			.Categories.AsNoTracking()
 			.OrderBy(c => c.Name)
 			.ToListAsync(cancellationToken);
 
@@ -132,8 +80,8 @@ public sealed class CatalogService
 
 	public async Task<CategoryDto> GetCategoryByIdAsync(int id, CancellationToken cancellationToken)
 	{
-		var category = await _context.Categories
-			.AsNoTracking()
+		var category = await _ctx
+			.Categories.AsNoTracking()
 			.FirstOrDefaultAsync(c => c.ID == id, cancellationToken);
 
 		if (category is null)
@@ -167,15 +115,18 @@ public sealed class CatalogService
 
 		if (quantity < 0)
 		{
-			throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be non-negative.");
+			throw new ArgumentOutOfRangeException(
+				nameof(quantity),
+				"Quantity must be non-negative."
+			);
 		}
 
 		var requestedCategoryIds = categoryIds ?? Array.Empty<int>();
 		var categories = new List<Category>();
 		if (requestedCategoryIds.Count > 0)
 		{
-			categories = await _context.Categories
-				.Where(c => requestedCategoryIds.Contains(c.ID))
+			categories = await _ctx
+				.Categories.Where(c => requestedCategoryIds.Contains(c.ID))
 				.ToListAsync(cancellationToken);
 
 			if (categories.Count != requestedCategoryIds.Count)
@@ -193,7 +144,7 @@ public sealed class CatalogService
 			CurrencySymbol = string.IsNullOrWhiteSpace(currencySymbol)
 				? "VNĐ"
 				: currencySymbol.Trim(),
-			Quantity = quantity
+			Quantity = quantity,
 		};
 
 		foreach (var category in categories)
@@ -204,16 +155,18 @@ public sealed class CatalogService
 		var imageInputs = images ?? Array.Empty<ProductImageInput>();
 		foreach (var image in imageInputs.Where(i => !string.IsNullOrWhiteSpace(i.Key)))
 		{
-			product.Images.Add(new ProductImage
-			{
-				key = image.Key.Trim(),
-				Order = image.Order,
-				Product = product
-			});
+			product.Images.Add(
+				new ProductImage
+				{
+					key = image.Key.Trim(),
+					Order = image.Order,
+					Product = product,
+				}
+			);
 		}
 
-		_context.Products.Add(product);
-		await _context.SaveChangesAsync(cancellationToken);
+		_ctx.Products.Add(product);
+		await _ctx.SaveChangesAsync(cancellationToken);
 
 		return product.ID;
 	}
@@ -242,11 +195,14 @@ public sealed class CatalogService
 
 		if (quantity < 0)
 		{
-			throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be non-negative.");
+			throw new ArgumentOutOfRangeException(
+				nameof(quantity),
+				"Quantity must be non-negative."
+			);
 		}
 
-		var product = await _context.Products
-			.Include(p => p.Categories)
+		var product = await _ctx
+			.Products.Include(p => p.Categories)
 			.Include(p => p.Images)
 			.FirstOrDefaultAsync(p => p.ID == id, cancellationToken);
 
@@ -259,8 +215,8 @@ public sealed class CatalogService
 		var categories = new List<Category>();
 		if (requestedCategoryIds.Count > 0)
 		{
-			categories = await _context.Categories
-				.Where(c => requestedCategoryIds.Contains(c.ID))
+			categories = await _ctx
+				.Categories.Where(c => requestedCategoryIds.Contains(c.ID))
 				.ToListAsync(cancellationToken);
 
 			if (categories.Count != requestedCategoryIds.Count)
@@ -284,28 +240,32 @@ public sealed class CatalogService
 			product.Categories.Add(category);
 		}
 
-		_context.ProductImages.RemoveRange(product.Images);
+		_ctx.ProductImages.RemoveRange(product.Images);
 		product.Images.Clear();
 
 		var imageInputs = images ?? Array.Empty<ProductImageInput>();
 		foreach (var image in imageInputs.Where(i => !string.IsNullOrWhiteSpace(i.Key)))
 		{
-			product.Images.Add(new ProductImage
-			{
-				key = image.Key.Trim(),
-				Order = image.Order,
-				Product = product
-			});
+			product.Images.Add(
+				new ProductImage
+				{
+					key = image.Key.Trim(),
+					Order = image.Order,
+					Product = product,
+				}
+			);
 		}
 
 		product.SetUpdated(_currentUser.UserId);
-		await _context.SaveChangesAsync(cancellationToken);
+		await _ctx.SaveChangesAsync(cancellationToken);
 	}
 
 	public async Task DeleteProductAsync(int id, CancellationToken cancellationToken)
 	{
-		var product = await _context.Products
-			.FirstOrDefaultAsync(p => p.ID == id, cancellationToken);
+		var product = await _ctx.Products.FirstOrDefaultAsync(
+			p => p.ID == id,
+			cancellationToken
+		);
 
 		if (product is null || product.IsDeleted)
 		{
@@ -313,13 +273,13 @@ public sealed class CatalogService
 		}
 
 		product.MarkAsDeleted(_currentUser.UserId);
-		await _context.SaveChangesAsync(cancellationToken);
+		await _ctx.SaveChangesAsync(cancellationToken);
 	}
 
 	public async Task<ProductDto> GetProductByIdAsync(int id, CancellationToken cancellationToken)
 	{
-		var product = await _context.Products
-			.AsNoTracking()
+		var product = await _ctx
+			.Products.AsNoTracking()
 			.Include(p => p.Categories)
 			.Include(p => p.Images)
 			.FirstOrDefaultAsync(p => p.ID == id && !p.IsDeleted, cancellationToken);
@@ -332,7 +292,7 @@ public sealed class CatalogService
 		return product.ToDto();
 	}
 
-	public async Task<PagedResult<ProductDto>> SearchProductsAsync(
+	public async Task<PaginatedResult<ProductDto>> SearchProductsAsync(
 		string? searchTerm,
 		int? categoryId,
 		decimal? minPrice,
@@ -344,9 +304,7 @@ public sealed class CatalogService
 		CancellationToken cancellationToken
 	)
 	{
-		var query = _context.Products
-			.AsNoTracking()
-			.Where(p => !p.IsDeleted);
+		var query = _ctx.Products.AsNoTracking().Where(p => !p.IsDeleted);
 
 		if (!string.IsNullOrWhiteSpace(searchTerm))
 		{
@@ -374,12 +332,16 @@ public sealed class CatalogService
 		var normalizedSortBy = sortBy?.Trim().ToLowerInvariant();
 		query = normalizedSortBy switch
 		{
-			"price" => sortDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
-			"name" => sortDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+			"price" => sortDescending
+				? query.OrderByDescending(p => p.Price)
+				: query.OrderBy(p => p.Price),
+			"name" => sortDescending
+				? query.OrderByDescending(p => p.Name)
+				: query.OrderBy(p => p.Name),
 			"created" => sortDescending
 				? query.OrderByDescending(p => p.CreatedAt)
 				: query.OrderBy(p => p.CreatedAt),
-			_ => query.OrderBy(p => p.ID)
+			_ => query.OrderBy(p => p.ID),
 		};
 
 		var normalizedPageNumber = pageNumber < 1 ? 1 : pageNumber;
@@ -394,6 +356,11 @@ public sealed class CatalogService
 			.ToListAsync(cancellationToken);
 
 		var results = items.Select(p => p.ToDto()).ToList();
-		return new PagedResult<ProductDto>(results, totalCount, normalizedPageNumber, normalizedPageSize);
+		return new PaginatedResult<ProductDto>(
+			results,
+			totalCount,
+			normalizedPageNumber,
+			normalizedPageSize
+		);
 	}
 }

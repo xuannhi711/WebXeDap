@@ -11,7 +11,7 @@ internal static class CategoryMappings
 		{
 			Id = category.ID,
 			Name = category.Name,
-			ParentCategoryId = category.ParentCategoryID
+			ParentCategoryId = category.ParentCategoryID,
 		};
 	}
 }
