@@ -1,7 +1,7 @@
 # Functions trong Makefile: https://www.gnu.org/software/make/manual/html_node/Functions.html
 
 
-.DEFAULT_GOAL := dev
+.DEFAULT_GOAL := server
 
 # --------------------------------------------------------------------
 # ------------------ IMPLICIT GUARD ----------------------------------
@@ -19,20 +19,18 @@ guard-%:
 include .env
 
 # Fallbacks when variables are omitted from .env or shell environment.
+ASPNETCORE_ENVIRONMENT ?= Development
 MSSQL_HOST ?= localhost
 MSSQL_PORT ?= 1433
 MSSQL_DB ?= BicycleShop
 MSSQL_USER ?= sa
+MSSQL_SA_PASSWORD ?= 2Secure@Password2
 MSSQL_TRUST_SERVER_CERTIFICATE ?= True
 MSSQL_ENCRYPT ?= False
-
-DB_PROVIDER ?= sqlserver
-SQLITE_CONNECTION_STRING ?= Data Source=webxedap.db
 
 ifndef MSSQL_SA_PASSWORD
 $(error MSSQL_SA_PASSWORD is not set. Please set it in the .env file)
 endif
-
 CONNECTION_STRING := Server=$(MSSQL_HOST),$(MSSQL_PORT);\
 					Database=$(MSSQL_DB);\
 					User Id=$(MSSQL_USER);\
@@ -57,20 +55,17 @@ db:
 stop-db:
 	@podman compose stop mssql
 
-.PHONY=dev
-dev:
-	@echo "Starting development server..."
-	@ASPNETCORE_ENVIRONMENT=Development \
+.PHONY=server
+server:
+	@echo "Starting server..."
+	@ASPNETCORE_ENVIRONMENT=$(ASPNETCORE_ENVIRONMENT) \
 	ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
 	dotnet watch --project WebXeDap.WebAPI
 
 .PHONY=migrate
 migrate:
 	@echo "Applying database migrations..."
-	@DB_PROVIDER=$(DB_PROVIDER) \
-	SQLITE_CONNECTION_STRING="$(SQLITE_CONNECTION_STRING)" \
-	ASPNETCORE_ENVIRONMENT=Development \
-	ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
+	@ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
 	dotnet ef database update --project WebXeDap.Infrastructure
 
 .PHONY=seed
@@ -81,7 +76,7 @@ seed:
 
 .PHONY=test
 test:
-	@dotnet test --logger "console;verbosity=normal"
+	@dotnet test
 
 .PHONY=clean
 clean:
