@@ -1,7 +1,7 @@
 using Moq;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Features.Catalog;
-using WebXeDap.Application.Features.Catalog.DTOs;
+using WebXeDap.Application.DTOs;
 using WebXeDap.Application.Features.Catalog.Mapper;
 using WebXeDap.Domain.Models;
 

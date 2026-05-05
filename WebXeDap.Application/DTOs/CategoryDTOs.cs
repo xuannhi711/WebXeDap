@@ -1,4 +1,4 @@
-namespace WebXeDap.Application.Features.Catalog.DTOs;
+namespace WebXeDap.Application.DTOs;
 
 public record CreateCategoryRequest(string Name, int? ParentCategoryID);
 

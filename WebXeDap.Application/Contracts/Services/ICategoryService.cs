@@ -1,4 +1,4 @@
-using WebXeDap.Application.Features.Catalog.DTOs;
+using WebXeDap.Application.DTOs;
 
 namespace WebXeDap.Application.Contracts.Services;
 

@@ -17,7 +17,7 @@
 using FluentValidation.TestHelper;
 using Moq;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.Features.Catalog.DTOs;
+using WebXeDap.Application.DTOs;
 using WebXeDap.Application.Features.Catalog.Specs;
 using WebXeDap.Application.Features.Catalog.Validators;
 
