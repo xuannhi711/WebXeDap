@@ -8,9 +8,9 @@ public record DeleteCategoryRequest(int ID);
 
 public record CategoryResponse(int ID, string Name, int? ParentCategoryID);
 
-public record CategoryWithSubcategoriesResponse(
+public record HierarchyCategoryResponse(
 	int ID,
 	string Name,
 	int? ParentCategoryID,
-	List<CategoryWithSubcategoriesResponse> Children
+	List<HierarchyCategoryResponse> Children
 );
