@@ -94,6 +94,8 @@ public class CategoryServiceTests
 	[Fact]
 	public async Task ListAsync_Pass_With_EmptyList()
 	{
+		_repo.SetupListAsyncToReturnCategories([]);
+
 		var result = await _service.ListAsync();
 		Assert.Empty(result);
 	}
@@ -146,6 +148,65 @@ public class CategoryServiceTests
 			i => Assert.Equal("C", i.Name)
 		);
 	}
+
+	[Fact]
+	public async Task UpdateAsync_Pass_When_RequestIsValid()
+	{
+		var request = new UpdateCategoryRequest(ID: 7, Name: "Tires", ParentCategoryID: 2);
+		_repo.SetupUpdateAsyncToReturnRowsAffected(1);
+
+		var result = await _service.UpdateAsync(request);
+
+		Assert.Equal(1, result);
+		_repo.Verify(
+			r =>
+				r.UpdateAsync(
+					It.Is<Category>(c =>
+						c.ID == request.ID
+						&& c.Name == request.Name
+						&& c.ParentCategoryID == request.ParentCategoryID
+					),
+					It.IsAny<CancellationToken>()
+				),
+			Times.Once
+		);
+	}
+
+	[Fact]
+	public async Task UpdateAsync_Fail_When_RepositoryThrowsException()
+	{
+		var request = new UpdateCategoryRequest(ID: 7, Name: "Tires", ParentCategoryID: 2);
+		_repo.SetupUpdateAsyncToThrowException(new InvalidOperationException("Update failed."));
+
+		await Assert.ThrowsAsync<InvalidOperationException>(() => _service.UpdateAsync(request));
+	}
+
+	[Fact]
+	public async Task DeleteAsync_Pass_When_CategoryExists()
+	{
+		var existing = new Category { ID = 3, Name = "Accessories" };
+		_repo.SetupGetByIdAsyncToReturnACategory(existing.ID, existing);
+		_repo.SetupDeleteAsyncToReturnRowsAffected(1);
+
+		var result = await _service.DeleteAsync(existing.ID);
+
+		Assert.True(result);
+		_repo.Verify(r => r.DeleteAsync(existing, It.IsAny<CancellationToken>()), Times.Once);
+	}
+
+	[Fact]
+	public async Task DeleteAsync_Fail_When_CategoryDoesNotExist()
+	{
+		const int MISSING_ID = 404;
+
+		var result = await _service.DeleteAsync(MISSING_ID);
+
+		Assert.False(result);
+		_repo.Verify(
+			r => r.DeleteAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()),
+			Times.Never
+		);
+	}
 }
 
 static class CategoryServiceTestsHelper
@@ -187,5 +248,35 @@ static class CategoryServiceTestsHelper
 	)
 	{
 		mockRepo.Setup(r => r.ListAsync(It.IsAny<CancellationToken>())).ReturnsAsync(categories);
+	}
+
+	public static void SetupUpdateAsyncToReturnRowsAffected(
+		this Mock<ICategoryRepository> mockRepo,
+		int rowsAffected
+	)
+	{
+		mockRepo
+			.Setup(r => r.UpdateAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
+			.ReturnsAsync(rowsAffected);
+	}
+
+	public static void SetupUpdateAsyncToThrowException(
+		this Mock<ICategoryRepository> mockRepo,
+		Exception ex
+	)
+	{
+		mockRepo
+			.Setup(r => r.UpdateAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
+			.ThrowsAsync(ex);
+	}
+
+	public static void SetupDeleteAsyncToReturnRowsAffected(
+		this Mock<ICategoryRepository> mockRepo,
+		int rowsAffected
+	)
+	{
+		mockRepo
+			.Setup(r => r.DeleteAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
+			.ReturnsAsync(rowsAffected);
 	}
 }
