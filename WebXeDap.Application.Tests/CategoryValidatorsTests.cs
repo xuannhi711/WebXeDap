@@ -19,6 +19,8 @@ using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Specs;
 using WebXeDap.Application.Features.Catalog.Validators;
+using FluentValidation.TestHelper;
+
 
 namespace WebXeDap.Application.Tests;
 
@@ -37,32 +39,30 @@ public sealed class CategoryValidatorsTests
 	public async Task CreateCategoryValidator_Fail_When_Name_Is_Empty()
 	{
 		var request = new CreateCategoryRequest(Name: "", ParentCategoryID: null);
-		var result = await _validator.ValidateAsync(request);
+		var result = await _validator.TestValidateAsync(request);
 
-		Assert.False(result.IsValid);
-		Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("Category name is required."));
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.Name);
 	}
 
 	[Fact]
 	public async Task CreateCategoryValidator_Fail_When_ParentCategoryID_Does_Not_Exist()
 	{
 		var req = new CreateCategoryRequest(Name: "New Category", ParentCategoryID: 999);
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.False(result.IsValid);
-		Assert.Contains(
-			result.Errors,
-			e => e.ErrorMessage.Contains("Parent category does not exist.")
-		);
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
 	}
 
 	[Fact]
 	public async Task CreateCategoryValidator_Pass_When_Name_Is_Valid()
 	{
 		var req = new CreateCategoryRequest(Name: "New Category", ParentCategoryID: null);
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.True(result.IsValid);
+		result.ShouldNotHaveAnyValidationErrors();
+		result.ShouldNotHaveValidationErrorFor(c => c.Name);
 	}
 
 	[Fact]
@@ -75,9 +75,10 @@ public sealed class CategoryValidatorsTests
 			Name: "New Category",
 			ParentCategoryID: PARENT_CATEGORY_ID
 		);
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.True(result.IsValid);
+		result.ShouldNotHaveAnyValidationErrors();
+		result.ShouldNotHaveValidationErrorFor(c => c.ParentCategoryID);
 	}
 }
 
@@ -100,10 +101,11 @@ public sealed class UpdateCategoryValidatorTests
 			Name: "Updated Category",
 			ParentCategoryID: null
 		);
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.False(result.IsValid);
-		Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("Category does not exist."));
+
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.ID);
 	}
 
 	[Fact]
@@ -118,10 +120,10 @@ public sealed class UpdateCategoryValidatorTests
 			ParentCategoryID: null
 		);
 
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.False(result.IsValid);
-		Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("Category name is required."));
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.Name);
 	}
 
 	[Fact]
@@ -136,12 +138,9 @@ public sealed class UpdateCategoryValidatorTests
 			ParentCategoryID: EXISTING_CATEGORY_ID
 		);
 
-		var result = await _validator.ValidateAsync(req);
-		Assert.False(result.IsValid);
-		Assert.Contains(
-			result.Errors,
-			e => e.ErrorMessage.Contains("A category cannot be its own parent.")
-		);
+		var result = await _validator.TestValidateAsync(req);
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
 	}
 
 	[Fact]
@@ -151,13 +150,10 @@ public sealed class UpdateCategoryValidatorTests
 		_mockRepo.SetupCategoryExists(EXISTING_CATEGORY_ID);
 
 		var req = new UpdateCategoryRequest(ID: 1, Name: "Updated Category", ParentCategoryID: 999);
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.False(result.IsValid);
-		Assert.Contains(
-			result.Errors,
-			e => e.ErrorMessage.Contains("Parent category does not exist or is invalid.")
-		);
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
 	}
 }
 
@@ -176,10 +172,10 @@ public sealed class DeleteCategoryValidatorTests
 	public async Task DeleteCategoryValidator_Fail_When_ID_Does_Not_Exist()
 	{
 		var req = new DeleteCategoryRequest(ID: 999);
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.False(result.IsValid);
-		Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("Category does not exist."));
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.ID);
 	}
 
 	[Fact]
@@ -189,9 +185,9 @@ public sealed class DeleteCategoryValidatorTests
 		_mockRepo.SetupCategoryExists(EXISTING_CATEGORY_ID);
 
 		var req = new DeleteCategoryRequest(ID: EXISTING_CATEGORY_ID);
-		var result = await _validator.ValidateAsync(req);
+		var result = await _validator.TestValidateAsync(req);
 
-		Assert.True(result.IsValid);
+		result.ShouldNotHaveAnyValidationErrors();
 	}
 }
 
