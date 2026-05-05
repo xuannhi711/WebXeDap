@@ -7,14 +7,23 @@ namespace WebXeDap.Application.Features.Catalog.Mapper;
 [Mapper]
 public partial class CategoryMapper
 {
-    public partial CategoryResponse CategoryToCategoryResponse(Category category);
+	[MapperIgnoreSource(nameof(Category.ParentCategory))]
+	[MapperIgnoreSource(nameof(Category.Children))]
+	[MapperIgnoreSource(nameof(Category.Products))]
+	public partial CategoryResponse CategoryToCategoryResponse(Category category);
 
-    public partial HierarchyCategoryResponse CategoryToHierarchyCategoryResponse(Category category);
+	[MapperIgnoreSource(nameof(Category.ParentCategory))]
+	[MapperIgnoreSource(nameof(Category.Products))]
+	public partial HierarchyCategoryResponse CategoryToHierarchyCategoryResponse(Category category);
 
-    public partial Category CategoryCreateRequestToCategory(CreateCategoryRequest request);
+	[MapperIgnoreTarget(nameof(Category.ID))]
+	[MapperIgnoreTarget(nameof(Category.ParentCategory))]
+	[MapperIgnoreTarget(nameof(Category.Children))]
+	[MapperIgnoreTarget(nameof(Category.Products))]
+	public partial Category CategoryCreateRequestToCategory(CreateCategoryRequest request);
 
-    public partial Category CategoryUpdateRequestToCategory(UpdateCategoryRequest request);
-
-    [MapValue(nameof(Category.Name), "")]
-    public partial Category CategoryDeleteRequestToCategory(DeleteCategoryRequest request);
+	[MapperIgnoreTarget(nameof(Category.ParentCategory))]
+	[MapperIgnoreTarget(nameof(Category.Children))]
+	[MapperIgnoreTarget(nameof(Category.Products))]
+	public partial Category CategoryUpdateRequestToCategory(UpdateCategoryRequest request);
 }

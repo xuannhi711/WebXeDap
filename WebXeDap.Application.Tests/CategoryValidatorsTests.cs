@@ -14,13 +14,12 @@
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+using FluentValidation.TestHelper;
 using Moq;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Specs;
 using WebXeDap.Application.Features.Catalog.Validators;
-using FluentValidation.TestHelper;
-
 
 namespace WebXeDap.Application.Tests;
 
@@ -104,7 +103,6 @@ public sealed class UpdateCategoryValidatorTests
 		);
 		var result = await _validator.TestValidateAsync(req);
 
-
 		result.ShouldHaveValidationErrors();
 		result.ShouldHaveValidationErrorFor(c => c.ID);
 	}
@@ -172,11 +170,10 @@ public sealed class DeleteCategoryValidatorTests
 	[Fact]
 	public async Task DeleteCategoryValidator_Fail_When_ID_Does_Not_Exist()
 	{
-		var req = new DeleteCategoryRequest(ID: 999);
-		var result = await _validator.TestValidateAsync(req);
+		const int NON_EXIST_CATEGORY_ID = 999;
+		var result = await _validator.TestValidateAsync(NON_EXIST_CATEGORY_ID);
 
 		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(c => c.ID);
 	}
 
 	[Fact]
@@ -185,8 +182,7 @@ public sealed class DeleteCategoryValidatorTests
 		const int EXISTING_CATEGORY_ID = 1;
 		_mockRepo.SetupCategoryIDToExists(EXISTING_CATEGORY_ID);
 
-		var req = new DeleteCategoryRequest(ID: EXISTING_CATEGORY_ID);
-		var result = await _validator.TestValidateAsync(req);
+		var result = await _validator.TestValidateAsync(EXISTING_CATEGORY_ID);
 
 		result.ShouldNotHaveAnyValidationErrors();
 	}

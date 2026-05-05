@@ -10,31 +10,39 @@ public class CategoryService : ICategoryService
 	private readonly ICategoryRepository _categoryRepo;
 	private readonly CategoryMapper _mapper;
 
-	public CategoryService(
-		ICategoryRepository categoryRepo,
-		CategoryMapper mapper
-	)
+	public CategoryService(ICategoryRepository categoryRepo, CategoryMapper mapper)
 	{
 		_categoryRepo = categoryRepo;
 		_mapper = mapper;
 	}
 
-	public async Task<CategoryResponse> CreateAsync(CreateCategoryRequest request, CancellationToken ct = default)
+	public async Task<CategoryResponse> CreateAsync(
+		CreateCategoryRequest request,
+		CancellationToken ct = default
+	)
 	{
 		var category = _mapper.CategoryCreateRequestToCategory(request);
 		var newCategory = await _categoryRepo.AddAsync(category, ct);
 		return _mapper.CategoryToCategoryResponse(newCategory);
 	}
 
-	public async Task<bool> DeleteAsync(DeleteCategoryRequest request, CancellationToken ct = default)
+	public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
 	{
-		var category = _mapper.CategoryDeleteRequestToCategory(request);
+		var category = await _categoryRepo.GetByIdAsync(id, ct);
+		if (category == null)
+		{
+			return false;
+		}
 		return (await _categoryRepo.DeleteAsync(category, ct)) == 1;
 	}
 
-	public async Task<List<CategoryResponse>> GetAllAsync(CancellationToken ct = default)
+	public async Task<List<CategoryResponse>> ListAsync(CancellationToken ct = default)
 	{
 		var categories = await _categoryRepo.ListAsync(ct);
+		if (categories == null)
+		{
+			return [];
+		}
 		return [.. categories.Select(_mapper.CategoryToCategoryResponse)];
 	}
 
@@ -48,20 +56,25 @@ public class CategoryService : ICategoryService
 		return _mapper.CategoryToCategoryResponse(category);
 	}
 
-	public async Task<List<HierarchyCategoryResponse>> GetHierarchyAsync(CancellationToken ct = default)
+	public async Task<List<HierarchyCategoryResponse>> ListHierarchyAsync(
+		CancellationToken ct = default
+	)
 	{
 		var categories = await _categoryRepo.ListAsync(ct);
 		var responseDict = categories.ToDictionary(
 			c => c.ID,
-			_mapper.CategoryToHierarchyCategoryResponse);
+			_mapper.CategoryToHierarchyCategoryResponse
+		);
 
 		var roots = new List<HierarchyCategoryResponse>();
 
 		foreach (var category in categories)
 		{
 			var response = responseDict[category.ID];
-			if (category.ParentCategoryID.HasValue &&
-				responseDict.TryGetValue(category.ParentCategoryID.Value, out var parent))
+			if (
+				category.ParentCategoryID.HasValue
+				&& responseDict.TryGetValue(category.ParentCategoryID.Value, out var parent)
+			)
 			{
 				parent.Children.Add(response);
 			}
@@ -74,7 +87,10 @@ public class CategoryService : ICategoryService
 		return roots;
 	}
 
-	public async Task<int> UpdateAsync(UpdateCategoryRequest request, CancellationToken ct = default)
+	public async Task<int> UpdateAsync(
+		UpdateCategoryRequest request,
+		CancellationToken ct = default
+	)
 	{
 		var category = _mapper.CategoryUpdateRequestToCategory(request);
 		return await _categoryRepo.UpdateAsync(category, ct);

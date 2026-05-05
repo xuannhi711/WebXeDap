@@ -22,10 +22,10 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
 
 		RuleFor(createReq => createReq.ParentCategoryID)
 			.MustAsync(
-				async (parentCategoryID, cancellationToken) =>
+				async (parentCategoryID, ct) =>
 				{
 					var spec = new CategoryByIDSpec(parentCategoryID!.Value);
-					return await _categoryRepo.AnyAsync(spec, cancellationToken);
+					return await _categoryRepo.AnyAsync(spec, ct);
 				}
 			)
 			.When(createReq => createReq.ParentCategoryID != null)
@@ -45,10 +45,7 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
 
 		RuleFor(updateReq => updateReq.ID)
 			.Cascade(CascadeMode.Stop)
-			.MustAsync(
-				async (id, cancellationToken) =>
-					await _categoryRepo.AnyAsync(new CategoryByIDSpec(id), cancellationToken)
-			)
+			.MustAsync(async (id, ct) => await _categoryRepo.AnyAsync(new CategoryByIDSpec(id), ct))
 			.WithMessage("Category does not exist.");
 
 		RuleFor(updateReq => updateReq.Name)
@@ -61,10 +58,10 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
 			.NotEqual(updateReq => updateReq.ID)
 			.WithMessage("A category cannot be its own parent.")
 			.MustAsync(
-				async (req, parentCategoryID, cancellationToken) =>
+				async (req, parentCategoryID, ct) =>
 				{
 					var spec = new CategoryByIDSpec(parentCategoryID!.Value);
-					return await _categoryRepo.AnyAsync(spec, cancellationToken);
+					return await _categoryRepo.AnyAsync(spec, ct);
 				}
 			)
 			.When(updateReq => updateReq.ParentCategoryID != null)
@@ -72,18 +69,15 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
 	}
 }
 
-public class DeleteCategoryValidator : AbstractValidator<DeleteCategoryRequest>
+public class DeleteCategoryValidator : AbstractValidator<int>
 {
 	private readonly ICategoryRepository _categoryRepo;
 
 	public DeleteCategoryValidator(ICategoryRepository categoryRepo)
 	{
 		_categoryRepo = categoryRepo;
-		RuleFor(req => req.ID)
-			.MustAsync(
-				async (id, cancellationToken) =>
-					await _categoryRepo.AnyAsync(new CategoryByIDSpec(id), cancellationToken)
-			)
+		RuleFor(id => id)
+			.MustAsync(async (id, ct) => await _categoryRepo.AnyAsync(new CategoryByIDSpec(id), ct))
 			.WithMessage("Category does not exist.");
 	}
 }

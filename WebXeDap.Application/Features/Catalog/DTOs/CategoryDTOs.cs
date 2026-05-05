@@ -4,8 +4,6 @@ public record CreateCategoryRequest(string Name, int? ParentCategoryID);
 
 public record UpdateCategoryRequest(int ID, string Name, int? ParentCategoryID);
 
-public record DeleteCategoryRequest(int ID);
-
 public record CategoryResponse(int ID, string Name, int? ParentCategoryID);
 
 public record HierarchyCategoryResponse(
