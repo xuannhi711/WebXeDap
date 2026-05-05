@@ -69,7 +69,7 @@ public sealed class CategoryValidatorsTests
 	public async Task CreateCategoryValidator_Pass_When_ParentCategoryID_Is_Valid()
 	{
 		const int PARENT_CATEGORY_ID = 6789;
-		_mockRepo.SetupCategoryExists(PARENT_CATEGORY_ID);
+		_mockRepo.SetupCategoryIDToExists(PARENT_CATEGORY_ID);
 
 		var req = new CreateCategoryRequest(
 			Name: "New Category",
@@ -96,6 +96,7 @@ public sealed class UpdateCategoryValidatorTests
 	[Fact]
 	public async Task UpdateCategoryValidator_Fail_When_ID_Does_Not_Exist()
 	{
+		_mockRepo.SetupCategoryIDToExists(1);
 		var req = new UpdateCategoryRequest(
 			ID: 999,
 			Name: "Updated Category",
@@ -112,7 +113,7 @@ public sealed class UpdateCategoryValidatorTests
 	public async Task UpdateCategoryValidator_Fail_When_Name_Is_Empty()
 	{
 		const int EXISTING_CATEGORY_ID = 1;
-		_mockRepo.SetupCategoryExists(EXISTING_CATEGORY_ID);
+		_mockRepo.SetupCategoryIDToExists(EXISTING_CATEGORY_ID);
 
 		var req = new UpdateCategoryRequest(
 			ID: EXISTING_CATEGORY_ID,
@@ -130,7 +131,7 @@ public sealed class UpdateCategoryValidatorTests
 	public async Task UpdateCategoryValidator_Fail_When_ParentCategoryID_Is_Same_As_ID()
 	{
 		const int EXISTING_CATEGORY_ID = 1;
-		_mockRepo.SetupCategoryExists(EXISTING_CATEGORY_ID);
+		_mockRepo.SetupCategoryIDToExists(EXISTING_CATEGORY_ID);
 
 		var req = new UpdateCategoryRequest(
 			ID: EXISTING_CATEGORY_ID,
@@ -147,7 +148,7 @@ public sealed class UpdateCategoryValidatorTests
 	public async Task UpdateCategoryValidator_Fail_When_ParentCategoryID_Is_Invalid()
 	{
 		const int EXISTING_CATEGORY_ID = 1;
-		_mockRepo.SetupCategoryExists(EXISTING_CATEGORY_ID);
+		_mockRepo.SetupCategoryIDToExists(EXISTING_CATEGORY_ID);
 
 		var req = new UpdateCategoryRequest(ID: 1, Name: "Updated Category", ParentCategoryID: 999);
 		var result = await _validator.TestValidateAsync(req);
@@ -182,7 +183,7 @@ public sealed class DeleteCategoryValidatorTests
 	public async Task DeleteCategoryValidator_Pass_When_ID_Exists()
 	{
 		const int EXISTING_CATEGORY_ID = 1;
-		_mockRepo.SetupCategoryExists(EXISTING_CATEGORY_ID);
+		_mockRepo.SetupCategoryIDToExists(EXISTING_CATEGORY_ID);
 
 		var req = new DeleteCategoryRequest(ID: EXISTING_CATEGORY_ID);
 		var result = await _validator.TestValidateAsync(req);
@@ -193,7 +194,7 @@ public sealed class DeleteCategoryValidatorTests
 
 static class CategoryValidatorsTestsHelper
 {
-	public static void SetupCategoryExists(this Mock<ICategoryRepository> mock, int categoryID)
+	public static void SetupCategoryIDToExists(this Mock<ICategoryRepository> mock, int categoryID)
 	{
 		mock.Setup(r => r.AnyAsync(It.Is<CategoryByIDSpec>(s => s.ID == categoryID), default))
 			.ReturnsAsync(true);
