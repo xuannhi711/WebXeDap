@@ -97,6 +97,55 @@ public class CategoryServiceTests
 		var result = await _service.ListAsync();
 		Assert.Empty(result);
 	}
+
+	[Fact]
+	public async Task ListHierarchyAsync_Pass()
+	{
+		var categories = new List<Category>
+		{
+			new Category { ID = 1, Name = "A" },
+			new Category
+			{
+				ID = 2,
+				Name = "A1",
+				ParentCategoryID = 1,
+			},
+			new Category
+			{
+				ID = 3,
+				Name = "A2",
+				ParentCategoryID = 1,
+			},
+			new Category
+			{
+				ID = 4,
+				Name = "A1.1",
+				ParentCategoryID = 2,
+			},
+			new Category { ID = 5, Name = "B" },
+			new Category { ID = 6, Name = "C" },
+		};
+		_repo.SetupListAsyncToReturnCategories(categories);
+
+		var resp = await _service.ListHierarchyAsync();
+
+		// root
+		Assert.Equal(3, resp.Count);
+		Assert.Collection(
+			resp,
+			i =>
+			{
+				Assert.Equal("A", i.Name);
+				Assert.Equal(2, i.Children.Count);
+				Assert.Equal("A1", i.Children[0].Name);
+				Assert.Equal("A2", i.Children[1].Name);
+				Assert.Single(i.Children[0].Children);
+				Assert.Equal("A1.1", i.Children[0].Children[0].Name);
+			},
+			i => Assert.Equal("B", i.Name),
+			i => Assert.Equal("C", i.Name)
+		);
+	}
 }
 
 static class CategoryServiceTestsHelper
