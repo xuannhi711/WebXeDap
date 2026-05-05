@@ -9,6 +9,8 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
 {
     public CreateCategoryValidator(IApplicationDbContext ctx)
     {
+        // RuleLevelCascadeMode = CascadeMode.Stop;
+
         RuleFor(createReq => createReq.Name)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
@@ -31,7 +33,10 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
 {
     public UpdateCategoryValidator(IApplicationDbContext ctx)
     {
+        // RuleLevelCascadeMode = CascadeMode.Stop;
+
         RuleFor(updateReq => updateReq.ID)
+            .Cascade(CascadeMode.Stop)
             .MustAsync(async (id, cancellationToken) =>
                 await ctx.Categories.AnyAsync(c => c.ID == id, cancellationToken))
             .WithMessage("Category does not exist.");
