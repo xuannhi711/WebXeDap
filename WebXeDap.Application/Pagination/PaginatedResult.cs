@@ -1,4 +1,4 @@
-namespace WebXeDap.Application.Pangination;
+namespace WebXeDap.Application.Pagination;
 
 public record PaginatedResult<T>(
 	IReadOnlyList<T> Items,
