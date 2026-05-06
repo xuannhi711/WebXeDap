@@ -3,6 +3,4 @@ using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Contracts.Persistence;
 
-public interface IProductRepository : IRepositoryBase<Product>
-{
-}
+public interface IProductRepository : IRepositoryBase<Product> { }
