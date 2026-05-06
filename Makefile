@@ -81,3 +81,7 @@ test:
 .PHONY=clean
 clean:
 	@dotnet clean
+
+.PHONY=static
+static:
+	@cd ./WebXeDap.StaticWeb && pnpm dev
