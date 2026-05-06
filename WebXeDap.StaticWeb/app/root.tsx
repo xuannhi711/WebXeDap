@@ -1,3 +1,4 @@
+import { Provider } from "react-redux";
 import {
 	isRouteErrorResponse,
 	Links,
@@ -6,10 +7,11 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
-import { Provider } from "react-redux";
+import { AppSidebar } from "./components/app-sidebar";
+import { SiteHeader } from "./components/site-header";
+import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
 import { store } from "./store";
 
 export const links: Route.LinksFunction = () => [
@@ -46,8 +48,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
 	return (
 		<Provider store={store}>
-			<main className="min-h-svh w-full">
-				<Outlet />
+			<main className="[--header-height:calc(--spacing(14))]">
+				<SidebarProvider className="flex flex-col min-h-svh">
+					<SiteHeader />
+					<div className="flex flex-1">
+						<AppSidebar />
+						<SidebarInset>
+							<Outlet />
+						</SidebarInset>
+					</div>
+				</SidebarProvider>
 			</main>
 		</Provider>
 	);
