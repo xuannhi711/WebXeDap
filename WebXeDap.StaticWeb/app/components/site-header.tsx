@@ -5,6 +5,7 @@ import { NavUser } from "./sidebar-navs/nav-user";
 import { SiteBrand } from "./site-brand";
 import { useAppSelector } from "~/store/hooks";
 import { Link } from "react-router";
+import { ROUTES } from "~/routes";
 
 export function SiteHeader() {
 	const { toggleSidebar } = useSidebar();
@@ -37,7 +38,7 @@ function UserMenu() {
 		return (
 			<div className="flex flex-row items-center gap-2">
 				<Link
-					to="/login"
+					to={ROUTES.LOGIN}
 					className={buttonVariants({
 						variant: "outline",
 						size: "lg",
@@ -46,7 +47,7 @@ function UserMenu() {
 					Login
 				</Link>
 				<Link
-					to="/register"
+					to={ROUTES.REGISTER}
 					className={buttonVariants({
 						variant: "default",
 						size: "lg",

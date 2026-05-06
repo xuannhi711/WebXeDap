@@ -8,6 +8,7 @@ import {
 	TerminalSquareIcon,
 } from "lucide-react";
 import type { ComponentProps } from "react";
+import { Link } from "react-router";
 import { NavCollapsible } from "~/components/sidebar-navs/nav-collapsible";
 import { NavUser } from "~/components/sidebar-navs/nav-user";
 import {
@@ -16,13 +17,13 @@ import {
 	SidebarFooter,
 	SidebarHeader,
 } from "~/components/ui/sidebar";
+import { cn } from "~/lib/utils";
+import { ROUTES } from "~/routes";
+import { useAppSelector } from "~/store/hooks";
 import { NavSecondary } from "./sidebar-navs/nav-secondary";
 import { SiteBrand } from "./site-brand";
 import { ThemeToggle } from "./toggles/theme-toggle";
-import { Link } from "react-router";
 import { buttonVariants } from "./ui/button";
-import { useAppSelector } from "~/store/hooks";
-import { cn } from "~/lib/utils";
 
 const data = {
 	navMain: [
@@ -170,10 +171,13 @@ function UserMenu() {
 	if (!isAuthenticated) {
 		return (
 			<div className="flex flex-col items-center gap-2">
-				<Link to="/login" className={cn(OUTLINE_BTN_CLASSES, "w-full")}>
+				<Link to={ROUTES.LOGIN} className={cn(OUTLINE_BTN_CLASSES, "w-full")}>
 					Login
 				</Link>
-				<Link to="/register" className={cn(DEFAULT_BTN_CLASSES, "w-full")}>
+				<Link
+					to={ROUTES.REGISTER}
+					className={cn(DEFAULT_BTN_CLASSES, "w-full")}
+				>
 					Register
 				</Link>
 			</div>
