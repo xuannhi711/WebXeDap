@@ -1,7 +1,7 @@
-/** biome-ignore-all lint/a11y/useAnchorContent: <cai nay cua shadcn> */
 "use client";
-import type { ComponentProps } from "react";
 import { ChevronRightIcon } from "lucide-react";
+import type { ComponentProps } from "react";
+import { Link } from "react-router";
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -12,12 +12,11 @@ import {
 	SidebarGroupLabel,
 	SidebarMenu,
 	SidebarMenuAction,
-	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarMenuSub,
-	SidebarMenuSubButton,
-	SidebarMenuSubItem,
+	SidebarMenuSubItem
 } from "~/components/ui/sidebar";
+import { buttonVariants } from "../ui/button";
 
 type NavCollapsibleItem = {
 	title: string;
@@ -49,13 +48,16 @@ export function NavCollapsible({
 						defaultOpen={item.isActive}
 						render={<SidebarMenuItem />}
 					>
-						<SidebarMenuButton
-							tooltip={item.title}
-							render={<a href={item.url} />}
+						<Link
+							to={item.url}
+							className={buttonVariants({
+								variant: "ghost",
+								className: "w-full justify-start",
+							})}
 						>
 							{item.icon}
 							<span>{item.title}</span>
-						</SidebarMenuButton>
+						</Link>
 						{item.items?.length ? (
 							<>
 								<SidebarMenuAction
@@ -69,9 +71,15 @@ export function NavCollapsible({
 									<SidebarMenuSub>
 										{item.items?.map((subItem) => (
 											<SidebarMenuSubItem key={subItem.title}>
-												<SidebarMenuSubButton render={<a href={subItem.url} />}>
+												<Link
+													to={subItem.url}
+													className={buttonVariants({
+														variant: "ghost",
+														className: "w-full justify-start",
+													})}
+												>
 													<span>{subItem.title}</span>
-												</SidebarMenuSubButton>
+												</Link>
 											</SidebarMenuSubItem>
 										))}
 									</SidebarMenuSub>
