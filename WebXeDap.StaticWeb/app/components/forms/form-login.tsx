@@ -15,6 +15,7 @@ import { InputPassword } from "../ui/input-password";
 interface LoginFormProps extends React.ComponentProps<"form"> {
 	className?: string;
 	onSubmitValid?: (email: string, password: string) => Promise<void>;
+	onSubmitError?: (error: Error) => void;
 }
 
 const LOGIN_FORM_SCHEMA = z.object({
@@ -32,6 +33,7 @@ const LOGIN_FORM_SCHEMA = z.object({
 export function LoginForm({
 	className,
 	onSubmitValid,
+	onSubmitError,
 	...props
 }: LoginFormProps) {
 	const form = useForm({
@@ -42,8 +44,17 @@ export function LoginForm({
 		validators: {
 			onSubmit: LOGIN_FORM_SCHEMA,
 		},
-		onSubmit: async ({ value }) => {
-			await onSubmitValid?.(value.email, value.password);
+		onSubmit: async ({ value, formApi }) => {
+			try {
+				await onSubmitValid?.(value.email, value.password);
+				formApi.reset();
+			} catch (error) {
+				onSubmitError?.(
+					error instanceof Error
+						? error
+						: new Error("An unknown error occurred"),
+				);
+			}
 		},
 	});
 

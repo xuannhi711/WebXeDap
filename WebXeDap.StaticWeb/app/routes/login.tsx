@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import { LoginForm } from "~/components/forms/form-login";
 import { buttonVariants } from "~/components/ui/button";
@@ -30,10 +31,12 @@ const OATH2_OPTIONS = [
 
 export default function LoginPage() {
 	const dispatch = useAppDispatch();
+	const [formError, setFormError] = useState<string | null>(null);
 	const authnService: AuthnService = {} as any;
 
 	async function onSubmitValidHandler(email: string, password: string) {
-		await new Promise((resolve) => setTimeout(resolve, 3000));
+        setFormError(null);
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		const loginData = await authnService.login({
 			email: email,
@@ -52,6 +55,10 @@ export default function LoginPage() {
 		);
 	}
 
+	function onSubmitErrorHandler(error: Error) {
+		setFormError(error.message);
+	}
+
 	return (
 		<div className="grid lg:grid-cols-2 py-20 lg:px-50 px-20 gap-15">
 			<div className="flex flex-col justify-between min-h-[67vh]">
@@ -61,7 +68,13 @@ export default function LoginPage() {
 						Enter your email below to login to your account
 					</span>
 				</div>
-				<LoginForm onSubmitValid={onSubmitValidHandler} />
+				<LoginForm
+					onSubmitValid={onSubmitValidHandler}
+					onSubmitError={onSubmitErrorHandler}
+				/>
+				{formError && (
+					<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">{formError}</div>
+				)}
 				<FieldSeparator>Or continue with</FieldSeparator>
 				<Oauth2LoginOptions />
 				<p className="text-muted-foreground text-center">
