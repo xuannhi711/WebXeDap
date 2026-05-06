@@ -9,6 +9,8 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { Provider } from "react-redux";
+import { store } from "./store";
 
 export const links: Route.LinksFunction = () => [
 	{
@@ -43,9 +45,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
 	return (
-		<main className="min-h-svh w-full">
-			<Outlet />
-		</main>
+		<Provider store={store}>
+			<main className="min-h-svh w-full">
+				<Outlet />
+			</main>
+		</Provider>
 	);
 }
 
