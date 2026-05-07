@@ -85,3 +85,8 @@ clean:
 .PHONY=static
 static:
 	@cd ./WebXeDap.StaticWeb && pnpm dev
+
+.PHONY=fmt
+fmt:
+	@dotnet csharpier format .
+	@cd ./WebXeDap.StaticWeb && pnpm format
