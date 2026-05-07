@@ -104,7 +104,12 @@ function Oauth2LoginOptions() {
 						variant: "outline",
 					})}
 				>
-					<img loading="lazy" src={option.icon} alt={option.name} className="h-5 w-5" />
+					<img
+						loading="lazy"
+						src={option.icon}
+						alt={option.name}
+						className="h-5 w-5"
+					/>
 					{option.name}
 				</Link>
 			))}

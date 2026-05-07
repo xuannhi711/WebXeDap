@@ -14,7 +14,7 @@ import {
 	SidebarMenuAction,
 	SidebarMenuItem,
 	SidebarMenuSub,
-	SidebarMenuSubItem
+	SidebarMenuSubItem,
 } from "~/components/ui/sidebar";
 import { buttonVariants } from "../ui/button";
 

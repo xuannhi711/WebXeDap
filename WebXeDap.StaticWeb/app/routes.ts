@@ -9,6 +9,6 @@ export default [
 export const ROUTES = {
 	HOME: "/",
 	LOGIN: "/login",
-    REGISTER: "/register",
+	REGISTER: "/register",
 	FORGOT_PASSWORD: "/forgot-password",
 } as const;
