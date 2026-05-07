@@ -1,11 +1,11 @@
 import { PanelLeftIcon } from "lucide-react";
+import { Link } from "react-router";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { useSidebar } from "~/components/ui/sidebar";
+import { ROUTES } from "~/routes";
+import { useAuthnStore } from "~/store/store-authn";
 import { NavUser } from "./sidebar-navs/nav-user";
 import { SiteBrand } from "./site-brand";
-import { useAppSelector } from "~/store/hooks";
-import { Link } from "react-router";
-import { ROUTES } from "~/routes";
 
 export function SiteHeader() {
 	const { toggleSidebar } = useSidebar();
@@ -31,7 +31,7 @@ export function SiteHeader() {
 }
 
 function UserMenu() {
-	const user = useAppSelector((state) => state.auth.user);
+	const user = useAuthnStore((state) => state.user);
 	const isAuthenticated = !!user;
 
 	if (!isAuthenticated) {

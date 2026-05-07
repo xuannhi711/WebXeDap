@@ -22,11 +22,11 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "~/components/ui/sidebar";
-import { useAppSelector } from "~/store/hooks";
+import { useAuthnStore } from "~/store/store-authn";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
-	const user = useAppSelector((state) => state.auth.user);
+	const user = useAuthnStore((state) => state.user);
 
 	return (
 		<SidebarMenu>

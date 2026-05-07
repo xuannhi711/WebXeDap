@@ -4,8 +4,7 @@ import { LoginForm } from "~/components/forms/form-login";
 import { buttonVariants } from "~/components/ui/button";
 import { FieldSeparator } from "~/components/ui/field";
 import { ROUTES } from "~/routes";
-import { type AuthenticatedUser, setAuthnState } from "~/store/authn-slice";
-import { useAppDispatch } from "~/store/hooks";
+import { type AuthenticatedUser, useAuthnStore } from "~/store/store-authn";
 
 interface AuthnService {
 	login: (params: { email: string; password: string }) => Promise<{
@@ -30,12 +29,12 @@ const OATH2_OPTIONS = [
 ];
 
 export default function LoginPage() {
-	const dispatch = useAppDispatch();
+	const { setAuthnState } = useAuthnStore();
 	const [formError, setFormError] = useState<string | null>(null);
 	const authnService: AuthnService = {} as any;
 
 	async function onSubmitValidHandler(email: string, password: string) {
-        setFormError(null);
+		setFormError(null);
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		const loginData = await authnService.login({
@@ -47,12 +46,10 @@ export default function LoginPage() {
 			accessToken: loginData.accessToken,
 		});
 
-		dispatch(
-			setAuthnState({
-				user: meData,
-				...loginData,
-			}),
-		);
+		setAuthnState({
+			user: meData,
+			accessToken: loginData.accessToken,
+		});
 	}
 
 	function onSubmitErrorHandler(error: Error) {
@@ -73,7 +70,9 @@ export default function LoginPage() {
 					onSubmitError={onSubmitErrorHandler}
 				/>
 				{formError && (
-					<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">{formError}</div>
+					<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
+						{formError}
+					</div>
 				)}
 				<FieldSeparator>Or continue with</FieldSeparator>
 				<Oauth2LoginOptions />
@@ -85,6 +84,7 @@ export default function LoginPage() {
 				</p>
 			</div>
 			<img
+				loading="lazy"
 				className="lg:block hidden size-full"
 				src="https://picsum.photos/500/500"
 				alt="banner"
@@ -104,7 +104,7 @@ function Oauth2LoginOptions() {
 						variant: "outline",
 					})}
 				>
-					<img src={option.icon} alt={option.name} className="h-5 w-5" />
+					<img loading="lazy" src={option.icon} alt={option.name} className="h-5 w-5" />
 					{option.name}
 				</Link>
 			))}

@@ -17,9 +17,10 @@ import {
 	SidebarFooter,
 	SidebarHeader,
 } from "~/components/ui/sidebar";
+import { useCloseSidebarOnLocationChange } from "~/hooks/use-close-sidebar-on-location-change";
 import { cn } from "~/lib/utils";
 import { ROUTES } from "~/routes";
-import { useAppSelector } from "~/store/hooks";
+import { useAuthnStore } from "~/store/store-authn";
 import { NavSecondary } from "./sidebar-navs/nav-secondary";
 import { SiteBrand } from "./site-brand";
 import { ThemeToggle } from "./toggles/theme-toggle";
@@ -133,6 +134,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
+	useCloseSidebarOnLocationChange();
+
 	return (
 		<Sidebar
 			className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
@@ -165,7 +168,7 @@ const DEFAULT_BTN_CLASSES = buttonVariants({
 });
 
 function UserMenu() {
-	const user = useAppSelector((state) => state.auth.user);
+	const user = useAuthnStore((state) => state.user);
 	const isAuthenticated = !!user;
 
 	if (!isAuthenticated) {

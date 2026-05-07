@@ -1,4 +1,3 @@
-import { Provider } from "react-redux";
 import {
 	isRouteErrorResponse,
 	Links,
@@ -12,7 +11,9 @@ import "./app.css";
 import { AppSidebar } from "./components/app-sidebar";
 import { SiteHeader } from "./components/site-header";
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
-import { store } from "./store";
+import { useTheme } from "./hooks/use-theme";
+
+export const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`;
 
 export const links: Route.LinksFunction = () => [
 	{
@@ -29,12 +30,14 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning={true}>
 			<head>
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<Meta />
 				<Links />
+				{/** biome-ignore lint/security/noDangerouslySetInnerHtml: <load theme > */}
+				<script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
 			</head>
 			<body>
 				{children}
@@ -46,20 +49,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+	useTheme();
+
 	return (
-		<Provider store={store}>
-			<main className="[--header-height:calc(--spacing(14))]">
-				<SidebarProvider className="flex flex-col min-h-svh">
-					<SiteHeader />
-					<div className="flex flex-1">
-						<AppSidebar />
-						<SidebarInset>
-							<Outlet />
-						</SidebarInset>
-					</div>
-				</SidebarProvider>
-			</main>
-		</Provider>
+		<main className="[--header-height:calc(--spacing(14))]">
+			<SidebarProvider defaultOpen={false} className="flex flex-col min-h-svh">
+				<SiteHeader />
+				<div className="flex flex-1">
+					<AppSidebar />
+					<SidebarInset>
+						<Outlet />
+					</SidebarInset>
+				</div>
+			</SidebarProvider>
+		</main>
 	);
 }
 
