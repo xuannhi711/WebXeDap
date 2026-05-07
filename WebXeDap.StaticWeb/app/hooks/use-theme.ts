@@ -21,7 +21,10 @@ function getInitialMode(): ThemeMode {
 function applyThemeMode(mode: ThemeMode) {
 	window.localStorage.setItem(THEME_LOCAL_STORAGE_KEY, mode);
 	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-	const resolved = mode === "auto" ? (prefersDark ? "dark" : "light") : mode;
+	const resolved = match([mode, prefersDark])
+		.with(["auto", true], () => "dark")
+		.with(["auto", false], () => "light")
+		.otherwise(([mode]) => mode);
 
 	document.documentElement.classList.remove("light", "dark");
 	document.documentElement.classList.add(resolved);

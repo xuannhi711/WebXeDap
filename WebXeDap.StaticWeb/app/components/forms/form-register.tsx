@@ -2,52 +2,71 @@
 
 import { useForm } from "@tanstack/react-form";
 import { LoaderPinwheel } from "lucide-react";
-import { Link } from "react-router";
 import { match, P } from "ts-pattern";
 import { z } from "zod";
 import { Field, FieldError, FieldLabel } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "~/config/authn";
 import { cn } from "~/lib/utils";
-import { ROUTES } from "~/routes";
 import { Button } from "../ui/button";
 import { InputPassword } from "../ui/input-password";
 
-interface LoginFormProps extends React.ComponentProps<"form"> {
+interface RegisterFormProps extends React.ComponentProps<"form"> {
 	className?: string;
-	onSubmitValid?: (email: string, password: string) => Promise<void>;
+	onSubmitValid?: (
+		email: string,
+		password: string,
+		confirmPassword: string,
+	) => Promise<void>;
 	onSubmitError?: (error: Error) => void;
 }
 
-const LOGIN_FORM_SCHEMA = z.object({
-	email: z.email({ message: "Invalid email address" }),
-	password: z
-		.string()
-		.min(PASSWORD_MIN_LENGTH, {
-			message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
-		})
-		.max(PASSWORD_MAX_LENGTH, {
-			message: `Password must be at most ${PASSWORD_MAX_LENGTH} characters`,
-		}),
-});
+const REGISTER_FORM_SCHEMA = z
+	.object({
+		email: z.email({ message: "Invalid email address" }),
+		password: z
+			.string()
+			.min(PASSWORD_MIN_LENGTH, {
+				message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+			})
+			.max(PASSWORD_MAX_LENGTH, {
+				message: `Password must be at most ${PASSWORD_MAX_LENGTH} characters`,
+			}),
+		confirmPassword: z.string(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.password === data.confirmPassword) {
+			return;
+		}
+		ctx.addIssue({
+			code: "custom",
+			path: ["confirmPassword"],
+			message: "Passwords do not match",
+		});
+	});
 
-export function LoginForm({
+export function RegisterForm({
 	className,
 	onSubmitValid,
 	onSubmitError,
 	...props
-}: LoginFormProps) {
+}: RegisterFormProps) {
 	const form = useForm({
 		defaultValues: {
 			email: "",
 			password: "",
+			confirmPassword: "",
 		},
 		validators: {
-			onSubmit: LOGIN_FORM_SCHEMA,
+			onSubmit: REGISTER_FORM_SCHEMA,
 		},
 		onSubmit: async ({ value, formApi }) => {
 			try {
-				await onSubmitValid?.(value.email, value.password);
+				await onSubmitValid?.(
+					value.email,
+					value.password,
+					value.confirmPassword,
+				);
 				formApi.reset();
 			} catch (err) {
 				const error = match(err)
@@ -101,15 +120,28 @@ export function LoginForm({
 						field.state.meta.isTouched && !field.state.meta.isValid;
 					return (
 						<Field data-invalid={isInvalid}>
-							<div className="flex items-center">
-								<FieldLabel htmlFor={field.name}>Password</FieldLabel>
-								<Link
-									to={ROUTES.FORGOT_PASSWORD}
-									className="ml-auto underline-offset-4 hover:underline"
-								>
-									Forgot password?
-								</Link>
-							</div>
+							<FieldLabel htmlFor={field.name}>Password</FieldLabel>
+							<InputPassword
+								id={field.name}
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+								aria-invalid={isInvalid}
+								required
+							/>
+							{isInvalid && <FieldError errors={field.state.meta.errors} />}
+						</Field>
+					);
+				}}
+			</form.Field>
+
+			<form.Field name="confirmPassword">
+				{(field) => {
+					const isInvalid =
+						field.state.meta.isTouched && !field.state.meta.isValid;
+					return (
+						<Field data-invalid={isInvalid}>
+							<FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
 							<InputPassword
 								id={field.name}
 								value={field.state.value}
@@ -131,11 +163,11 @@ export function LoginForm({
 							.with(true, () => (
 								<>
 									<LoaderPinwheel className="animate-spin" />
-									Logging in
+									Registering
 								</>
 							))
 							.otherwise(() => (
-								<>Login</>
+								<>Register</>
 							))}
 					</Button>
 				)}
