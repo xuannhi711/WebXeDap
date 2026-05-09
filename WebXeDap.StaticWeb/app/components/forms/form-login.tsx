@@ -3,9 +3,9 @@
 import { useForm } from "@tanstack/react-form";
 import { LoaderPinwheel } from "lucide-react";
 import { Link } from "react-router";
-import { match, P } from "ts-pattern";
+import { match } from "ts-pattern";
 import { z } from "zod";
-import { Field, FieldError, FieldLabel } from "~/components/ui/field";
+import { Field, FieldLabel } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "~/config/authn";
 import { cn } from "~/lib/utils";
@@ -13,14 +13,8 @@ import { ROUTES } from "~/routes";
 import { Button } from "../ui/button";
 import { InputPassword } from "../ui/input-password";
 
-interface LoginFormProps extends React.ComponentProps<"form"> {
-	className?: string;
-	onSubmitValid?: (email: string, password: string) => Promise<void>;
-	onSubmitError?: (error: Error) => void;
-}
-
 const LOGIN_FORM_SCHEMA = z.object({
-	email: z.email({ message: "Invalid email address" }),
+	email: z.string({ message: "Invalid email address" }),
 	password: z
 		.string()
 		.min(PASSWORD_MIN_LENGTH, {
@@ -31,38 +25,46 @@ const LOGIN_FORM_SCHEMA = z.object({
 		}),
 });
 
+type LoginFormValues = z.infer<typeof LOGIN_FORM_SCHEMA>;
+
+export type LoginFormOnSubmitValidParams = {
+	value: LoginFormValues;
+};
+
+type InvalidLoginFormError = {
+	fields?: Partial<Record<keyof LoginFormValues, string>>;
+	form?: string;
+};
+
+interface LoginFormProps extends React.ComponentProps<"form"> {
+	className?: string;
+	onSubmitValid?: (
+		params: LoginFormOnSubmitValidParams,
+	) => Promise<undefined | InvalidLoginFormError>;
+}
+
+const LOGIN_FORM_DEFAULT_VALUES: LoginFormValues = {
+	email: "",
+	password: "",
+};
+
 export function LoginForm({
 	className,
 	onSubmitValid,
-	onSubmitError,
 	...props
 }: LoginFormProps) {
 	const form = useForm({
-		defaultValues: {
-			email: "",
-			password: "",
-		},
+		defaultValues: LOGIN_FORM_DEFAULT_VALUES,
 		validators: {
 			onSubmit: LOGIN_FORM_SCHEMA,
-		},
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				await onSubmitValid?.(value.email, value.password);
-				formApi.reset();
-			} catch (err) {
-				const error = match(err)
-					.returnType<Error>()
-					.with(P.instanceOf(Error), (err) => err)
-					.otherwise(() => new Error("An unknown error occurred"));
-				onSubmitError?.(error);
-			}
+			onSubmitAsync: onSubmitValid,
 		},
 	});
 
 	return (
 		<form
 			className={cn(
-				"group/field-group @container/field-group flex w-full flex-col gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4 overflow-hidden",
+				"group/field-group @container/field-group flex w-full flex-col gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4",
 				className,
 			)}
 			onSubmit={(e) => {
@@ -81,7 +83,7 @@ export function LoginForm({
 							<FieldLabel htmlFor={field.name}>Email</FieldLabel>
 							<Input
 								id={field.name}
-								type="email"
+								// type="email"
 								placeholder="johndoe@example.com"
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -89,7 +91,7 @@ export function LoginForm({
 								aria-invalid={isInvalid}
 								required
 							/>
-							{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							{isInvalid && <p>{field.state.meta.errors.join(", ")}</p>}
 						</Field>
 					);
 				}}
@@ -118,7 +120,7 @@ export function LoginForm({
 								aria-invalid={isInvalid}
 								required
 							/>
-							{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							{isInvalid && <p>{field.state.meta.errors.join(", ")}</p>}
 						</Field>
 					);
 				}}
@@ -139,6 +141,16 @@ export function LoginForm({
 							))}
 					</Button>
 				)}
+			</form.Subscribe>
+
+			<form.Subscribe selector={(state) => [state.errorMap.onSubmit]}>
+				{([formError]) =>
+					formError && (
+						<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
+							{formError.form as string}
+						</div>
+					)
+				}
 			</form.Subscribe>
 		</form>
 	);

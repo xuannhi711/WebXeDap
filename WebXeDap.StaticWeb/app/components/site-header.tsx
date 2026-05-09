@@ -3,9 +3,9 @@ import { Link } from "react-router";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { useSidebar } from "~/components/ui/sidebar";
 import { ROUTES } from "~/routes";
-import { useAuthnStore } from "~/store/store-authn";
 import { NavUser } from "./sidebar-navs/nav-user";
 import { SiteBrand } from "./site-brand";
+import { useStore } from "~/store/store";
 
 export function SiteHeader() {
 	const { toggleSidebar } = useSidebar();
@@ -31,8 +31,7 @@ export function SiteHeader() {
 }
 
 function UserMenu() {
-	const user = useAuthnStore((state) => state.user);
-	const isAuthenticated = !!user;
+	const isAuthenticated = useStore((state) => state.isAuthenticated);
 
 	if (!isAuthenticated) {
 		return (

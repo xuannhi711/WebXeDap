@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { RegisterForm } from "~/components/forms/form-register";
+import { ResultAsync } from "neverthrow";
+
+import {
+	RegisterForm,
+	type RegisterFormOnSubmitValidParams,
+} from "~/components/forms/form-register";
 import { buttonVariants } from "~/components/ui/button";
 import { FieldSeparator } from "~/components/ui/field";
 import { ROUTES } from "~/routes";
@@ -33,23 +38,25 @@ export default function RegisterPage() {
 	const [formError, setFormError] = useState<string | null>(null);
 	const userService: UserService = {} as any;
 
-	async function onSubmitValidHandler(
-		email: string,
-		password: string,
-		confirmPassword: string,
-	) {
+	async function onSubmitValidHandler(params: RegisterFormOnSubmitValidParams) {
 		setFormError(null);
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
-		const registerData = await userService.register({
-			email: email,
-			password: password,
-			confirmPassword: confirmPassword,
-		});
-	}
+		const registerResult = await ResultAsync.fromPromise(
+			userService.register(params.value),
+			(error) => "An unexpected error occurred",
+		);
 
-	function onSubmitErrorHandler(error: Error) {
-		setFormError(error.message);
+		registerResult.match({
+			ok: (data: { id: number; accessToken: string }) => {
+				console.log("Registered user:", data);
+			},
+			err: (errorMessage) => {
+				params.formApi.setErrorMap({
+					onSubmit: errorMessage,
+				});
+			},
+		});
 	}
 
 	return (
@@ -67,10 +74,7 @@ export default function RegisterPage() {
 						Enter your email below to create your account
 					</span>
 				</div>
-				<RegisterForm
-					onSubmitValid={onSubmitValidHandler}
-					onSubmitError={onSubmitErrorHandler}
-				/>
+				<RegisterForm onSubmitValid={onSubmitValidHandler} />
 				{formError && (
 					<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
 						{formError}

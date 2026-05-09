@@ -20,11 +20,11 @@ import {
 import { useCloseSidebarOnLocationChange } from "~/hooks/use-close-sidebar-on-location-change";
 import { cn } from "~/lib/utils";
 import { ROUTES } from "~/routes";
-import { useAuthnStore } from "~/store/store-authn";
 import { NavSecondary } from "./sidebar-navs/nav-secondary";
 import { SiteBrand } from "./site-brand";
 import { ThemeToggle } from "./toggles/theme-toggle";
 import { buttonVariants } from "./ui/button";
+import { useStore } from "~/store/store";
 
 const data = {
 	navMain: [
@@ -168,8 +168,7 @@ const DEFAULT_BTN_CLASSES = buttonVariants({
 });
 
 function UserMenu() {
-	const user = useAuthnStore((state) => state.user);
-	const isAuthenticated = !!user;
+	const isAuthenticated = useStore((state) => state.isAuthenticated);
 
 	if (!isAuthenticated) {
 		return (

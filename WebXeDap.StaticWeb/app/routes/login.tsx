@@ -1,19 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router";
-import { LoginForm } from "~/components/forms/form-login";
+import { Link, useNavigate } from "react-router";
+import {
+	LoginForm,
+	type LoginFormOnSubmitValidParams,
+} from "~/components/forms/form-login";
 import { buttonVariants } from "~/components/ui/button";
 import { FieldSeparator } from "~/components/ui/field";
+import { useLogin } from "~/hooks/users/use-login";
 import { ROUTES } from "~/routes";
-import { type AuthenticatedUser, useAuthnStore } from "~/store/store-authn";
-
-interface AuthnService {
-	login: (params: { email: string; password: string }) => Promise<{
-		id: number;
-		accessToken: string;
-	}>;
-
-	me: (params: { accessToken: string }) => Promise<AuthenticatedUser>;
-}
 
 const OATH2_OPTIONS = [
 	{
@@ -29,31 +22,24 @@ const OATH2_OPTIONS = [
 ];
 
 export default function LoginPage() {
-	const { setAuthnState } = useAuthnStore();
-	const [formError, setFormError] = useState<string | null>(null);
-	const authnService: AuthnService = {} as any;
+	const login = useLogin();
+	const navigate = useNavigate();
 
-	async function onSubmitValidHandler(email: string, password: string) {
-		setFormError(null);
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		const loginData = await authnService.login({
-			email: email,
-			password: password,
+	async function onSubmitValidHandler(params: LoginFormOnSubmitValidParams) {
+		const loginResult = await login.mutateAsync({
+			username: params.value.email,
+			password: params.value.password,
 		});
 
-		const meData = await authnService.me({
-			accessToken: loginData.accessToken,
-		});
-
-		setAuthnState({
-			user: meData,
-			accessToken: loginData.accessToken,
-		});
-	}
-
-	function onSubmitErrorHandler(error: Error) {
-		setFormError(error.message);
+		if (loginResult.isErr()) {
+			return {
+				form: `Login failed: ${JSON.stringify(loginResult.error.message)}`,
+				// fields: {
+				// 	email: "Invalid email address",
+				// },
+			};
+		}
+		navigate(ROUTES.HOME);
 	}
 
 	return (
@@ -65,15 +51,7 @@ export default function LoginPage() {
 						Enter your email below to login to your account
 					</span>
 				</div>
-				<LoginForm
-					onSubmitValid={onSubmitValidHandler}
-					onSubmitError={onSubmitErrorHandler}
-				/>
-				{formError && (
-					<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
-						{formError}
-					</div>
-				)}
+				<LoginForm onSubmitValid={onSubmitValidHandler} />
 				<FieldSeparator>Or continue with</FieldSeparator>
 				<Oauth2LoginOptions />
 				<p className="text-muted-foreground text-center">

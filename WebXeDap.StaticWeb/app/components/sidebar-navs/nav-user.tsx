@@ -22,11 +22,11 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "~/components/ui/sidebar";
-import { useAuthnStore } from "~/store/store-authn";
+import { useStore } from "~/store/store";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
-	const user = useAuthnStore((state) => state.user);
+	const { email, firstName, lastName, avatar } = useStore((state) => state);
 
 	return (
 		<SidebarMenu>
@@ -41,14 +41,14 @@ export function NavUser() {
 						}
 					>
 						<Avatar>
-							<AvatarImage src={user?.avatar} alt={user?.lastName} />
+							<AvatarImage src={avatar} alt={lastName} />
 							<AvatarFallback>CN</AvatarFallback>
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight">
 							<span className="truncate font-medium">
-								{user?.firstName} {user?.lastName}
+								{firstName} {lastName}
 							</span>
-							<span className="truncate text-xs">{user?.email}</span>
+							<span className="truncate text-xs">{email}</span>
 						</div>
 						<ChevronsUpDownIcon className="ml-auto size-4" />
 					</DropdownMenuTrigger>
@@ -62,14 +62,14 @@ export function NavUser() {
 							<DropdownMenuLabel className="p-0 font-normal">
 								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 									<Avatar>
-										<AvatarImage src={user?.avatar} alt={user?.lastName} />
+										<AvatarImage src={avatar} alt={lastName} />
 										<AvatarFallback>CN</AvatarFallback>
 									</Avatar>
 									<div className="grid flex-1 text-left text-sm leading-tight">
 										<span className="truncate font-medium">
-											{user?.firstName} {user?.lastName}
+											{firstName} {lastName}
 										</span>
-										<span className="truncate text-xs">{user?.email}</span>
+										<span className="truncate text-xs">{email}</span>
 									</div>
 								</div>
 							</DropdownMenuLabel>

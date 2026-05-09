@@ -1,8 +1,8 @@
 "use client";
 
-import { useForm } from "@tanstack/react-form";
+import { type AnyFormApi, useForm } from "@tanstack/react-form";
 import { LoaderPinwheel } from "lucide-react";
-import { match, P } from "ts-pattern";
+import { match } from "ts-pattern";
 import { z } from "zod";
 import { Field, FieldError, FieldLabel } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
@@ -10,16 +10,6 @@ import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "~/config/authn";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { InputPassword } from "../ui/input-password";
-
-interface RegisterFormProps extends React.ComponentProps<"form"> {
-	className?: string;
-	onSubmitValid?: (
-		email: string,
-		password: string,
-		confirmPassword: string,
-	) => Promise<void>;
-	onSubmitError?: (error: Error) => void;
-}
 
 const REGISTER_FORM_SCHEMA = z
 	.object({
@@ -45,43 +35,41 @@ const REGISTER_FORM_SCHEMA = z
 		});
 	});
 
+type RegisterFormValues = z.infer<typeof REGISTER_FORM_SCHEMA>;
+
+export type RegisterFormOnSubmitValidParams = {
+	value: RegisterFormValues;
+	formApi: AnyFormApi;
+};
+
+interface RegisterFormProps extends React.ComponentProps<"form"> {
+	className?: string;
+	onSubmitValid?: (params: RegisterFormOnSubmitValidParams) => Promise<void>;
+}
+
+const REGISTER_FORM_DEFAULT_VALUES: RegisterFormValues = {
+	email: "",
+	password: "",
+	confirmPassword: "",
+};
+
 export function RegisterForm({
 	className,
 	onSubmitValid,
-	onSubmitError,
 	...props
 }: RegisterFormProps) {
 	const form = useForm({
-		defaultValues: {
-			email: "",
-			password: "",
-			confirmPassword: "",
-		},
+		defaultValues: REGISTER_FORM_DEFAULT_VALUES,
 		validators: {
 			onSubmit: REGISTER_FORM_SCHEMA,
 		},
-		onSubmit: async ({ value, formApi }) => {
-			try {
-				await onSubmitValid?.(
-					value.email,
-					value.password,
-					value.confirmPassword,
-				);
-				formApi.reset();
-			} catch (err) {
-				const error = match(err)
-					.returnType<Error>()
-					.with(P.instanceOf(Error), (err) => err)
-					.otherwise(() => new Error("An unknown error occurred"));
-				onSubmitError?.(error);
-			}
-		},
+		onSubmit: onSubmitValid,
 	});
 
 	return (
 		<form
 			className={cn(
-				"group/field-group @container/field-group flex w-full flex-col gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4 overflow-hidden",
+				"group/field-group @container/field-group flex w-full flex-col gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4",
 				className,
 			)}
 			onSubmit={(e) => {
