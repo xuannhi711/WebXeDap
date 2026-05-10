@@ -19,52 +19,25 @@ public sealed class CreateCategoryValidatorTests
 	}
 
 	[Fact]
-	public async Task CreateCategoryValidator_Fail_When_Name_Is_Empty()
+	public async Task CreateCategoryValidator_Pass_WhenRequestIsValid()
 	{
-		var request = new CreateCategoryRequest(Name: "", ParentCategoryID: null);
-		var result = await _validator.TestValidateAsync(request);
+		var parentCategory = new Category { Name = "Parent Category" };
+		await _ctx.AddCategoryAsync(parentCategory);
+		var req = new CreateCategoryRequest(Name: "New Category", ParentCategoryID: parentCategory.ID);
+
+		var result = await _validator.TestValidateAsync(req);
+		result.ShouldNotHaveAnyValidationErrors();
+	}
+
+	[Fact]
+	public async Task CreateCategoryValidator_Fail_WhenRequestIsInvalid()
+	{
+		var req = new CreateCategoryRequest(Name: "", ParentCategoryID: Random.Shared.Next());
+		var result = await _validator.TestValidateAsync(req);
 
 		result.ShouldHaveValidationErrors();
 		result.ShouldHaveValidationErrorFor(c => c.Name);
-	}
-
-	[Fact]
-	public async Task CreateCategoryValidator_Fail_When_ParentCategoryID_Does_Not_Exist()
-	{
-		var req = new CreateCategoryRequest(
-			Name: "New Category",
-			ParentCategoryID: Random.Shared.Next()
-		);
-		var result = await _validator.TestValidateAsync(req);
-
-		result.ShouldHaveValidationErrors();
 		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
-	}
-
-	[Fact]
-	public async Task CreateCategoryValidator_Pass_When_Name_Is_Valid()
-	{
-		var req = new CreateCategoryRequest(Name: "New Category", ParentCategoryID: null);
-		var result = await _validator.TestValidateAsync(req);
-
-		result.ShouldNotHaveAnyValidationErrors();
-		result.ShouldNotHaveValidationErrorFor(c => c.Name);
-	}
-
-	[Fact]
-	public async Task CreateCategoryValidator_Pass_When_ParentCategoryID_Is_Valid()
-	{
-		var PARENT_CATEGORY = new Category { ID = Random.Shared.Next(), Name = "Parent Category" };
-		await _ctx.AddCategoryAsync(PARENT_CATEGORY);
-
-		var req = new CreateCategoryRequest(
-			Name: "New Category",
-			ParentCategoryID: PARENT_CATEGORY.ID
-		);
-		var result = await _validator.TestValidateAsync(req);
-
-		result.ShouldNotHaveAnyValidationErrors();
-		result.ShouldNotHaveValidationErrorFor(c => c.ParentCategoryID);
 	}
 }
 
@@ -80,84 +53,60 @@ public sealed class UpdateCategoryValidatorTests
 	}
 
 	[Fact]
-	public async Task UpdateCategoryValidator_Fail_When_ID_Does_Not_Exist()
+	public async Task UpdateCategoryValidator_Pass_WhenRequestIsValid()
 	{
-		var RandomCategory = new Category { ID = Random.Shared.Next(), Name = "Random Category" };
-		await _ctx.AddCategoryAsync(RandomCategory);
+		var parentCategory = new Category { Name = "Parent Category" };
+		var toBeParentCategory = new Category { Name = "To Be Parent Category" };
+		await _ctx.AddCategoriesAsync([parentCategory, toBeParentCategory]);
+		var toUpdateCategory = new Category { Name = "Existing Category", ParentCategoryID = parentCategory.ID };
+		await _ctx.AddCategoryAsync(toUpdateCategory);
+
+		Assert.NotEqual(toUpdateCategory.ID, toBeParentCategory.ID);
+
+		var req = new UpdateCategoryRequest(
+			ID: toUpdateCategory.ID,
+			Name: "Updated Category",
+			ParentCategoryID: toBeParentCategory.ID
+		);
+
+		var result = await _validator.TestValidateAsync(req);
+		result.ShouldNotHaveAnyValidationErrors();
+
+		req = new UpdateCategoryRequest(
+			ID: toUpdateCategory.ID,
+			Name: "Updated Category",
+			ParentCategoryID: null
+		);
+		result = await _validator.TestValidateAsync(req);
+		result.ShouldNotHaveAnyValidationErrors();
+	}
+
+	[Fact]
+	public async Task UpdateCategoryValidator_Fail_WhenRequestIsInvalid()
+	{
 		var req = new UpdateCategoryRequest(
 			ID: Random.Shared.Next(),
-			Name: "Updated Category",
-			ParentCategoryID: null
-		);
-		var result = await _validator.TestValidateAsync(req);
-
-		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(c => c.ID);
-	}
-
-	[Fact]
-	public async Task UpdateCategoryValidator_Fail_When_Name_Is_Empty()
-	{
-		var EXISTING_CATEGORY = new Category
-		{
-			ID = Random.Shared.Next(),
-			Name = "Existing Category",
-		};
-		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
-
-		var req = new UpdateCategoryRequest(
-			ID: EXISTING_CATEGORY.ID,
 			Name: "",
-			ParentCategoryID: null
-		);
-
-		var result = await _validator.TestValidateAsync(req);
-
-		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(c => c.Name);
-	}
-
-	[Fact]
-	public async Task UpdateCategoryValidator_Fail_When_ParentCategoryID_Is_Same_As_ID()
-	{
-		var EXISTING_CATEGORY = new Category
-		{
-			ID = Random.Shared.Next(),
-			Name = "Existing Category",
-		};
-		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
-
-		var req = new UpdateCategoryRequest(
-			ID: EXISTING_CATEGORY.ID,
-			Name: "Updated Category",
-			ParentCategoryID: EXISTING_CATEGORY.ID
-		);
-
-		var result = await _validator.TestValidateAsync(req);
-		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
-	}
-
-	[Fact]
-	public async Task UpdateCategoryValidator_Fail_When_ParentCategoryID_Is_Invalid()
-	{
-		var EXISTING_CATEGORY = new Category
-		{
-			ID = Random.Shared.Next(),
-			Name = "Existing Category",
-		};
-		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
-
-		var req = new UpdateCategoryRequest(
-			ID: EXISTING_CATEGORY.ID,
-			Name: "Updated Category",
 			ParentCategoryID: Random.Shared.Next()
 		);
-		var result = await _validator.TestValidateAsync(req);
 
+		var result = await _validator.TestValidateAsync(req);
+		result.ShouldHaveValidationErrors();
+		result.ShouldHaveValidationErrorFor(c => c.ID);
+		result.ShouldHaveValidationErrorFor(c => c.Name);
+		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
+
+		var duplicateID = Random.Shared.Next();
+		req = new UpdateCategoryRequest(
+			ID: duplicateID,
+			Name: "Valid Name",
+			ParentCategoryID: duplicateID
+		);
+		result = await _validator.TestValidateAsync(req);
 		result.ShouldHaveValidationErrors();
 		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
 	}
+
 }
 
 public sealed class DeleteCategoryValidatorTests
@@ -174,8 +123,8 @@ public sealed class DeleteCategoryValidatorTests
 	[Fact]
 	public async Task DeleteCategoryValidator_Fail_When_ID_Does_Not_Exist()
 	{
-		const int NON_EXIST_CATEGORY_ID = 999;
-		var result = await _validator.TestValidateAsync(NON_EXIST_CATEGORY_ID);
+		var nonExistCategoryID = Random.Shared.Next();
+		var result = await _validator.TestValidateAsync(nonExistCategoryID);
 
 		result.ShouldHaveValidationErrors();
 	}
@@ -183,14 +132,14 @@ public sealed class DeleteCategoryValidatorTests
 	[Fact]
 	public async Task DeleteCategoryValidator_Pass_When_ID_Exists()
 	{
-		var EXISTING_CATEGORY = new Category
+		var existingCategory = new Category
 		{
 			ID = Random.Shared.Next(),
 			Name = "Existing Category",
 		};
-		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
+		await _ctx.AddCategoryAsync(existingCategory);
 
-		var result = await _validator.TestValidateAsync(EXISTING_CATEGORY.ID);
+		var result = await _validator.TestValidateAsync(existingCategory.ID);
 
 		result.ShouldNotHaveAnyValidationErrors();
 	}

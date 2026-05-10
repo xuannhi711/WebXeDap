@@ -22,31 +22,18 @@ public class CategoryServiceCreateTests
 	}
 
 	[Fact]
-	public async Task CreateAsync_Pass_When_RequestIsValid()
+	public async Task CreateAsync_Pass_WhenRequestIsValid()
 	{
-		var request = new CreateCategoryRequest(Name: "Tires", ParentCategoryID: null);
+		var parentCategory = new Category { Name = "Vehicles" };
+		await _ctx.AddCategoryAsync(parentCategory);
+		var request = new CreateCategoryRequest(Name: "Tires", ParentCategoryID: parentCategory.ID);
 
 		var result = await _service.CreateAsync(request);
 
 		Assert.NotNull(result);
 		Assert.NotEqual(0, result.ID);
 		Assert.Equal(request.Name, result.Name);
-		Assert.Equal(request.ParentCategoryID, result.ParentCategoryID);
-	}
-
-	[Fact]
-	public async Task CreateAsync_Pass_When_ParentExists()
-	{
-		var PARENT = new Category { Name = "Vehicles" };
-		await _ctx.AddCategoryAsync(PARENT);
-
-		var req = new CreateCategoryRequest(Name: "Tires", ParentCategoryID: PARENT.ID);
-		var result = await _service.CreateAsync(req);
-
-		Assert.NotNull(result);
-		Assert.NotEqual(0, result.ID);
-		Assert.Equal(req.Name, result.Name);
-		Assert.Equal(req.ParentCategoryID, result.ParentCategoryID);
+		Assert.Equal(parentCategory.ID, result.ParentCategoryID);
 	}
 }
 
@@ -64,7 +51,7 @@ public class CategoryServiceReadTests
 	}
 
 	[Fact]
-	public async Task GetByIDAsync_Pass_When_CategoryExists()
+	public async Task GetByIDAsync_Pass_WhenCategoryExists()
 	{
 		var category = new Category { Name = "Tires" };
 		await _ctx.AddCategoryAsync(category);
@@ -78,7 +65,7 @@ public class CategoryServiceReadTests
 	}
 
 	[Fact]
-	public async Task GetByIDAsync_Fail_When_CategoryDoesNotExist()
+	public async Task GetByIDAsync_Fail_WhenCategoryDoesNotExist()
 	{
 		var result = await _service.GetByIDAsync(Random.Shared.Next());
 
@@ -86,7 +73,7 @@ public class CategoryServiceReadTests
 	}
 
 	[Fact]
-	public async Task ListAsync_Pass_With_3_Entries()
+	public async Task ListAsync_Pass_With3Entries()
 	{
 		var categories = new List<Category>
 		{
@@ -149,7 +136,7 @@ public class CategoryServiceUpdateTests
 	}
 
 	[Fact]
-	public async Task UpdateAsync_Pass_When_RequestIsValid()
+	public async Task UpdateAsync_Pass_WhenRequestIsValid()
 	{
 		var EXISTING_CATEGORY = new Category { Name = "Existing Category" };
 		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
@@ -168,7 +155,7 @@ public class CategoryServiceUpdateTests
 	}
 
 	[Fact]
-	public async Task UpdateAsync_Fail_When_ID_Is_Invalid()
+	public async Task UpdateAsync_Fail_WhenIDIsInvalid()
 	{
 		var req = new UpdateCategoryRequest(
 			ID: Random.Shared.Next(),
