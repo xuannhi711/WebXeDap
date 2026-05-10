@@ -1,6 +1,6 @@
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Extensions.Queries;
+namespace WebXeDap.Application.Features.Catalog.Queries;
 
 public static class CategoryQueries
 {
