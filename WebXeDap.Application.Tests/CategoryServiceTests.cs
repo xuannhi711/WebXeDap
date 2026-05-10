@@ -1,4 +1,3 @@
-using Moq;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.DTOs;
 using WebXeDap.Application.Features.Catalog;

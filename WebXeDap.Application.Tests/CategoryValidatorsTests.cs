@@ -23,7 +23,10 @@ public sealed class CreateCategoryValidatorTests
 	{
 		var parentCategory = new Category { Name = "Parent Category" };
 		await _ctx.AddCategoryAsync(parentCategory);
-		var req = new CreateCategoryRequest(Name: "New Category", ParentCategoryID: parentCategory.ID);
+		var req = new CreateCategoryRequest(
+			Name: "New Category",
+			ParentCategoryID: parentCategory.ID
+		);
 
 		var result = await _validator.TestValidateAsync(req);
 		result.ShouldNotHaveAnyValidationErrors();
@@ -58,7 +61,11 @@ public sealed class UpdateCategoryValidatorTests
 		var parentCategory = new Category { Name = "Parent Category" };
 		var toBeParentCategory = new Category { Name = "To Be Parent Category" };
 		await _ctx.AddCategoriesAsync([parentCategory, toBeParentCategory]);
-		var toUpdateCategory = new Category { Name = "Existing Category", ParentCategoryID = parentCategory.ID };
+		var toUpdateCategory = new Category
+		{
+			Name = "Existing Category",
+			ParentCategoryID = parentCategory.ID,
+		};
 		await _ctx.AddCategoryAsync(toUpdateCategory);
 
 		Assert.NotEqual(toUpdateCategory.ID, toBeParentCategory.ID);
@@ -106,7 +113,6 @@ public sealed class UpdateCategoryValidatorTests
 		result.ShouldHaveValidationErrors();
 		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
 	}
-
 }
 
 public sealed class DeleteCategoryValidatorTests

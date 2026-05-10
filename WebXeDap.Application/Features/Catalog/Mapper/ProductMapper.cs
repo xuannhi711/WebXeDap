@@ -8,6 +8,13 @@ namespace WebXeDap.Application.Features.Catalog.Mapper;
 [Mapper]
 public partial class ProductMapper
 {
+	private readonly IApplicationDbContext _ctx;
+
+	public ProductMapper(IApplicationDbContext ctx)
+	{
+		_ctx = ctx;
+	}
+
 	[MapperIgnoreSource(nameof(Product.Categories))]
 	[MapProperty(nameof(Product.Images), nameof(SimpleProductResponse.Image))]
 	public partial SimpleProductResponse ToSimpleProductResponse(Product product);
@@ -34,7 +41,7 @@ public partial class ProductMapper
 		{
 			return [];
 		}
-		return [.. categoryIDs.Select(id => new Category { ID = id, Name = "" })];
+		return [.. _ctx.Categories.Where(c => categoryIDs.Contains(c.ID))];
 	}
 
 	[UserMapping]
