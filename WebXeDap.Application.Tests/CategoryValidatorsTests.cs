@@ -7,12 +7,12 @@ using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Tests;
 
-public sealed class CategoryValidatorsTests
+public sealed class CreateCategoryValidatorTests
 {
 	private readonly CreateCategoryValidator _validator;
 	private readonly IApplicationDbContext _ctx;
 
-	public CategoryValidatorsTests()
+	public CreateCategoryValidatorTests()
 	{
 		_ctx = TestApplicationDbContextFactory.CreateContext();
 		_validator = new CreateCategoryValidator(_ctx);

@@ -1,11 +1,5 @@
 namespace WebXeDap.Application.DTOs;
 
-public enum Order
-{
-	ASCENDING,
-	DESCENDING,
-}
-
 public record CreateProductRequest(
 	string Name,
 	string? Description,
@@ -33,7 +27,7 @@ public record FilterProductRequest(
 	int Page = 1,
 	int Size = 20,
 	string SortBy = "id",
-	Order Order = Order.ASCENDING
+	bool IsAscending = true
 );
 
 public record SimpleProductResponse(

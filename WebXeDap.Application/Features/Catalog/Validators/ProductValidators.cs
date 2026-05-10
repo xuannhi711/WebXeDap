@@ -30,6 +30,20 @@ public class CreateProductValidator : AbstractValidator<CreateProductRequest>
 			.Cascade(CascadeMode.Stop)
 			.GreaterThanOrEqualTo(0)
 			.WithMessage("Product quantity must >= 0");
+
+		RuleFor(createReq => createReq.CategoryIDs)
+			.Cascade(CascadeMode.Stop)
+			.MustAsync(
+				async (categoryIDs, ct) =>
+				{
+					if (categoryIDs == null || categoryIDs.Length == 0)
+						return true;
+					return await _ctx
+							.Categories.Where(c => categoryIDs.Contains(c.ID))
+							.CountAsync(ct) == categoryIDs.Length;
+				}
+			)
+			.WithMessage("One or more selected categories are invalid.");
 	}
 }
 
@@ -62,6 +76,20 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductRequest>
 			.Cascade(CascadeMode.Stop)
 			.GreaterThanOrEqualTo(0)
 			.WithMessage("Product quantity must >= 0");
+
+		RuleFor(updateReq => updateReq.CategoryIDs)
+			.Cascade(CascadeMode.Stop)
+			.MustAsync(
+				async (categoryIDs, ct) =>
+				{
+					if (categoryIDs == null || categoryIDs.Length == 0)
+						return true;
+					return await _ctx
+							.Categories.Where(c => categoryIDs.Contains(c.ID))
+							.CountAsync(ct) == categoryIDs.Length;
+				}
+			)
+			.WithMessage("One or more selected categories are invalid.");
 	}
 }
 

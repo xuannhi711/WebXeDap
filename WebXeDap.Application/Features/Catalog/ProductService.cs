@@ -4,6 +4,7 @@ using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.DTOs;
 using WebXeDap.Application.Features.Catalog.Mapper;
 using WebXeDap.Application.Features.Catalog.Queries;
+using WebXeDap.Application.QueryExtensions;
 
 namespace WebXeDap.Application.Features.Catalog;
 
@@ -44,15 +45,18 @@ public class ProductService : IProductService
 
 	public async Task<PaginatedResult<SimpleProductResponse>> FilterAsync(FilterProductRequest req)
 	{
-		// var products = await _ctx.Products.FilterAsync(req, default);
-		// var total = await _ctx.Products.CountAsync(req, default);
-		// return new PaginatedResult<SimpleProductResponse>(
-		// 	Items: [.. products.Select(_mapper.ToSimpleProductResponse)],
-		// 	Total: total,
-		// 	Page: req.Page,
-		// 	Size: products.Count
-		// );
-		throw new NotImplementedException();
+		var products = await _ctx
+			.Products.Filter(req)
+			.ApplySorting(req)
+			.Paginate(req.Page, req.Size)
+			.ToListAsync(default);
+		var total = await _ctx.Products.Filter(req).CountAsync(default);
+		return new PaginatedResult<SimpleProductResponse>(
+			Items: [.. products.Select(_mapper.ToSimpleProductResponse)],
+			Total: total,
+			Page: req.Page,
+			Size: products.Count
+		);
 	}
 
 	public async Task<DetailedProductResponse?> GetByIDAsync(int id)
