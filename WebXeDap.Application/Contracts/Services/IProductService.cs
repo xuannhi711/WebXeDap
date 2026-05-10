@@ -4,18 +4,13 @@ namespace WebXeDap.Application.Contracts.Services;
 
 public interface IProductService
 {
-	Task<ProductResponse> CreateAsync(CreateProductRequest req, CancellationToken ct = default);
+	Task<SimpleProductResponse?> CreateAsync(CreateProductRequest req);
 
-	Task<ProductResponse?> GetByIDAsync(int id, CancellationToken ct = default);
+	Task<DetailedProductResponse?> GetByIDAsync(int id);
 
-	Task<PaginatedResult<ProductResponse>> ListAsync(CancellationToken ct = default);
+	Task<PaginatedResult<SimpleProductResponse>> FilterAsync(FilterProductRequest req);
 
-	Task<PaginatedResult<ProductResponse>> FilterAsync(
-		FilterProductRequest req,
-		CancellationToken ct = default
-	);
+	Task<DetailedProductResponse?> UpdateAsync(UpdateProductRequest req);
 
-	Task<int> UpdateAsync(UpdateProductRequest req, CancellationToken ct = default);
-
-	Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+	Task<bool> DeleteAsync(int id);
 }

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.DTOs;
@@ -7,64 +8,59 @@ namespace WebXeDap.Application.Features.Catalog;
 
 public class CategoryService : ICategoryService
 {
-	private readonly ICategoryRepository _categoryRepo;
+	private readonly IApplicationDbContext _ctx;
 	private readonly CategoryMapper _mapper;
 
-	public CategoryService(ICategoryRepository categoryRepo, CategoryMapper mapper)
+	public CategoryService(IApplicationDbContext ctx, CategoryMapper mapper)
 	{
-		_categoryRepo = categoryRepo;
+		_ctx = ctx;
 		_mapper = mapper;
 	}
 
-	public async Task<CategoryResponse> CreateAsync(
-		CreateCategoryRequest request,
-		CancellationToken ct = default
-	)
+	public async Task<CategoryResponse?> CreateAsync(CreateCategoryRequest request)
 	{
-		var category = _mapper.CategoryCreateRequestToCategory(request);
-		var newCategory = await _categoryRepo.AddAsync(category, ct);
-		return _mapper.CategoryToCategoryResponse(newCategory);
+		var category = _mapper.ToCategory(request);
+		await _ctx.Categories.AddAsync(category);
+		var res = await _ctx.SaveChangesAsync(default);
+		if (res == 0)
+		{
+			return null;
+		}
+		return _mapper.ToCategoryResponse(category);
 	}
 
-	public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+	public async Task<bool> DeleteAsync(int id)
 	{
-		var category = await _categoryRepo.GetByIdAsync(id, ct);
+		var category = await _ctx.Categories.FindAsync(id);
 		if (category == null)
 		{
 			return false;
 		}
-		return (await _categoryRepo.DeleteAsync(category, ct)) == 1;
+		_ctx.Categories.Remove(category);
+		var result = await _ctx.SaveChangesAsync(default);
+		return result == 1;
 	}
 
-	public async Task<List<CategoryResponse>> ListAsync(CancellationToken ct = default)
+	public async Task<List<CategoryResponse>> ListAsync()
 	{
-		var categories = await _categoryRepo.ListAsync(ct);
-		if (categories == null)
-		{
-			return [];
-		}
-		return [.. categories.Select(_mapper.CategoryToCategoryResponse)];
+		var categories = await _ctx.Categories.AsNoTracking().ToListAsync();
+		return [.. categories.Select(_mapper.ToCategoryResponse)];
 	}
 
-	public async Task<CategoryResponse?> GetByIDAsync(int id, CancellationToken ct = default)
+	public async Task<CategoryResponse?> GetByIDAsync(int id)
 	{
-		var category = await _categoryRepo.GetByIdAsync(id, ct);
+		var category = await _ctx.Categories.FindAsync(id);
 		if (category == null)
 		{
 			return null;
 		}
-		return _mapper.CategoryToCategoryResponse(category);
+		return _mapper.ToCategoryResponse(category);
 	}
 
-	public async Task<List<HierarchyCategoryResponse>> ListHierarchyAsync(
-		CancellationToken ct = default
-	)
+	public async Task<List<HierarchyCategoryResponse>> ListHierarchyAsync()
 	{
-		var categories = await _categoryRepo.ListAsync(ct);
-		var responseDict = categories.ToDictionary(
-			c => c.ID,
-			_mapper.CategoryToHierarchyCategoryResponse
-		);
+		var categories = await _ctx.Categories.AsNoTracking().ToListAsync();
+		var responseDict = categories.ToDictionary(c => c.ID, _mapper.ToHierarchyCategoryResponse);
 
 		var roots = new List<HierarchyCategoryResponse>();
 
@@ -87,12 +83,26 @@ public class CategoryService : ICategoryService
 		return roots;
 	}
 
-	public async Task<int> UpdateAsync(
-		UpdateCategoryRequest request,
-		CancellationToken ct = default
-	)
+	public async Task<CategoryResponse?> UpdateAsync(UpdateCategoryRequest request)
 	{
-		var category = _mapper.CategoryUpdateRequestToCategory(request);
-		return await _categoryRepo.UpdateAsync(category, ct);
+		var category = await _ctx.Categories.FirstOrDefaultAsync(x => x.ID == request.ID);
+
+		if (category is null)
+		{
+			return null;
+		}
+
+		_mapper.PatchCategory(request, category);
+
+		try
+		{
+			await _ctx.SaveChangesAsync(default);
+		}
+		catch (DbUpdateConcurrencyException)
+		{
+			return null;
+		}
+
+		return _mapper.ToCategoryResponse(category);
 	}
 }

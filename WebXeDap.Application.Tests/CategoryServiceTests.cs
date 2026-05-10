@@ -1,72 +1,86 @@
 using Moq;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.Features.Catalog;
 using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Features.Catalog;
 using WebXeDap.Application.Features.Catalog.Mapper;
+using WebXeDap.Application.Tests.Extensions;
 using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Tests;
 
-public class CategoryServiceTests
+public class CategoryServiceCreateTests
 {
-	private readonly Mock<ICategoryRepository> _repo;
+	private readonly IApplicationDbContext _ctx;
 	private readonly CategoryService _service;
 	private readonly CategoryMapper _mapper;
 
-	public CategoryServiceTests()
+	public CategoryServiceCreateTests()
 	{
-		_repo = new Mock<ICategoryRepository>();
+		_ctx = TestApplicationDbContextFactory.CreateContext();
 		_mapper = new CategoryMapper();
-		_service = new CategoryService(_repo.Object, _mapper);
+		_service = new CategoryService(_ctx, _mapper);
 	}
 
 	[Fact]
-	public async Task CreateAsync_Pass_When_ValidRequestIsProvided()
+	public async Task CreateAsync_Pass_When_RequestIsValid()
 	{
-		var EXPECTED_CATEGORY = new Category { ID = 5, Name = "Electronics" };
-		var request = new CreateCategoryRequest(Name: "Electronics", ParentCategoryID: null);
-
-		_repo.SetupAddAnyAsyncToReturnACategory(EXPECTED_CATEGORY);
+		var request = new CreateCategoryRequest(Name: "Tires", ParentCategoryID: null);
 
 		var result = await _service.CreateAsync(request);
 
-		Assert.Equal(EXPECTED_CATEGORY.ID, result.ID);
-		Assert.Equal(EXPECTED_CATEGORY.Name, result.Name);
-		Assert.Equal(EXPECTED_CATEGORY.ParentCategoryID, result.ParentCategoryID);
+		Assert.NotNull(result);
+		Assert.NotEqual(0, result.ID);
+		Assert.Equal(request.Name, result.Name);
+		Assert.Equal(request.ParentCategoryID, result.ParentCategoryID);
 	}
 
 	[Fact]
-	public async Task CreateAsync_Fail_When_RepositoryThrowsException()
+	public async Task CreateAsync_Pass_When_ParentExists()
 	{
-		var request = new CreateCategoryRequest(Name: "Electronics", ParentCategoryID: null);
+		var PARENT = new Category { Name = "Vehicles" };
+		await _ctx.AddCategoryAsync(PARENT);
 
-		_repo.SetupAddAnyAsyncToThrowException(
-			new InvalidOperationException("An error occurred while creating the category.")
-		);
+		var req = new CreateCategoryRequest(Name: "Tires", ParentCategoryID: PARENT.ID);
+		var result = await _service.CreateAsync(req);
 
-		await Assert.ThrowsAsync<InvalidOperationException>(() => _service.CreateAsync(request));
+		Assert.NotNull(result);
+		Assert.NotEqual(0, result.ID);
+		Assert.Equal(req.Name, result.Name);
+		Assert.Equal(req.ParentCategoryID, result.ParentCategoryID);
+	}
+}
+
+public class CategoryServiceReadTests
+{
+	private readonly IApplicationDbContext _ctx;
+	private readonly CategoryService _service;
+	private readonly CategoryMapper _mapper;
+
+	public CategoryServiceReadTests()
+	{
+		_ctx = TestApplicationDbContextFactory.CreateContext();
+		_mapper = new CategoryMapper();
+		_service = new CategoryService(_ctx, _mapper);
 	}
 
 	[Fact]
 	public async Task GetByIDAsync_Pass_When_CategoryExists()
 	{
-		var EXPECTED_CATEGORY = new Category { ID = 5, Name = "Electronics" };
+		var category = new Category { Name = "Tires" };
+		await _ctx.AddCategoryAsync(category);
 
-		_repo.SetupGetByIdAsyncToReturnACategory(EXPECTED_CATEGORY.ID, EXPECTED_CATEGORY);
-
-		var result = await _service.GetByIDAsync(EXPECTED_CATEGORY.ID);
+		var result = await _service.GetByIDAsync(category.ID);
 
 		Assert.NotNull(result);
-		Assert.Equal(EXPECTED_CATEGORY.ID, result.ID);
-		Assert.Equal(EXPECTED_CATEGORY.Name, result.Name);
-		Assert.Equal(EXPECTED_CATEGORY.ParentCategoryID, result.ParentCategoryID);
+		Assert.Equal(category.ID, result.ID);
+		Assert.Equal(category.Name, result.Name);
+		Assert.Equal(category.ParentCategoryID, result.ParentCategoryID);
 	}
 
 	[Fact]
 	public async Task GetByIDAsync_Fail_When_CategoryDoesNotExist()
 	{
-		const int NON_EXISTING_ID = 999;
-		var result = await _service.GetByIDAsync(NON_EXISTING_ID);
+		var result = await _service.GetByIDAsync(Random.Shared.Next());
 
 		Assert.Null(result);
 	}
@@ -76,207 +90,126 @@ public class CategoryServiceTests
 	{
 		var categories = new List<Category>
 		{
-			new Category { ID = 1, Name = "Electronics" },
-			new Category { ID = 2, Name = "Books" },
-			new Category { ID = 3, Name = "Clothing" },
+			new() { Name = "Electronics" },
+			new() { Name = "Books" },
+			new() { Name = "Clothing" },
 		};
-
-		_repo.SetupListAsyncToReturnCategories(categories);
-
-		var result = await _service.ListAsync();
-
-		Assert.Equal(3, result.Count);
-		Assert.Contains(result, c => c.ID == 1 && c.Name == "Electronics");
-		Assert.Contains(result, c => c.ID == 2 && c.Name == "Books");
-		Assert.Contains(result, c => c.ID == 3 && c.Name == "Clothing");
-	}
-
-	[Fact]
-	public async Task ListAsync_Pass_With_EmptyList()
-	{
-		_repo.SetupListAsyncToReturnCategories([]);
+		await _ctx.AddCategoriesAsync(categories);
 
 		var result = await _service.ListAsync();
-		Assert.Empty(result);
+
+		Assert.Contains(result, c => c.ID == categories[0].ID && c.Name == "Electronics");
+		Assert.Contains(result, c => c.ID == categories[1].ID && c.Name == "Books");
+		Assert.Contains(result, c => c.ID == categories[2].ID && c.Name == "Clothing");
 	}
 
 	[Fact]
 	public async Task ListHierarchyAsync_Pass()
 	{
-		var categories = new List<Category>
-		{
-			new Category { ID = 1, Name = "A" },
-			new Category
-			{
-				ID = 2,
-				Name = "A1",
-				ParentCategoryID = 1,
-			},
-			new Category
-			{
-				ID = 3,
-				Name = "A2",
-				ParentCategoryID = 1,
-			},
-			new Category
-			{
-				ID = 4,
-				Name = "A1.1",
-				ParentCategoryID = 2,
-			},
-			new Category { ID = 5, Name = "B" },
-			new Category { ID = 6, Name = "C" },
-		};
-		_repo.SetupListAsyncToReturnCategories(categories);
+		var root = new Category { Name = "A" };
+		await _ctx.AddCategoryAsync(root);
+		var child1 = new Category { Name = "A1", ParentCategoryID = root.ID };
+		var child2 = new Category { Name = "A2", ParentCategoryID = root.ID };
+		await _ctx.AddCategoriesAsync([child1, child2]);
+		var grandchild1 = new Category { Name = "A1.1", ParentCategoryID = child1.ID };
+		await _ctx.AddCategoryAsync(grandchild1);
 
 		var resp = await _service.ListHierarchyAsync();
+		var rootResp = resp.FirstOrDefault(c => c.ID == root.ID);
+		Assert.NotNull(rootResp);
 
-		// root
-		Assert.Equal(3, resp.Count);
 		Assert.Collection(
-			resp,
+			rootResp.Children,
 			i =>
 			{
-				Assert.Equal("A", i.Name);
-				Assert.Equal(2, i.Children.Count);
-				Assert.Equal("A1", i.Children[0].Name);
-				Assert.Equal("A2", i.Children[1].Name);
-				Assert.Single(i.Children[0].Children);
-				Assert.Equal("A1.1", i.Children[0].Children[0].Name);
+				Assert.Equal("A1", i.Name);
+				Assert.Single(i.Children);
+				Assert.Equal("A1.1", i.Children[0].Name);
 			},
-			i => Assert.Equal("B", i.Name),
-			i => Assert.Equal("C", i.Name)
+			i =>
+			{
+				Assert.Equal("A2", i.Name);
+				Assert.Empty(i.Children);
+			}
 		);
+	}
+}
+
+public class CategoryServiceUpdateTests
+{
+	private readonly IApplicationDbContext _ctx;
+	private readonly CategoryService _service;
+	private readonly CategoryMapper _mapper;
+
+	public CategoryServiceUpdateTests()
+	{
+		_ctx = TestApplicationDbContextFactory.CreateContext();
+		_mapper = new CategoryMapper();
+		_service = new CategoryService(_ctx, _mapper);
 	}
 
 	[Fact]
 	public async Task UpdateAsync_Pass_When_RequestIsValid()
 	{
-		var request = new UpdateCategoryRequest(ID: 7, Name: "Tires", ParentCategoryID: 2);
-		_repo.SetupUpdateAsyncToReturnRowsAffected(1);
+		var EXISTING_CATEGORY = new Category { Name = "Existing Category" };
+		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
 
-		var result = await _service.UpdateAsync(request);
-
-		Assert.Equal(1, result);
-		_repo.Verify(
-			r =>
-				r.UpdateAsync(
-					It.Is<Category>(c =>
-						c.ID == request.ID
-						&& c.Name == request.Name
-						&& c.ParentCategoryID == request.ParentCategoryID
-					),
-					It.IsAny<CancellationToken>()
-				),
-			Times.Once
+		var req = new UpdateCategoryRequest(
+			ID: EXISTING_CATEGORY.ID,
+			Name: "Updated Category",
+			ParentCategoryID: null
 		);
+		var result = await _service.UpdateAsync(req);
+
+		Assert.NotNull(result);
+		Assert.Equal(req.ID, result.ID);
+		Assert.Equal(req.Name, result.Name);
+		Assert.Equal(req.ParentCategoryID, result.ParentCategoryID);
 	}
 
 	[Fact]
-	public async Task UpdateAsync_Fail_When_RepositoryThrowsException()
+	public async Task UpdateAsync_Fail_When_ID_Is_Invalid()
 	{
-		var request = new UpdateCategoryRequest(ID: 7, Name: "Tires", ParentCategoryID: 2);
-		_repo.SetupUpdateAsyncToThrowException(new InvalidOperationException("Update failed."));
+		var req = new UpdateCategoryRequest(
+			ID: Random.Shared.Next(),
+			Name: "Updated Category",
+			ParentCategoryID: null
+		);
+		var result = await _service.UpdateAsync(req);
+		Assert.Null(result);
+	}
+}
 
-		await Assert.ThrowsAsync<InvalidOperationException>(() => _service.UpdateAsync(request));
+public class CategoryServiceDeleteTests
+{
+	private readonly IApplicationDbContext _ctx;
+	private readonly CategoryService _service;
+	private readonly CategoryMapper _mapper;
+
+	public CategoryServiceDeleteTests()
+	{
+		_ctx = TestApplicationDbContextFactory.CreateContext();
+		_mapper = new CategoryMapper();
+		_service = new CategoryService(_ctx, _mapper);
 	}
 
 	[Fact]
 	public async Task DeleteAsync_Pass_When_CategoryExists()
 	{
-		var existing = new Category { ID = 3, Name = "Accessories" };
-		_repo.SetupGetByIdAsyncToReturnACategory(existing.ID, existing);
-		_repo.SetupDeleteAsyncToReturnRowsAffected(1);
+		var EXISTING_CATEGORY = new Category { Name = "Existing Category" };
+		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
 
-		var result = await _service.DeleteAsync(existing.ID);
+		var result = await _service.DeleteAsync(EXISTING_CATEGORY.ID);
 
 		Assert.True(result);
-		_repo.Verify(r => r.DeleteAsync(existing, It.IsAny<CancellationToken>()), Times.Once);
+		var deletedCategory = await _ctx.Categories.FindAsync(EXISTING_CATEGORY.ID);
+		Assert.Null(deletedCategory);
 	}
 
 	[Fact]
 	public async Task DeleteAsync_Fail_When_CategoryDoesNotExist()
 	{
-		const int MISSING_ID = 404;
-
-		var result = await _service.DeleteAsync(MISSING_ID);
-
+		var result = await _service.DeleteAsync(Random.Shared.Next());
 		Assert.False(result);
-		_repo.Verify(
-			r => r.DeleteAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()),
-			Times.Never
-		);
-	}
-}
-
-static class CategoryServiceTestsHelper
-{
-	public static void SetupAddAnyAsyncToReturnACategory(
-		this Mock<ICategoryRepository> mockRepo,
-		Category category
-	)
-	{
-		mockRepo
-			.Setup(r => r.AddAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
-			.ReturnsAsync(category);
-	}
-
-	public static void SetupAddAnyAsyncToThrowException(
-		this Mock<ICategoryRepository> mockRepo,
-		Exception ex
-	)
-	{
-		mockRepo
-			.Setup(r => r.AddAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
-			.ThrowsAsync(ex);
-	}
-
-	public static void SetupGetByIdAsyncToReturnACategory(
-		this Mock<ICategoryRepository> mockRepo,
-		int id,
-		Category? category
-	)
-	{
-		mockRepo
-			.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(category);
-	}
-
-	public static void SetupListAsyncToReturnCategories(
-		this Mock<ICategoryRepository> mockRepo,
-		List<Category> categories
-	)
-	{
-		mockRepo.Setup(r => r.ListAsync(It.IsAny<CancellationToken>())).ReturnsAsync(categories);
-	}
-
-	public static void SetupUpdateAsyncToReturnRowsAffected(
-		this Mock<ICategoryRepository> mockRepo,
-		int rowsAffected
-	)
-	{
-		mockRepo
-			.Setup(r => r.UpdateAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
-			.ReturnsAsync(rowsAffected);
-	}
-
-	public static void SetupUpdateAsyncToThrowException(
-		this Mock<ICategoryRepository> mockRepo,
-		Exception ex
-	)
-	{
-		mockRepo
-			.Setup(r => r.UpdateAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
-			.ThrowsAsync(ex);
-	}
-
-	public static void SetupDeleteAsyncToReturnRowsAffected(
-		this Mock<ICategoryRepository> mockRepo,
-		int rowsAffected
-	)
-	{
-		mockRepo
-			.Setup(r => r.DeleteAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
-			.ReturnsAsync(rowsAffected);
 	}
 }

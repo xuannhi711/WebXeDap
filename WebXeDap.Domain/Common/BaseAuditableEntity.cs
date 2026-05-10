@@ -5,8 +5,10 @@ public abstract class BaseAuditableEntity
 	public DateTime CreatedAt { get; protected set; }
 	public DateTime? UpdatedAt { get; protected set; }
 
-	public int CreatedBy { get; protected set; }
-	public int? UpdatedBy { get; protected set; }
+	// public int? CreatedById { get; protected set; }
+	// public int? UpdatedById { get; protected set; }
+	// public User? CreatedBy { get; protected set; }
+	// public User? UpdatedBy { get; protected set; }
 
 	public bool IsDeleted { get; protected set; }
 	public DateTime? DeletedAt { get; protected set; }
@@ -17,16 +19,16 @@ public abstract class BaseAuditableEntity
 		CreatedAt = DateTime.UtcNow;
 	}
 
-	public void SetUpdated(int? userId = null)
+	public void SetUpdated(User? user = null)
 	{
 		UpdatedAt = DateTime.UtcNow;
-		UpdatedBy = userId;
+		// UpdatedBy = user;
 	}
 
-	public void MarkAsDeleted(int? userId = null)
+	public void MarkAsDeleted(User? user = null)
 	{
 		IsDeleted = true;
 		DeletedAt = DateTime.UtcNow;
-		UpdatedBy = userId;
+		// UpdatedBy = user;
 	}
 }

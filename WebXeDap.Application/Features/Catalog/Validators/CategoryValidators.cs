@@ -1,17 +1,18 @@
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.DTOs;
-using WebXeDap.Application.Features.Catalog.Specs;
+using WebXeDap.Application.Extensions.Queries;
 
 namespace WebXeDap.Application.Features.Catalog.Validators;
 
 public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
 {
-	private readonly ICategoryRepository _categoryRepo;
+	private readonly IApplicationDbContext _ctx;
 
-	public CreateCategoryValidator(ICategoryRepository categoryRepo)
+	public CreateCategoryValidator(IApplicationDbContext ctx)
 	{
-		_categoryRepo = categoryRepo;
+		_ctx = ctx;
 
 		// RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -24,28 +25,27 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
 			.MustAsync(
 				async (parentCategoryID, ct) =>
 				{
-					var spec = new CategoryByIDSpec(parentCategoryID!.Value);
-					return await _categoryRepo.AnyAsync(spec, ct);
+					return await _ctx.Categories.ByID(parentCategoryID!.Value).AnyAsync(ct);
 				}
 			)
-			.When(createReq => createReq.ParentCategoryID != null)
+			.When(createReq => createReq.ParentCategoryID.HasValue)
 			.WithMessage("Parent category does not exist.");
 	}
 }
 
 public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
 {
-	private readonly ICategoryRepository _categoryRepo;
+	private readonly IApplicationDbContext _ctx;
 
-	public UpdateCategoryValidator(ICategoryRepository categoryRepo)
+	public UpdateCategoryValidator(IApplicationDbContext ctx)
 	{
-		_categoryRepo = categoryRepo;
+		_ctx = ctx;
 
 		// RuleLevelCascadeMode = CascadeMode.Stop;
 
 		RuleFor(updateReq => updateReq.ID)
 			.Cascade(CascadeMode.Stop)
-			.MustAsync(async (id, ct) => await _categoryRepo.AnyAsync(new CategoryByIDSpec(id), ct))
+			.MustAsync(async (id, ct) => await _ctx.Categories.AnyAsync(c => c.ID == id, ct))
 			.WithMessage("Category does not exist.");
 
 		RuleFor(updateReq => updateReq.Name)
@@ -60,24 +60,23 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
 			.MustAsync(
 				async (req, parentCategoryID, ct) =>
 				{
-					var spec = new CategoryByIDSpec(parentCategoryID!.Value);
-					return await _categoryRepo.AnyAsync(spec, ct);
+					return await _ctx.Categories.ByID(parentCategoryID!.Value).AnyAsync(ct);
 				}
 			)
-			.When(updateReq => updateReq.ParentCategoryID != null)
+			.When(updateReq => updateReq.ParentCategoryID.HasValue)
 			.WithMessage("Parent category does not exist or is invalid.");
 	}
 }
 
 public class DeleteCategoryValidator : AbstractValidator<int>
 {
-	private readonly ICategoryRepository _categoryRepo;
+	private readonly IApplicationDbContext _ctx;
 
-	public DeleteCategoryValidator(ICategoryRepository categoryRepo)
+	public DeleteCategoryValidator(IApplicationDbContext ctx)
 	{
-		_categoryRepo = categoryRepo;
+		_ctx = ctx;
 		RuleFor(id => id)
-			.MustAsync(async (id, ct) => await _categoryRepo.AnyAsync(new CategoryByIDSpec(id), ct))
+			.MustAsync(async (id, ct) => await _ctx.Categories.ByID(id).AnyAsync(ct))
 			.WithMessage("Category does not exist.");
 	}
 }

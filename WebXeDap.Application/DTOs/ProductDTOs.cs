@@ -1,6 +1,10 @@
-using WebXeDap.Application.Extensions;
-
 namespace WebXeDap.Application.DTOs;
+
+public enum Order
+{
+	ASCENDING,
+	DESCENDING,
+}
 
 public record CreateProductRequest(
 	string Name,
@@ -8,17 +12,17 @@ public record CreateProductRequest(
 	decimal Price,
 	int Quantity,
 	int[]? CategoryIDs,
-	string? CurrencySymbol = "VNĐ"
+	string CurrencySymbol = "VNĐ"
 );
 
 public record UpdateProductRequest(
 	int ID,
-	string? Name,
+	string Name,
 	string? Description,
-	decimal? Price,
-	int? Quantity,
+	decimal Price,
+	int Quantity,
 	int[]? CategoryIDs,
-	string? CurrencySymbol
+	string CurrencySymbol
 );
 
 public record FilterProductRequest(
@@ -26,19 +30,37 @@ public record FilterProductRequest(
 	int[]? CategoryIDs,
 	decimal? MinPrice,
 	decimal? MaxPrice,
-	string? SortBy,
 	int Page = 1,
 	int Size = 20,
+	string SortBy = "id",
 	Order Order = Order.ASCENDING
 );
 
-public record ProductResponse(
+public record SimpleProductResponse(
 	int ID,
 	string Name,
-	string Description,
+	string? Description,
+	decimal Price,
+	string CurrencySymbol,
+	int Quantity,
+	ProductImageResponse? Image,
+	DateTime CreatedAt,
+	DateTime? UpdatedAt,
+	bool IsDeleted,
+	DateTime? DeletedAt
+);
+
+public record DetailedProductResponse(
+	int ID,
+	string Name,
+	string? Description,
 	decimal Price,
 	int Quantity,
 	List<CategoryResponse> Categories,
 	List<ProductImageResponse> Images,
-	string CurrencySymbol
+	string CurrencySymbol,
+	DateTime CreatedAt,
+	DateTime? UpdatedAt,
+	bool IsDeleted,
+	DateTime? DeletedAt
 );
