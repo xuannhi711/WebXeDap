@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace WebXeDap.Domain.Models;
 
-public class User
+public class User : IdentityUser<int>
 {
-	public int ID { get; set; }
-	public required string Email { get; set; }
 	public string? FullName { get; set; }
 	public string? Address { get; set; }
 	public string? Avatar { get; set; }

@@ -20,7 +20,7 @@ public sealed class BaseAuditableEntityTests
 	public void SetUpdated_SetsUpdatedFields()
 	{
 		var entity = new TestEntity();
-		var user = new User { ID = 42, Email = "test@example.com" };
+		var user = new User { Email = "test@example.com" };
 
 		entity.SetUpdated(user: user);
 
@@ -32,7 +32,7 @@ public sealed class BaseAuditableEntityTests
 	public void MarkAsDeleted_SetsDeletedFields()
 	{
 		var entity = new TestEntity();
-		var user = new User { ID = 42, Email = "test@example.com" };
+		var user = new User { Email = "test@example.com" };
 
 		entity.MarkAsDeleted(user: user);
 
