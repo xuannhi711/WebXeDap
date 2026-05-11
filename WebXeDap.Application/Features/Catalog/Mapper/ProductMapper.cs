@@ -9,10 +9,12 @@ namespace WebXeDap.Application.Features.Catalog.Mapper;
 public partial class ProductMapper
 {
 	private readonly IApplicationDbContext _ctx;
+	private readonly ProductImageMapper _productImageMapper;
 
 	public ProductMapper(IApplicationDbContext ctx)
 	{
 		_ctx = ctx;
+		_productImageMapper = new ProductImageMapper();
 	}
 
 	[MapperIgnoreSource(nameof(Product.Categories))]
@@ -64,6 +66,6 @@ public partial class ProductMapper
 			return null;
 		}
 		var openingImg = images.OrderBy(i => i.Order).First();
-		return ProductImageMapper.ToProductImageResponse(openingImg);
+		return _productImageMapper.ToProductImageResponse(openingImg);
 	}
 }
