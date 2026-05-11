@@ -3,6 +3,7 @@ using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Validators;
 using WebXeDap.Application.Tests.Extensions;
+using WebXeDap.Application.Tests.Fixtures;
 using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Tests;
@@ -14,8 +15,9 @@ public sealed class CreateCategoryValidatorTests
 
 	public CreateCategoryValidatorTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_validator = new CreateCategoryValidator(_ctx);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_validator = fixture.GetService<CreateCategoryValidator>();
 	}
 
 	[Fact]
@@ -51,8 +53,9 @@ public sealed class UpdateCategoryValidatorTests
 
 	public UpdateCategoryValidatorTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_validator = new UpdateCategoryValidator(_ctx);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_validator = fixture.GetService<UpdateCategoryValidator>();
 	}
 
 	[Fact]
@@ -122,8 +125,9 @@ public sealed class DeleteCategoryValidatorTests
 
 	public DeleteCategoryValidatorTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_validator = new DeleteCategoryValidator(_ctx);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_validator = fixture.GetService<DeleteCategoryValidator>();
 	}
 
 	[Fact]

@@ -3,19 +3,21 @@ using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Validators;
 using WebXeDap.Application.Tests.Extensions;
+using WebXeDap.Application.Tests.Fixtures;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests;
+namespace WebXeDap.Application.Tests.Catalog;
 
 public sealed class CreateProductValidatorTests
 {
-	private readonly CreateProductValidator _validator;
 	private readonly IApplicationDbContext _ctx;
+	private readonly CreateProductValidator _validator;
 
 	public CreateProductValidatorTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_validator = new CreateProductValidator(_ctx);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_validator = fixture.GetService<CreateProductValidator>();
 	}
 
 	[Fact]
@@ -63,8 +65,9 @@ public sealed class UpdateProductValidatorTests
 
 	public UpdateProductValidatorTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_validator = new UpdateProductValidator(_ctx);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_validator = fixture.GetService<UpdateProductValidator>();
 	}
 
 	[Fact]
@@ -125,8 +128,9 @@ public sealed class DeleteProductValidatorTests
 
 	public DeleteProductValidatorTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_validator = new DeleteProductValidator(_ctx);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_validator = fixture.GetService<DeleteProductValidator>();
 	}
 
 	[Fact]

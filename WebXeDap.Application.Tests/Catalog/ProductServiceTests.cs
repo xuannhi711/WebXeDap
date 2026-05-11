@@ -1,25 +1,24 @@
 using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.Features.Catalog;
+using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
-using WebXeDap.Application.Features.Catalog.Mapper;
 using WebXeDap.Application.Features.Catalog.Queries;
 using WebXeDap.Application.Tests.Extensions;
+using WebXeDap.Application.Tests.Fixtures;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests;
+namespace WebXeDap.Application.Tests.Catalog;
 
 public class ProductServiceCreateTests
 {
 	private readonly IApplicationDbContext _ctx;
-	private readonly ProductService _service;
-	private readonly ProductMapper _mapper;
+	private readonly IProductService _service;
 
 	public ProductServiceCreateTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_mapper = new ProductMapper(_ctx);
-		_service = new ProductService(_ctx, _mapper);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_service = fixture.GetService<IProductService>();
 	}
 
 	[Fact]

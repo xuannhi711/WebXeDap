@@ -1,23 +1,23 @@
 using WebXeDap.Application.Contracts.Persistence;
+using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog;
 using WebXeDap.Application.Features.Catalog.DTOs;
-using WebXeDap.Application.Features.Catalog.Mapper;
 using WebXeDap.Application.Tests.Extensions;
+using WebXeDap.Application.Tests.Fixtures;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests;
+namespace WebXeDap.Application.Tests.Catalog;
 
 public class CategoryServiceCreateTests
 {
 	private readonly IApplicationDbContext _ctx;
-	private readonly CategoryService _service;
-	private readonly CategoryMapper _mapper;
+	private readonly ICategoryService _service;
 
 	public CategoryServiceCreateTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_mapper = new CategoryMapper();
-		_service = new CategoryService(_ctx, _mapper);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_service = fixture.GetService<ICategoryService>();
 	}
 
 	[Fact]
@@ -39,14 +39,13 @@ public class CategoryServiceCreateTests
 public class CategoryServiceReadTests
 {
 	private readonly IApplicationDbContext _ctx;
-	private readonly CategoryService _service;
-	private readonly CategoryMapper _mapper;
+	private readonly ICategoryService _service;
 
 	public CategoryServiceReadTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_mapper = new CategoryMapper();
-		_service = new CategoryService(_ctx, _mapper);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_service = fixture.GetService<ICategoryService>();
 	}
 
 	[Fact]
@@ -124,14 +123,13 @@ public class CategoryServiceReadTests
 public class CategoryServiceUpdateTests
 {
 	private readonly IApplicationDbContext _ctx;
-	private readonly CategoryService _service;
-	private readonly CategoryMapper _mapper;
+	private readonly ICategoryService _service;
 
 	public CategoryServiceUpdateTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_mapper = new CategoryMapper();
-		_service = new CategoryService(_ctx, _mapper);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_service = fixture.GetService<ICategoryService>();
 	}
 
 	[Fact]
@@ -169,14 +167,13 @@ public class CategoryServiceUpdateTests
 public class CategoryServiceDeleteTests
 {
 	private readonly IApplicationDbContext _ctx;
-	private readonly CategoryService _service;
-	private readonly CategoryMapper _mapper;
+	private readonly ICategoryService _service;
 
 	public CategoryServiceDeleteTests()
 	{
-		_ctx = TestApplicationDbContextFactory.CreateContext();
-		_mapper = new CategoryMapper();
-		_service = new CategoryService(_ctx, _mapper);
+		var fixture = new ApplicationTestFixture();
+		_ctx = fixture.GetService<IApplicationDbContext>();
+		_service = fixture.GetService<ICategoryService>();
 	}
 
 	[Fact]
