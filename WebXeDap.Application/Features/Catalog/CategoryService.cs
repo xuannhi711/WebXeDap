@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
-using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Mapper;
 
 namespace WebXeDap.Application.Features.Catalog;

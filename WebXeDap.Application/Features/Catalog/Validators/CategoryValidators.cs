@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Queries;
 
 namespace WebXeDap.Application.Features.Catalog.Validators;

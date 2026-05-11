@@ -1,6 +1,6 @@
 using Riok.Mapperly.Abstractions;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Features.Catalog.Mapper;

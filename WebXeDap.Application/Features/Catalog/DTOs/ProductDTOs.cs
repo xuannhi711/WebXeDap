@@ -1,4 +1,6 @@
-namespace WebXeDap.Application.DTOs;
+using WebXeDap.Application.Contracts.Pagination;
+
+namespace WebXeDap.Application.Features.Catalog.DTOs;
 
 public record CreateProductRequest(
 	string Name,
@@ -28,7 +30,7 @@ public record FilterProductRequest(
 	int Size = 20,
 	string SortBy = "id",
 	bool IsAscending = true
-);
+) : IPaginatedRequest;
 
 public record SimpleProductResponse(
 	int ID,

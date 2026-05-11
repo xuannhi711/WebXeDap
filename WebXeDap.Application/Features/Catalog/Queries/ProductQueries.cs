@@ -1,72 +1,36 @@
-using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Features.Catalog.Queries;
 
 public static class ProductQueries
 {
-	public static IQueryable<Product> ByName(this IQueryable<Product> query, string name)
-	{
-		return query.Where(x => x.Name.Contains(name));
-	}
-
 	public static IQueryable<Product> ByID(this IQueryable<Product> query, int id)
 	{
 		return query.Where(x => x.ID == id);
 	}
 
-	public static IQueryable<Product> ByCategoryID(this IQueryable<Product> query, int categoryID)
-	{
-		return query.Where(x => x.Categories.Any(c => c.ID == categoryID));
-	}
-
-	public static IQueryable<Product> ByCategoryIDs(
-		this IQueryable<Product> query,
-		int[] categoryIDs
-	)
-	{
-		return query.Where(x => x.Categories.Any(c => categoryIDs.Contains(c.ID)));
-	}
-
-	public static IQueryable<Product> ByMinPrice(this IQueryable<Product> query, decimal minPrice)
-	{
-		return query.Where(x => x.Price >= minPrice);
-	}
-
-	public static IQueryable<Product> ByMaxPrice(this IQueryable<Product> query, decimal maxPrice)
-	{
-		return query.Where(x => x.Price <= maxPrice);
-	}
-
-	public static IQueryable<Product> ByPriceRange(
-		this IQueryable<Product> query,
-		decimal minPrice,
-		decimal maxPrice
-	)
-	{
-		return query.Where(x => x.Price >= minPrice && x.Price <= maxPrice);
-	}
-
 	public static IQueryable<Product> ApplySorting(
 		this IQueryable<Product> query,
-		bool ascending,
+		bool isAscending,
 		string sortBy = "id"
 	)
 	{
-		return sortBy.ToLowerInvariant() switch
+		return (sortBy.ToLowerInvariant(), isAscending) switch
 		{
-			"id" => ascending ? query.OrderBy(p => p.ID) : query.OrderByDescending(p => p.ID),
-			"name" => ascending ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name),
+			("id", true) => query.OrderBy(p => p.ID),
+			("id", false) => query.OrderByDescending(p => p.ID),
 
-			"price" => ascending
-				? query.OrderBy(p => p.Price)
-				: query.OrderByDescending(p => p.Price),
+			("name", true) => query.OrderBy(p => p.Name),
+			("name", false) => query.OrderByDescending(p => p.Name),
 
-			"createdat" => ascending
-				? query.OrderBy(p => p.CreatedAt)
-				: query.OrderByDescending(p => p.CreatedAt),
+			("price", true) => query.OrderBy(p => p.Price),
+			("price", false) => query.OrderByDescending(p => p.Price),
 
-			_ => query.OrderBy(p => p.ID),
+			("created_at", true) => query.OrderBy(p => p.CreatedAt),
+			("created_at", false) => query.OrderByDescending(p => p.CreatedAt),
+
+			_ => isAscending ? query.OrderBy(x => x.ID) : query.OrderByDescending(x => x.ID),
 		};
 	}
 
@@ -83,22 +47,28 @@ public static class ProductQueries
 		FilterProductRequest req
 	)
 	{
-		if (req.CategoryIDs != null && req.CategoryIDs.Length > 0)
+		if (!string.IsNullOrWhiteSpace(req.Keyword))
 		{
-			query = query.ByCategoryIDs(req.CategoryIDs);
+			query = query.Where(p => p.Name.Contains(req.Keyword));
 		}
-		if (!string.IsNullOrEmpty(req.Keyword))
+
+		if (req.CategoryIDs is { Length: > 0 })
 		{
-			query = query.ByName(req.Keyword);
+			query = query.Where(product =>
+				product.Categories.Any(category => req.CategoryIDs.Contains(category.ID))
+			);
 		}
+
 		if (req.MinPrice.HasValue)
 		{
-			query = query.ByMinPrice(req.MinPrice.Value);
+			query = query.Where(p => p.Price >= req.MinPrice.Value);
 		}
+
 		if (req.MaxPrice.HasValue)
 		{
-			query = query.ByMaxPrice(req.MaxPrice.Value);
+			query = query.Where(p => p.Price <= req.MaxPrice.Value);
 		}
+
 		return query;
 	}
 }

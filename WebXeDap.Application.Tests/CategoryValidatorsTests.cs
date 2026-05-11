@@ -1,6 +1,6 @@
 using FluentValidation.TestHelper;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Validators;
 using WebXeDap.Application.Tests.Extensions;
 using WebXeDap.Domain.Models;

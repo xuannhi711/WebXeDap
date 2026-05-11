@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using WebXeDap.Application.Contracts.Pagination;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
-using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Mapper;
 using WebXeDap.Application.Features.Catalog.Queries;
-using WebXeDap.Application.QueryExtensions;
 
 namespace WebXeDap.Application.Features.Catalog;
 
@@ -48,7 +48,7 @@ public class ProductService : IProductService
 		var products = await _ctx
 			.Products.Filter(req)
 			.ApplySorting(req)
-			.Paginate(req.Page, req.Size)
+			.Paginate(req)
 			.ToListAsync(default);
 		var total = await _ctx.Products.Filter(req).CountAsync(default);
 		return new PaginatedResult<SimpleProductResponse>(

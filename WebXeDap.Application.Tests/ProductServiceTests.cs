@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.DTOs;
 using WebXeDap.Application.Features.Catalog;
+using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Mapper;
 using WebXeDap.Application.Features.Catalog.Queries;
 using WebXeDap.Application.Tests.Extensions;

@@ -1,4 +1,5 @@
-using WebXeDap.Application.DTOs;
+using WebXeDap.Application.Contracts.Pagination;
+using WebXeDap.Application.Features.Catalog.DTOs;
 
 namespace WebXeDap.Application.Contracts.Services;
 
