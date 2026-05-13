@@ -36,7 +36,7 @@ public static class ProductQueries
 
 	public static IQueryable<Product> ApplySorting(
 		this IQueryable<Product> query,
-		FilterProductRequest req
+		FilterProductCommand req
 	)
 	{
 		return query.ApplySorting(req.IsAscending, req.SortBy);
@@ -44,7 +44,7 @@ public static class ProductQueries
 
 	public static IQueryable<Product> Filter(
 		this IQueryable<Product> query,
-		FilterProductRequest req
+		FilterProductCommand req
 	)
 	{
 		if (!string.IsNullOrWhiteSpace(req.Keyword))

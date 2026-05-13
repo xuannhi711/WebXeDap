@@ -20,18 +20,18 @@ public partial class CategoryMapper
 	[MapperIgnoreTarget(nameof(Category.ParentCategory))]
 	[MapperIgnoreTarget(nameof(Category.Children))]
 	[MapperIgnoreTarget(nameof(Category.Products))]
-	public partial Category ToCategory(CreateCategoryRequest request);
+	public partial Category ToCategory(CreateCategoryCommand request);
 
 	[MapperIgnoreTarget(nameof(Category.ParentCategory))]
 	[MapperIgnoreTarget(nameof(Category.Children))]
 	[MapperIgnoreTarget(nameof(Category.Products))]
-	public partial Category ToCategory(UpdateCategoryRequest request);
+	public partial Category ToCategory(UpdateCategoryCommand request);
 
 	[MapperIgnoreTarget(nameof(Category.ParentCategory))]
 	[MapperIgnoreTarget(nameof(Category.Children))]
 	[MapperIgnoreTarget(nameof(Category.Products))]
 	public partial void PatchCategory(
-		UpdateCategoryRequest request,
+		UpdateCategoryCommand request,
 		[MappingTarget] Category category
 	);
 }

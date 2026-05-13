@@ -1,8 +1,6 @@
-using WebXeDap.Application.Contracts.Pagination;
-
 namespace WebXeDap.Application.Features.Catalog.DTOs;
 
-public record CreateProductRequest(
+public record CreateProductCommand(
 	string Name,
 	string? Description,
 	decimal Price,
@@ -11,7 +9,7 @@ public record CreateProductRequest(
 	string CurrencySymbol = "VNĐ"
 );
 
-public record UpdateProductRequest(
+public record UpdateProductCommand(
 	int ID,
 	string Name,
 	string? Description,
@@ -21,16 +19,14 @@ public record UpdateProductRequest(
 	string CurrencySymbol
 );
 
-public record FilterProductRequest(
+public record FilterProductCommand(
 	string? Keyword,
 	int[]? CategoryIDs,
 	decimal? MinPrice,
 	decimal? MaxPrice,
-	int Page = 1,
-	int Size = 20,
 	string SortBy = "id",
 	bool IsAscending = true
-) : IPaginatedRequest;
+);
 
 public record SimpleProductResponse(
 	int ID,

@@ -10,9 +10,9 @@ public interface ICategoryService
 
 	Task<List<HierarchyCategoryResponse>> ListHierarchyAsync();
 
-	Task<CategoryResponse?> CreateAsync(CreateCategoryRequest request);
+	Task<CategoryResponse?> CreateAsync(CreateCategoryCommand request);
 
-	Task<CategoryResponse?> UpdateAsync(UpdateCategoryRequest request);
+	Task<CategoryResponse?> UpdateAsync(UpdateCategoryCommand request);
 
 	Task<bool> DeleteAsync(int id);
 }

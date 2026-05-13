@@ -1,17 +1,19 @@
-using WebXeDap.Application.Contracts.Pagination;
+using Util.Primitives.ResultType;
 using WebXeDap.Application.Features.Catalog.DTOs;
 
 namespace WebXeDap.Application.Contracts.Services;
 
 public interface IProductService
 {
-	Task<SimpleProductResponse?> CreateAsync(CreateProductRequest req);
+	Task<Result<SimpleProductResponse>> CreateAsync(CreateProductCommand cmd);
 
-	Task<DetailedProductResponse?> GetByIDAsync(int id);
+	Task<Result<DetailedProductResponse>> GetByIDAsync(int id);
 
-	Task<PaginatedResult<SimpleProductResponse>> FilterAsync(FilterProductRequest req);
+	Task<List<SimpleProductResponse>> FilterAsync(FilterProductCommand cmd, int page, int size);
 
-	Task<DetailedProductResponse?> UpdateAsync(UpdateProductRequest req);
+	Task<int> CountAsync(FilterProductCommand cmd);
 
-	Task<bool> DeleteAsync(int id);
+	Task<Result<DetailedProductResponse>> UpdateAsync(UpdateProductCommand cmd);
+
+	Task<Result> DeleteAsync(int id);
 }

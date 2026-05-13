@@ -29,12 +29,12 @@ public partial class ProductMapper
 	[MapperIgnoreTarget(nameof(Product.UpdatedAt))]
 	[MapperIgnoreTarget(nameof(Product.IsDeleted))]
 	[MapperIgnoreTarget(nameof(Product.DeletedAt))]
-	[MapProperty(nameof(CreateProductRequest.CategoryIDs), nameof(Product.Categories))]
-	public partial Product ToProduct(CreateProductRequest request);
+	[MapProperty(nameof(CreateProductCommand.CategoryIDs), nameof(Product.Categories))]
+	public partial Product ToProduct(CreateProductCommand request);
 
 	[MapperIgnoreTarget(nameof(Product.Images))]
-	[MapProperty(nameof(UpdateProductRequest.CategoryIDs), nameof(Product.Categories))]
-	public partial Product ToProduct(UpdateProductRequest request);
+	[MapProperty(nameof(UpdateProductCommand.CategoryIDs), nameof(Product.Categories))]
+	public partial Product ToProduct(UpdateProductCommand request);
 
 	[UserMapping]
 	public ICollection<Category> CategoryIDsToCategories(int[]? categoryIDs)

@@ -6,7 +6,7 @@ using WebXeDap.Application.Features.Catalog.Queries;
 
 namespace WebXeDap.Application.Features.Catalog.Validators;
 
-public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
+public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
 {
 	private readonly IApplicationDbContext _ctx;
 
@@ -33,7 +33,7 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryRequest>
 	}
 }
 
-public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryRequest>
+public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
 {
 	private readonly IApplicationDbContext _ctx;
 

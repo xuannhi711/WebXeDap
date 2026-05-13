@@ -25,7 +25,7 @@ public class CategoryServiceCreateTests
 	{
 		var parentCategory = new Category { Name = "Vehicles" };
 		await _ctx.AddCategoryAsync(parentCategory);
-		var request = new CreateCategoryRequest(Name: "Tires", ParentCategoryID: parentCategory.ID);
+		var request = new CreateCategoryCommand(Name: "Tires", ParentCategoryID: parentCategory.ID);
 
 		var result = await _service.CreateAsync(request);
 
@@ -138,7 +138,7 @@ public class CategoryServiceUpdateTests
 		var EXISTING_CATEGORY = new Category { Name = "Existing Category" };
 		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
 
-		var req = new UpdateCategoryRequest(
+		var req = new UpdateCategoryCommand(
 			ID: EXISTING_CATEGORY.ID,
 			Name: "Updated Category",
 			ParentCategoryID: null
@@ -154,7 +154,7 @@ public class CategoryServiceUpdateTests
 	[Fact]
 	public async Task UpdateAsync_Fail_WhenIDIsInvalid()
 	{
-		var req = new UpdateCategoryRequest(
+		var req = new UpdateCategoryCommand(
 			ID: Random.Shared.Next(),
 			Name: "Updated Category",
 			ParentCategoryID: null

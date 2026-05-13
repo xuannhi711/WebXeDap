@@ -3,6 +3,7 @@ using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Mapper;
+using WebXeDap.Application.Features.Catalog.Validators;
 
 namespace WebXeDap.Application.Features.Catalog;
 
@@ -10,15 +11,33 @@ public class CategoryService : ICategoryService
 {
 	private readonly IApplicationDbContext _ctx;
 	private readonly CategoryMapper _mapper;
+	private readonly CreateCategoryValidator _createValidator;
+	private readonly UpdateCategoryValidator _updateValidator;
+	private readonly DeleteCategoryValidator _deleteValidator;
 
-	public CategoryService(IApplicationDbContext ctx, CategoryMapper mapper)
+	public CategoryService(
+		IApplicationDbContext ctx,
+		CategoryMapper mapper,
+		CreateCategoryValidator createValidator,
+		UpdateCategoryValidator updateValidator,
+		DeleteCategoryValidator deleteValidator
+	)
 	{
 		_ctx = ctx;
 		_mapper = mapper;
+		_createValidator = createValidator;
+		_updateValidator = updateValidator;
+		_deleteValidator = deleteValidator;
 	}
 
-	public async Task<CategoryResponse?> CreateAsync(CreateCategoryRequest request)
+	public async Task<CategoryResponse?> CreateAsync(CreateCategoryCommand request)
 	{
+		var validationResult = await _createValidator.ValidateAsync(request);
+		if (!validationResult.IsValid)
+		{
+			return null;
+		}
+
 		var category = _mapper.ToCategory(request);
 		await _ctx.Categories.AddAsync(category);
 		var res = await _ctx.SaveChangesAsync(default);
@@ -31,6 +50,11 @@ public class CategoryService : ICategoryService
 
 	public async Task<bool> DeleteAsync(int id)
 	{
+		var validationResult = await _deleteValidator.ValidateAsync(id);
+		if (!validationResult.IsValid)
+		{
+			return false;
+		}
 		var category = await _ctx.Categories.FindAsync(id);
 		if (category == null)
 		{
@@ -83,8 +107,14 @@ public class CategoryService : ICategoryService
 		return roots;
 	}
 
-	public async Task<CategoryResponse?> UpdateAsync(UpdateCategoryRequest request)
+	public async Task<CategoryResponse?> UpdateAsync(UpdateCategoryCommand request)
 	{
+		var validationResult = await _updateValidator.ValidateAsync(request);
+		if (!validationResult.IsValid)
+		{
+			return null;
+		}
+
 		var category = await _ctx.Categories.FirstOrDefaultAsync(x => x.ID == request.ID);
 
 		if (category is null)

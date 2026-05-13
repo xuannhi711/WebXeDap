@@ -25,7 +25,7 @@ public sealed class CreateCategoryValidatorTests
 	{
 		var parentCategory = new Category { Name = "Parent Category" };
 		await _ctx.AddCategoryAsync(parentCategory);
-		var req = new CreateCategoryRequest(
+		var req = new CreateCategoryCommand(
 			Name: "New Category",
 			ParentCategoryID: parentCategory.ID
 		);
@@ -37,7 +37,7 @@ public sealed class CreateCategoryValidatorTests
 	[Fact]
 	public async Task CreateCategoryValidator_Fail_WhenRequestIsInvalid()
 	{
-		var req = new CreateCategoryRequest(Name: "", ParentCategoryID: Random.Shared.Next());
+		var req = new CreateCategoryCommand(Name: "", ParentCategoryID: Random.Shared.Next());
 		var result = await _validator.TestValidateAsync(req);
 
 		result.ShouldHaveValidationErrors();
@@ -73,7 +73,7 @@ public sealed class UpdateCategoryValidatorTests
 
 		Assert.NotEqual(toUpdateCategory.ID, toBeParentCategory.ID);
 
-		var req = new UpdateCategoryRequest(
+		var req = new UpdateCategoryCommand(
 			ID: toUpdateCategory.ID,
 			Name: "Updated Category",
 			ParentCategoryID: toBeParentCategory.ID
@@ -82,7 +82,7 @@ public sealed class UpdateCategoryValidatorTests
 		var result = await _validator.TestValidateAsync(req);
 		result.ShouldNotHaveAnyValidationErrors();
 
-		req = new UpdateCategoryRequest(
+		req = new UpdateCategoryCommand(
 			ID: toUpdateCategory.ID,
 			Name: "Updated Category",
 			ParentCategoryID: null
@@ -94,7 +94,7 @@ public sealed class UpdateCategoryValidatorTests
 	[Fact]
 	public async Task UpdateCategoryValidator_Fail_WhenRequestIsInvalid()
 	{
-		var req = new UpdateCategoryRequest(
+		var req = new UpdateCategoryCommand(
 			ID: Random.Shared.Next(),
 			Name: "",
 			ParentCategoryID: Random.Shared.Next()
@@ -107,7 +107,7 @@ public sealed class UpdateCategoryValidatorTests
 		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
 
 		var duplicateID = Random.Shared.Next();
-		req = new UpdateCategoryRequest(
+		req = new UpdateCategoryCommand(
 			ID: duplicateID,
 			Name: "Valid Name",
 			ParentCategoryID: duplicateID

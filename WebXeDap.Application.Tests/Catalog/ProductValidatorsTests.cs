@@ -26,7 +26,7 @@ public sealed class CreateProductValidatorTests
 		var cat1 = new Category { Name = "Category 1" };
 		var cat2 = new Category { Name = "Category 2" };
 		await _ctx.AddCategoriesAsync([cat1, cat2]);
-		var request = new CreateProductRequest(
+		var request = new CreateProductCommand(
 			Name: "Valid Product",
 			Description: "A valid product description",
 			Price: 10,
@@ -41,7 +41,7 @@ public sealed class CreateProductValidatorTests
 	[Fact]
 	public async Task CreateProductValidator_Fail_WhenRequestIsInvalid()
 	{
-		var request = new CreateProductRequest(
+		var request = new CreateProductCommand(
 			Name: "",
 			Description: null,
 			Price: -1,
@@ -84,7 +84,7 @@ public sealed class UpdateProductValidatorTests
 		var cat2 = new Category { Name = "Category 2" };
 		await _ctx.AddCategoriesAsync([cat1, cat2]);
 
-		var request = new UpdateProductRequest(
+		var request = new UpdateProductCommand(
 			ID: product.ID,
 			Name: "Updated Product",
 			Description: "An updated product description",
@@ -101,7 +101,7 @@ public sealed class UpdateProductValidatorTests
 	[Fact]
 	public async Task UpdateProductValidator_Fail_WhenRequestIsInvalid()
 	{
-		var request = new UpdateProductRequest(
+		var request = new UpdateProductCommand(
 			ID: Random.Shared.Next(),
 			Name: "",
 			Description: null,

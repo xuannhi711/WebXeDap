@@ -21,14 +21,14 @@ public sealed class UserService : IUserService
 		var user = await _userManager.FindByEmailAsync(email);
 		if (user is null)
 		{
-			var errors = new Dictionary<string, string> { { "email", "Email not found." } };
+			var errors = new Dictionary<string, string[]> { { "email", ["Email not found."] } };
 			return new ValidationError(errors);
 		}
 
 		var validPassword = await _userManager.CheckPasswordAsync(user, password);
 		if (!validPassword)
 		{
-			var errors = new Dictionary<string, string> { { "password", "Invalid password." } };
+			var errors = new Dictionary<string, string[]> { { "password", ["Invalid password."] } };
 			return new ValidationError(errors);
 		}
 
@@ -47,7 +47,10 @@ public sealed class UserService : IUserService
 		var createResult = await _userManager.CreateAsync(user, password);
 		if (!createResult.Succeeded)
 		{
-			var errors = createResult.Errors.ToDictionary(e => e.Code, e => e.Description);
+			var errors = createResult.Errors.ToDictionary(
+				e => e.Code,
+				e => new[] { e.Description }
+			);
 			return new ValidationError(errors);
 		}
 
@@ -66,7 +69,7 @@ public sealed class UserService : IUserService
 		var result = await _userManager.ConfirmEmailAsync(user, token);
 		if (!result.Succeeded)
 		{
-			var errors = result.Errors.ToDictionary(e => e.Code, e => e.Description);
+			var errors = result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description });
 			return new ValidationError(errors);
 		}
 

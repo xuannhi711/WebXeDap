@@ -27,7 +27,7 @@ public class ProductServiceCreateTests
 		var cat1 = new Category { Name = "Tires" };
 		var cat2 = new Category { Name = "Bicycles" };
 		await _ctx.AddCategoriesAsync([cat1, cat2]);
-		var request = new CreateProductRequest(
+		var request = new CreateProductCommand(
 			Name: "Tire A",
 			Price: 100,
 			Quantity: 10,
@@ -36,9 +36,9 @@ public class ProductServiceCreateTests
 		);
 
 		var result = await _service.CreateAsync(request);
-		Assert.NotNull(result);
+		Assert.True(result.TryPickValue(out var productResp));
 
-		var newProduct = await _ctx.Products.ByID(result.ID).FirstOrDefaultAsync(default);
+		var newProduct = await _ctx.Products.ByID(productResp.ID).FirstOrDefaultAsync(default);
 		Assert.NotNull(newProduct);
 		Assert.Equal(request.Name, newProduct.Name);
 		Assert.Equal(request.Price, newProduct.Price);

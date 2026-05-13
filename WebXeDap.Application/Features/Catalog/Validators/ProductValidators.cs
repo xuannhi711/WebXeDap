@@ -6,7 +6,7 @@ using WebXeDap.Application.Features.Catalog.Queries;
 
 namespace WebXeDap.Application.Features.Catalog.Validators;
 
-public class CreateProductValidator : AbstractValidator<CreateProductRequest>
+public class CreateProductValidator : AbstractValidator<CreateProductCommand>
 {
 	private readonly IApplicationDbContext _ctx;
 
@@ -47,7 +47,7 @@ public class CreateProductValidator : AbstractValidator<CreateProductRequest>
 	}
 }
 
-public class UpdateProductValidator : AbstractValidator<UpdateProductRequest>
+public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
 {
 	private readonly IApplicationDbContext _ctx;
 
