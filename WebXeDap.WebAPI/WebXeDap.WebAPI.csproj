@@ -15,6 +15,5 @@
 		<ProjectReference Include="..\WebXeDap.Application\WebXeDap.Application.csproj" />
 		<ProjectReference Include="..\WebXeDap.Infrastructure\WebXeDap.Infrastructure.csproj" />
 		<ProjectReference Include="..\Util.Primitives\Util.Primitives.csproj" />
-
 	</ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
-using WebXeDap.Application.Contracts.Services;
-using WebXeDap.Application.Errors;
 using Util.Primitives.ResultType;
+using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Domain.Models;
 
 namespace WebXeDap.WebAPI.Services;

@@ -3,6 +3,7 @@ using Util.Primitives.ResultType;
 namespace Util.Primitives.Tests;
 
 public record NotFoundError(string Message) : Error;
+
 public record ValidationError(Dictionary<string, string> Errors) : Error;
 
 public class CustomResultTypeTests
@@ -27,8 +28,8 @@ public class CustomResultTypeTests
 		Assert.True(res4.IsErr);
 
 		Result<string> res5 = new ValidationError(
-				new Dictionary<string, string> { { "email", "Invalid email format" } }
-			);
+			new Dictionary<string, string> { { "email", "Invalid email format" } }
+		);
 		Assert.False(res5.IsOk);
 		Assert.True(res5.IsErr);
 	}
@@ -44,11 +45,13 @@ public class CustomResultTypeTests
 		Assert.Equal("Not found", notFoundErr.Message);
 
 		// 2. ValidationError
-		Result<int> res2 = new ValidationError(new Dictionary<string, string>
-		{
-			{ "email", "Invalid email format" },
-			{ "password", "Password is too short" },
-		});
+		Result<int> res2 = new ValidationError(
+			new Dictionary<string, string>
+			{
+				{ "email", "Invalid email format" },
+				{ "password", "Password is too short" },
+			}
+		);
 		var isOk2 = res2.TryPickValue(out _, out var err2);
 		Assert.False(isOk2);
 		var validationErr2 = Assert.IsType<ValidationError>(err2);
@@ -90,11 +93,13 @@ public class CustomResultTypeTests
 		Assert.Equal("Not found", notFoundErr.Message);
 
 		// 2. ValidationError
-		Result<int> res2 = new ValidationError(new Dictionary<string, string>
-		{
-			{ "email", "Invalid email format" },
-			{ "password", "Password is too short" },
-		});
+		Result<int> res2 = new ValidationError(
+			new Dictionary<string, string>
+			{
+				{ "email", "Invalid email format" },
+				{ "password", "Password is too short" },
+			}
+		);
 		var isErr2 = res2.TryPickError(out var err2);
 		Assert.True(isErr2);
 		var validationErr2 = Assert.IsType<ValidationError>(err2);
@@ -120,11 +125,13 @@ public class CustomResultTypeTests
 		Assert.Equal("Not found", err1.Message);
 
 		// 2
-		Result<string> result2 = new ValidationError(new Dictionary<string, string>
-		{
-			{ "email", "Invalid email format" },
-			{ "password", "Password is too short" },
-		});
+		Result<string> result2 = new ValidationError(
+			new Dictionary<string, string>
+			{
+				{ "email", "Invalid email format" },
+				{ "password", "Password is too short" },
+			}
+		);
 		Assert.True(result2.IsErr);
 		var err2 = Assert.IsType<ValidationError>(result2.Value);
 		Assert.Equal(2, err2.Errors.Count);
@@ -141,8 +148,10 @@ public class CustomResultTypeTests
 				var e = error switch
 				{
 					NotFoundError nf => nf,
-					ValidationError ve => throw new Exception("Expected NotFoundError, but got ValidationError"),
-					_ => throw new Exception("Unexpected error type")
+					ValidationError ve => throw new Exception(
+						"Expected NotFoundError, but got ValidationError"
+					),
+					_ => throw new Exception("Unexpected error type"),
 				};
 				Assert.Same(err3, e);
 			}
