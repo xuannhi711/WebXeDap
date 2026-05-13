@@ -6,7 +6,7 @@ using WebXeDap.Application.Tests.Extensions;
 using WebXeDap.Application.Tests.Fixtures;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests;
+namespace WebXeDap.Application.Tests.Catalog;
 
 public sealed class CreateCategoryValidatorTests
 {
