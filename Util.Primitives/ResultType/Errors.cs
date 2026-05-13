@@ -6,4 +6,4 @@ public record NotFoundError(string Message) : Error;
 
 public record UnknownError(string Message) : Error;
 
-public record ValidationError(Dictionary<string, string> Errors) : Error;
+public record ValidationError(IDictionary<string, string[]> Errors) : Error;

@@ -2,10 +2,6 @@ using Util.Primitives.ResultType;
 
 namespace Util.Primitives.Tests;
 
-public record NotFoundError(string Message) : Error;
-
-public record ValidationError(Dictionary<string, string> Errors) : Error;
-
 public class CustomResultTypeTests
 {
 	[Fact]
@@ -28,7 +24,7 @@ public class CustomResultTypeTests
 		Assert.True(res4.IsErr);
 
 		Result<string> res5 = new ValidationError(
-			new Dictionary<string, string> { { "email", "Invalid email format" } }
+			new Dictionary<string, string[]> { { "email", ["Invalid email format"] } }
 		);
 		Assert.False(res5.IsOk);
 		Assert.True(res5.IsErr);
@@ -46,18 +42,19 @@ public class CustomResultTypeTests
 
 		// 2. ValidationError
 		Result<int> res2 = new ValidationError(
-			new Dictionary<string, string>
+			new Dictionary<string, string[]>
 			{
-				{ "email", "Invalid email format" },
-				{ "password", "Password is too short" },
+				{ "email", ["Invalid email format"] },
+				{ "password", ["Password is too short"] },
 			}
 		);
 		var isOk2 = res2.TryPickValue(out _, out var err2);
 		Assert.False(isOk2);
 		var validationErr2 = Assert.IsType<ValidationError>(err2);
 		Assert.Equal(2, validationErr2.Errors.Count);
-		Assert.Equal("Invalid email format", validationErr2.Errors["email"]);
-		Assert.Equal("Password is too short", validationErr2.Errors["password"]);
+
+		Assert.Equal(["Invalid email format"], validationErr2.Errors["email"]);
+		Assert.Equal(["Password is too short"], validationErr2.Errors["password"]);
 
 		// 3. Guid
 		var guid3 = Guid.NewGuid();
@@ -94,18 +91,18 @@ public class CustomResultTypeTests
 
 		// 2. ValidationError
 		Result<int> res2 = new ValidationError(
-			new Dictionary<string, string>
+			new Dictionary<string, string[]>
 			{
-				{ "email", "Invalid email format" },
-				{ "password", "Password is too short" },
+				{ "email", ["Invalid email format"] },
+				{ "password", ["Password is too short"] },
 			}
 		);
 		var isErr2 = res2.TryPickError(out var err2);
 		Assert.True(isErr2);
 		var validationErr2 = Assert.IsType<ValidationError>(err2);
 		Assert.Equal(2, validationErr2.Errors.Count);
-		Assert.Equal("Invalid email format", validationErr2.Errors["email"]);
-		Assert.Equal("Password is too short", validationErr2.Errors["password"]);
+		Assert.Equal(["Invalid email format"], validationErr2.Errors["email"]);
+		Assert.Equal(["Password is too short"], validationErr2.Errors["password"]);
 
 		// 3. Guid
 		var guid3 = Guid.NewGuid();
@@ -126,17 +123,17 @@ public class CustomResultTypeTests
 
 		// 2
 		Result<string> result2 = new ValidationError(
-			new Dictionary<string, string>
+			new Dictionary<string, string[]>
 			{
-				{ "email", "Invalid email format" },
-				{ "password", "Password is too short" },
+				{ "email", ["Invalid email format"] },
+				{ "password", ["Password is too short"] },
 			}
 		);
 		Assert.True(result2.IsErr);
 		var err2 = Assert.IsType<ValidationError>(result2.Value);
 		Assert.Equal(2, err2.Errors.Count);
-		Assert.Equal("Invalid email format", err2.Errors["email"]);
-		Assert.Equal("Password is too short", err2.Errors["password"]);
+		Assert.Equal(["Invalid email format"], err2.Errors["email"]);
+		Assert.Equal(["Password is too short"], err2.Errors["password"]);
 
 		// 3
 		var err3 = new NotFoundError("Not found");
