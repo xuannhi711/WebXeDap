@@ -25,14 +25,13 @@ public sealed class AuthController : ControllerBase
 		}
 
 		var result = await _userService.LoginAsync(request.Email, request.Password);
-		if (!result.IsOk)
+		if (!result.TryPickValue(out var tokensResult, out var err))
 		{
-			return BadRequest(result.Error);
+			return BadRequest(err);
 		}
-		var tokens = result.Value;
 
-		SetRefreshTokenCookie(tokens.RefreshToken, tokens.RefreshTokenExpiresAtUtc);
-		return Ok(new LoginResponse(tokens.AccessToken, tokens.RefreshToken));
+		SetRefreshTokenCookie(tokensResult.RefreshToken, tokensResult.RefreshTokenExpiresAtUtc);
+		return Ok(new LoginResponse(tokensResult.AccessToken, tokensResult.RefreshToken));
 	}
 
 	[HttpPost("register")]
@@ -44,9 +43,9 @@ public sealed class AuthController : ControllerBase
 		}
 
 		var result = await _userService.RegisterAsync(request.Email, request.Password);
-		if (!result.IsOk)
+		if (result.TryPickError(out var err))
 		{
-			return BadRequest(result.Error);
+			return BadRequest(err);
 		}
 
 		return Ok();
@@ -61,9 +60,9 @@ public sealed class AuthController : ControllerBase
 		}
 
 		var result = await _userService.ConfirmEmailAsync(request.UserId, request.Token);
-		if (!result.IsOk)
+		if (result.TryPickError(out var err))
 		{
-			return BadRequest(result.Error);
+			return BadRequest(err);
 		}
 
 		return Ok();
