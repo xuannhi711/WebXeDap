@@ -6,16 +6,16 @@ namespace WebXeDap.WebAPI.Controllers;
 [Route("[controller]")]
 public class HelloController : ControllerBase
 {
-    private readonly ILogger<HelloController> _logger;
+	private readonly ILogger<HelloController> _logger;
 
-    public HelloController(ILogger<HelloController> logger)
-    {
-        _logger = logger;
-    }
+	public HelloController(ILogger<HelloController> logger)
+	{
+		_logger = logger;
+	}
 
-    [HttpGet]
-    public string Get()
-    {
-        return "Hello, World!";
-    }
+	[HttpGet]
+	public string Get()
+	{
+		return "Hello, World!";
+	}
 }
