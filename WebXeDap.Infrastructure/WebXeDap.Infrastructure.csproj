@@ -2,6 +2,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\WebXeDap.Application\WebXeDap.Application.csproj" />
 		<ProjectReference Include="..\WebXeDap.Domain\WebXeDap.Domain.csproj" />
+		<ProjectReference Include="..\Util.Primitives\Util.Primitives.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -7,38 +7,22 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<App
 {
 	public ApplicationDbContext CreateDbContext(string[] args)
 	{
-		var provider = Environment.GetEnvironmentVariable("DB_PROVIDER");
-		var useSqlite = string.Equals(provider, "sqlite", StringComparison.OrdinalIgnoreCase);
+		var conf = new InfrastructureConfiguration();
 		var migrationsAssembly = typeof(ApplicationDbContext).Assembly.FullName;
 
 		var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 
-		if (useSqlite)
+		if (conf.IsSqlite)
 		{
-			var sqliteConnection =
-				Environment.GetEnvironmentVariable("SQLITE_CONNECTION_STRING")
-				?? "Data Source=webxedap.db";
-
 			optionsBuilder.UseSqlite(
-				sqliteConnection,
+				conf.ConnectionString,
 				sqlite => sqlite.MigrationsAssembly(migrationsAssembly)
 			);
 		}
 		else
 		{
-			var sqlServerConnection = Environment.GetEnvironmentVariable(
-				"ConnectionStrings__DefaultConnection"
-			);
-
-			if (string.IsNullOrWhiteSpace(sqlServerConnection))
-			{
-				throw new InvalidOperationException(
-					"ConnectionStrings__DefaultConnection is not set for SQL Server migrations."
-				);
-			}
-
 			optionsBuilder.UseSqlServer(
-				sqlServerConnection,
+				conf.ConnectionString,
 				sql => sql.MigrationsAssembly(migrationsAssembly)
 			);
 		}

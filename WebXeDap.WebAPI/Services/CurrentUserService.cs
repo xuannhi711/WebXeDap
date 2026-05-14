@@ -22,10 +22,8 @@ public sealed class CurrentUserService : ICurrentUserService
 				return null;
 			}
 
-			var sub =
-				user.FindFirst("sub")?.Value ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-			return int.TryParse(sub, out var userId) ? userId : null;
+			var nameIdentifier = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			return int.TryParse(nameIdentifier, out var userId) ? userId : null;
 		}
 	}
 }

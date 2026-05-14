@@ -8,19 +8,16 @@ namespace WebXeDap.Infrastructure;
 
 public static class DependencyInjection
 {
-	public static IServiceCollection AddInfrastructure(
-		this IServiceCollection services,
-		string connectionString,
-		bool useSqlite = false
-	)
+	public static IServiceCollection AddInfrastructure(this IServiceCollection services)
 	{
+		var conf = new InfrastructureConfiguration();
 		var migrationsAssembly = typeof(ApplicationDbContext).Assembly.FullName;
 
-		if (useSqlite)
+		if (conf.IsSqlite)
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>
 				options.UseSqlite(
-					connectionString,
+					conf.ConnectionString,
 					sqlite => sqlite.MigrationsAssembly(migrationsAssembly)
 				)
 			);
@@ -29,7 +26,7 @@ public static class DependencyInjection
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>
 				options.UseSqlServer(
-					connectionString,
+					conf.ConnectionString,
 					sql => sql.MigrationsAssembly(migrationsAssembly)
 				)
 			);

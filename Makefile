@@ -1,25 +1,14 @@
-# Functions trong Makefile: https://www.gnu.org/software/make/manual/html_node/Functions.html
+.DEFAULT_GOAL := api
 
-
-.DEFAULT_GOAL := server
-
-# --------------------------------------------------------------------
-# ------------------ IMPLICIT GUARD ----------------------------------
-# --------------------------------------------------------------------
-
-# Pattern được dùng nhiều hồi xưa. Cách dùng:
-# - đặt làm prerequisite cho target nào đó cần biến môi trường.
-guard-%:
-	$(if $($*),,$(error Missing required variable: $*))
-
-
-# --------------------------------------------------------------------
-# ------------------ ENV VARIABLES -----------------------------------
-# --------------------------------------------------------------------
 include .env
 
-# Fallbacks when variables are omitted from .env or shell environment.
+# -----------------------------------------------------------------------------
+# Config
+# -----------------------------------------------------------------------------
+
 ASPNETCORE_ENVIRONMENT ?= Development
+DB_PROVIDER ?= sqlite
+
 MSSQL_HOST ?= localhost
 MSSQL_PORT ?= 1433
 MSSQL_DB ?= BicycleShop
@@ -28,65 +17,76 @@ MSSQL_SA_PASSWORD ?= 2Secure@Password2
 MSSQL_TRUST_SERVER_CERTIFICATE ?= True
 MSSQL_ENCRYPT ?= False
 
-ifndef MSSQL_SA_PASSWORD
-$(error MSSQL_SA_PASSWORD is not set. Please set it in the .env file)
+API_PROJECT := WebXeDap.WebAPI
+INFRA_PROJECT := WebXeDap.Infrastructure
+SEED_PROJECT := WebXeDap.Seeder
+STATIC_PROJECT := WebXeDap.StaticWeb
+
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+
+guard-%:
+	$(if $($*),,$(error Missing required variable: $*))
+
+ifeq ($(DB_PROVIDER),sqlite)
+CONNECTION_STRING := Data Source=$(CURDIR)/db.sqlite
+else
+CONNECTION_STRING := Server=$(MSSQL_HOST),$(MSSQL_PORT); \
+	Database=$(MSSQL_DB); \
+	User Id=$(MSSQL_USER); \
+	Password=$(MSSQL_SA_PASSWORD); \
+	TrustServerCertificate=$(MSSQL_TRUST_SERVER_CERTIFICATE); \
+	Encrypt=$(MSSQL_ENCRYPT)
 endif
-CONNECTION_STRING := Server=$(MSSQL_HOST),$(MSSQL_PORT);\
-					Database=$(MSSQL_DB);\
-					User Id=$(MSSQL_USER);\
-					Password=$(MSSQL_SA_PASSWORD);\
-					TrustServerCertificate=$(MSSQL_TRUST_SERVER_CERTIFICATE);\
-					Encrypt=$(MSSQL_ENCRYPT)
 
+ENV := \
+	ASPNETCORE_ENVIRONMENT=$(ASPNETCORE_ENVIRONMENT) \
+	DB_PROVIDER=$(DB_PROVIDER) \
+	CONNECTION_STRING="$(CONNECTION_STRING)"
 
+# -----------------------------------------------------------------------------
+# Targets
+# -----------------------------------------------------------------------------
 
-
-
-
-# --------------------------------------------------------------------
-# ------------------ RULES -------------------------------------------
-# --------------------------------------------------------------------
-
-.PHONY=db
+.PHONY: db
 db:
 	@podman compose up -d mssql
 
-.PHONY=stop-db
-stop-db:
+.PHONY: db-stop
+db-stop:
 	@podman compose stop mssql
 
-.PHONY=server
-server:
-	@echo "Starting server..."
-	@ASPNETCORE_ENVIRONMENT=$(ASPNETCORE_ENVIRONMENT) \
-	ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
-	dotnet watch --project WebXeDap.WebAPI
+.PHONY: api
+api:
+	@$(ENV) dotnet watch --project $(API_PROJECT)
 
-.PHONY=migrate
+.PHONY: addmigration
+addmigration: guard-name
+	@$(ENV) dotnet ef migrations add $(name) --project $(INFRA_PROJECT)
+
+.PHONY: migrate
 migrate:
-	@echo "Applying database migrations..."
-	@ConnectionStrings__DefaultConnection="$(CONNECTION_STRING)" \
-	dotnet ef database update --project WebXeDap.Infrastructure
+	@$(ENV) dotnet ef database update --project $(INFRA_PROJECT)
 
-.PHONY=seed
+.PHONY: seed
 seed:
-	@echo "Seeding admin user..."
 	@CONNECTION_STRING="$(CONNECTION_STRING)" \
-	dotnet run --project WebXeDap.Seeder
+	dotnet run --project $(SEED_PROJECT)
 
-.PHONY=test
+.PHONY: test
 test:
 	@dotnet test
 
-.PHONY=clean
+.PHONY: clean
 clean:
 	@dotnet clean
 
-.PHONY=static
+.PHONY: static
 static:
-	@cd ./WebXeDap.StaticWeb && pnpm dev
+	@cd $(STATIC_PROJECT) && pnpm dev
 
-.PHONY=fmt
+.PHONY: fmt
 fmt:
 	@dotnet csharpier format .
-	@cd ./WebXeDap.StaticWeb && pnpm format
+	@cd $(STATIC_PROJECT) && pnpm format
