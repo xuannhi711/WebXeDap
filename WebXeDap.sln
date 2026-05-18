@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35825.156 d17.13
+VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap", "WebXeDap\WebXeDap.csproj", "{9CDCD78A-B769-47DC-AC96-446F3D328D1D}"
 EndProject
@@ -13,17 +13,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Domain", "WebXeDap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Application", "WebXeDap.Application\WebXeDap.Application.csproj", "{A18C9F5B-0B33-4E24-9C3E-3F8B1E8C5E2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Application.Tests", "WebXeDap.Application.Tests\WebXeDap.Application.Tests.csproj", "{08D27F9B-A816-4CE1-AEA1-634B68F0F853}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Application.UnitTests", "tests\WebXeDap.Application.UnitTests\WebXeDap.Application.UnitTests.csproj", "{08D27F9B-A816-4CE1-AEA1-634B68F0F853}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Infrastructure", "WebXeDap.Infrastructure\WebXeDap.Infrastructure.csproj", "{54834843-35A2-41E7-A777-33D078BFA0C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Domain.Tests", "WebXeDap.Domain.Tests\WebXeDap.Domain.Tests.csproj", "{1C13935F-B800-49FD-A559-6FF227B54640}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Domain.UnitTests", "tests\WebXeDap.Domain.UnitTests\WebXeDap.Domain.UnitTests.csproj", "{1C13935F-B800-49FD-A559-6FF227B54640}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Infrastructure.Tests", "WebXeDap.Infrastructure.Tests\WebXeDap.Infrastructure.Tests.csproj", "{868C33FB-89E4-4271-8701-8992CB768CEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXeDap.Infrastructure.UnitTests", "tests\WebXeDap.Infrastructure.UnitTests\WebXeDap.Infrastructure.UnitTests.csproj", "{868C33FB-89E4-4271-8701-8992CB768CEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util.Primitives", "Util.Primitives\Util.Primitives.csproj", "{A107A780-1D45-4C55-8616-B2C4350BDB23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util.Primitives.Tests", "Util.Primitives.Tests\Util.Primitives.Tests.csproj", "{1CC1CC67-3D5F-42A0-AFA2-8D3300C7DDC5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Util.Primitives.UnitTests", "tests\Util.Primitives.UnitTests\Util.Primitives.UnitTests.csproj", "{1CC1CC67-3D5F-42A0-AFA2-8D3300C7DDC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
