@@ -1,15 +1,22 @@
 using Microsoft.EntityFrameworkCore;
+using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
-using Xunit;
 
 namespace WebXeDap.Infrastructure.Tests;
 
 public sealed class ApplicationDbContextIdentityTests
 {
+	private readonly IApplicationDbContext ctx;
+
+	public ApplicationDbContextIdentityTests()
+	{
+		var fixture = new InfraTestFixture();
+		ctx = fixture.GetService<IApplicationDbContext>();
+	}
+
 	[Fact]
 	public async Task CanPersistIdentityUser()
 	{
-		using var context = TestDbContextFactory.CreateContext();
 		var user = new User
 		{
 			Id = 123,
@@ -18,10 +25,10 @@ public sealed class ApplicationDbContextIdentityTests
 			EmailConfirmed = true,
 		};
 
-		context.Users.Add(user);
-		await context.SaveChangesAsync(CancellationToken.None);
+		ctx.Users.Add(user);
+		await ctx.SaveChangesAsync(CancellationToken.None);
 
-		var saved = await context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == 123);
+		var saved = await ctx.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == 123);
 
 		Assert.NotNull(saved);
 		Assert.Equal("admin", saved!.UserName);
