@@ -45,13 +45,22 @@ API_ENV := \
 	DB_PROVIDER=$(DB_PROVIDER) \
 	CONNECTION_STRING="$(CONNECTION_STRING)"
 
+# -----------------------------------------------------------------------------
+# SERVICES
+# -----------------------------------------------------------------------------
+
+.PHONY: api
+api:
+	@$(API_ENV) dotnet watch --project $(API_PROJECT)
+
+.PHONY: static
+static:
+	@cd $(STATIC_PROJECT) && pnpm dev
 
 # -----------------------------------------------------------------------------
-# Targets
+# EXTERNAL SERVICES
 # -----------------------------------------------------------------------------
 
-
-# External services
 .PHONY: db
 db:
 	@podman compose up -d mssql
@@ -68,10 +77,29 @@ mail:
 mail-stop:
 	@podman compose stop mailpit
 
-# API
-.PHONY: api
-api:
-	@$(API_ENV) dotnet watch --project $(API_PROJECT)
+# -----------------------------------------------------------------------------
+# TESTING
+# -----------------------------------------------------------------------------
+
+.PHONY: test
+test: test-unit test-integration
+
+.PHONY: test-unit
+test-unit:
+	@dotnet test \
+		--no-build \
+		--filter "Category=Unit"
+
+.PHONY: test-integration
+test-integration:
+	@$(API_ENV) dotnet test \
+		--no-build \
+		--filter "Category=Integration"
+
+
+# -----------------------------------------------------------------------------
+# MIGRATING
+# -----------------------------------------------------------------------------
 
 .PHONY: addmigration
 addmigration: guard-name
@@ -81,21 +109,17 @@ addmigration: guard-name
 migrate:
 	@$(API_ENV) dotnet ef database update --project $(INFRA_PROJECT)
 
+# -----------------------------------------------------------------------------
+# MISC
+# -----------------------------------------------------------------------------
+
 .PHONY: createadmin
 createadmin:
 	@$(API_ENV) dotnet run --project $(SEED_PROJECT)
 
-.PHONY: test
-test:
-	@$(API_ENV) dotnet test
-
 .PHONY: clean
 clean:
 	@dotnet clean
-
-.PHONY: static
-static:
-	@cd $(STATIC_PROJECT) && pnpm dev
 
 .PHONY: fmt
 fmt:
