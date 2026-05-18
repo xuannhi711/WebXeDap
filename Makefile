@@ -120,6 +120,10 @@ migrate:
 createadmin:
 	@$(API_ENV) dotnet run --project $(SEED_PROJECT)
 
+.PHONY: build
+build:
+	@dotnet build --configuration $(BUILD_CONFIG)
+
 .PHONY: clean
 clean:
 	@dotnet clean
