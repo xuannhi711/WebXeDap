@@ -8,4 +8,6 @@ public static class DevEnvVars
 	public const string SMTP_PORT = "SMTP_PORT";
 	public const string SMTP_USER = "SMTP_USER";
 	public const string SMTP_PASS = "SMTP_PASS";
+	public const string SMTP_FROM_EMAIL = "SMTP_FROM_EMAIL";
+	public const string SMTP_FROM_NAME = "SMTP_FROM_NAME";
 }

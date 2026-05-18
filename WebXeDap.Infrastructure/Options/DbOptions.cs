@@ -5,13 +5,13 @@ namespace WebXeDap.Infrastructure.Options;
 
 public sealed class DbOptions
 {
-	public DbProvider Provider { get; }
-	public string ConnectionString { get; }
+	public DbProvider Provider { get; init; }
+	public required string ConnectionString { get; init; }
 
-	public DbOptions()
+	public static DbOptions LoadFromEnvironment()
 	{
 		var providerStr = Environment.GetEnvironmentVariable(DevEnvVars.DB_PROVIDER);
-		Provider = providerStr switch
+		var provider = providerStr switch
 		{
 			"sqlite" => DbProvider.Sqlite,
 			"mssql" => DbProvider.SqlServer,
@@ -27,6 +27,8 @@ public sealed class DbOptions
 				$"Connection string is not set in environment variable {DevEnvVars.CONN_STRING}"
 			);
 		}
-		ConnectionString = connStr;
+		var options = new DbOptions() { Provider = provider, ConnectionString = connStr };
+
+		return options;
 	}
 }

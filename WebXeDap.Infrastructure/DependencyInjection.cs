@@ -5,6 +5,7 @@ using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
 using WebXeDap.Infrastructure.Enums;
 using WebXeDap.Infrastructure.Options;
+using WebXeDap.Infrastructure.Services;
 
 namespace WebXeDap.Infrastructure;
 
@@ -13,7 +14,9 @@ public static class DependencyInjection
 	public static IServiceCollection AddInfrastructure(this IServiceCollection services)
 	{
 		var migrationsAssembly = typeof(ApplicationDbContext).Assembly.FullName;
-		var dbOptions = new DbOptions();
+		var dbOptions = DbOptions.LoadFromEnvironment();
+
+		services.AddSingleton(dbOptions);
 
 		_ = dbOptions.Provider switch
 		{
@@ -44,6 +47,9 @@ public static class DependencyInjection
 		services.AddScoped<IApplicationDbContext>(sp =>
 			sp.GetRequiredService<ApplicationDbContext>()
 		);
+
+		services.AddSingleton(EmailOptions.LoadFromEnvironment());
+		services.AddScoped<IEmailSender<User>, EmailService>();
 
 		return services;
 	}
