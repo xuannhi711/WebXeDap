@@ -70,8 +70,8 @@ addmigration: guard-name
 migrate:
 	@$(API_ENV) dotnet ef database update --project $(INFRA_PROJECT)
 
-.PHONY: seed
-seed:
+.PHONY: createadmin
+createadmin:
 	@$(API_ENV) dotnet run --project $(SEED_PROJECT)
 
 .PHONY: test
