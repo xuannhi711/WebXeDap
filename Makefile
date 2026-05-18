@@ -8,6 +8,7 @@
 
 ASPNETCORE_ENVIRONMENT ?= Development
 DB_PROVIDER ?= sqlite
+BUILD_CONFIG ?= Debug
 
 MSSQL_HOST ?= localhost
 MSSQL_PORT ?= 1433
@@ -87,12 +88,14 @@ test: test-unit test-integration
 .PHONY: test-unit
 test-unit:
 	@dotnet test \
+		--configuration $(BUILD_CONFIG) \
 		--no-build \
 		--filter "Category=Unit"
 
 .PHONY: test-integration
 test-integration:
 	@$(API_ENV) dotnet test \
+		--configuration $(BUILD_CONFIG) \
 		--no-build \
 		--filter "Category=Integration"
 

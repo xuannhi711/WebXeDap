@@ -11,29 +11,87 @@ env:
   BUILD_CONFIG: Release
 
 jobs:
-  unit-tests:
-    name: Unit testing
+
+  build:
+    name: Build
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: >
+        dotnet build
+        --no-restore
+        --configuration ${{ env.BUILD_CONFIG }}
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          **/bin/${{ env.BUILD_CONFIG }}/
+          **/obj/${{ env.BUILD_CONFIG }}/
+
+      
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - run: dotnet restore
-      - run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIG }}
-      - run: make test-unit
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: .
+
+      - name: Run Unit Tests
+        run: make test-unit
+
 
   integration-tests:
-    name: Integration testing
+    name: Integration Tests
     runs-on: ubuntu-latest
+
+    needs: build
+
     env:
       DB_PROVIDER: sqlite
       CONN_STRING: Data Source=test.db
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - run: dotnet restore
-      - run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIG }}
-      - run: make test-integration
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: .
+
+      - name: Run Integration Tests
+        run: make test-integration
