@@ -50,6 +50,8 @@ API_ENV := \
 # Targets
 # -----------------------------------------------------------------------------
 
+
+# External services
 .PHONY: db
 db:
 	@podman compose up -d mssql
@@ -58,6 +60,15 @@ db:
 db-stop:
 	@podman compose stop mssql
 
+.PHONY: mail
+mail:
+	@podman compose up -d mailpit
+
+.PHONY: mail-stop
+mail-stop:
+	@podman compose stop mailpit
+
+# API
 .PHONY: api
 api:
 	@$(API_ENV) dotnet watch --project $(API_PROJECT)

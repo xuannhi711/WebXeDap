@@ -11,5 +11,16 @@ services:
     volumes:
       - mssql_data:/var/opt/mssql
 
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.30
+    environment:
+      - MP_DATABASE=/data/mailpit.db
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+    volumes:
+      - mailpit_data:/data
+
 volumes:
   mssql_data:
+  mailpit_data:
