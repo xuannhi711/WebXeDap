@@ -21,7 +21,6 @@ var dbContext = services.GetRequiredService<ApplicationDbContext>();
 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
 var userManager = services.GetRequiredService<UserManager<User>>();
 
-
 Console.WriteLine("====================== ADMIN SEEDER ======================");
 
 var adminResult = await AdminSeeder.CreateAdmin(services);
