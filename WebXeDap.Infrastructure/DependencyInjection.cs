@@ -33,7 +33,10 @@ public static class DependencyInjection
 		}
 
 		services
-			.AddIdentity<User, IdentityRole<int>>()
+			.AddIdentity<User, IdentityRole<int>>(options =>
+			{
+				options.User.RequireUniqueEmail = true;
+			})
 			.AddEntityFrameworkStores<ApplicationDbContext>()
 			.AddDefaultTokenProviders();
 
