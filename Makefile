@@ -90,3 +90,7 @@ static:
 fmt:
 	@dotnet csharpier format .
 	@cd $(STATIC_PROJECT) && pnpm format
+
+.PHONY: tool-restore
+tool-restore:
+	@dotnet tool restore
