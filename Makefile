@@ -40,10 +40,11 @@ CONNECTION_STRING := Server=$(MSSQL_HOST),$(MSSQL_PORT); \
 	Encrypt=$(MSSQL_ENCRYPT)
 endif
 
-ENV := \
+API_ENV := \
 	ASPNETCORE_ENVIRONMENT=$(ASPNETCORE_ENVIRONMENT) \
 	DB_PROVIDER=$(DB_PROVIDER) \
 	CONNECTION_STRING="$(CONNECTION_STRING)"
+
 
 # -----------------------------------------------------------------------------
 # Targets
@@ -59,24 +60,23 @@ db-stop:
 
 .PHONY: api
 api:
-	@$(ENV) dotnet watch --project $(API_PROJECT)
+	@$(API_ENV) dotnet watch --project $(API_PROJECT)
 
 .PHONY: addmigration
 addmigration: guard-name
-	@$(ENV) dotnet ef migrations add $(name) --project $(INFRA_PROJECT)
+	@$(API_ENV) dotnet ef migrations add $(name) --project $(INFRA_PROJECT)
 
 .PHONY: migrate
 migrate:
-	@$(ENV) dotnet ef database update --project $(INFRA_PROJECT)
+	@$(API_ENV) dotnet ef database update --project $(INFRA_PROJECT)
 
 .PHONY: seed
 seed:
-	@CONNECTION_STRING="$(CONNECTION_STRING)" \
-	dotnet run --project $(SEED_PROJECT)
+	@$(API_ENV) dotnet run --project $(SEED_PROJECT)
 
 .PHONY: test
 test:
-	@dotnet test
+	@$(API_ENV) dotnet test
 
 .PHONY: clean
 clean:
