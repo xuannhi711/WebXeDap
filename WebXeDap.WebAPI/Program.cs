@@ -24,6 +24,10 @@ builder
 
 builder.Services.AddControllers();
 
+// required for MapIdentityApi
+builder.Services.AddAuthentication()
+	.AddCookie(IdentityConstants.BearerScheme);
+	
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
