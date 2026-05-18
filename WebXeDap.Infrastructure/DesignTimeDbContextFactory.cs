@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace WebXeDap.Infrastructure;
 
@@ -7,26 +8,12 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<App
 {
 	public ApplicationDbContext CreateDbContext(string[] args)
 	{
-		var conf = new InfrastructureConfiguration();
-		var migrationsAssembly = typeof(ApplicationDbContext).Assembly.FullName;
+		var services = new ServiceCollection();
 
-		var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+		services.AddInfrastructure();
 
-		if (conf.IsSqlite)
-		{
-			optionsBuilder.UseSqlite(
-				conf.ConnectionString,
-				sqlite => sqlite.MigrationsAssembly(migrationsAssembly)
-			);
-		}
-		else
-		{
-			optionsBuilder.UseSqlServer(
-				conf.ConnectionString,
-				sql => sql.MigrationsAssembly(migrationsAssembly)
-			);
-		}
+		var provider = services.BuildServiceProvider();
 
-		return new ApplicationDbContext(optionsBuilder.Options);
+		return provider.GetRequiredService<ApplicationDbContext>();
 	}
 }

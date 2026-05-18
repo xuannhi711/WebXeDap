@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
+using WebXeDap.Infrastructure.Enums;
+using WebXeDap.Infrastructure.Options;
 
 namespace WebXeDap.Infrastructure;
 
@@ -10,33 +12,32 @@ public static class DependencyInjection
 {
 	public static IServiceCollection AddInfrastructure(this IServiceCollection services)
 	{
-		var conf = new InfrastructureConfiguration();
 		var migrationsAssembly = typeof(ApplicationDbContext).Assembly.FullName;
+		var dbOptions = new DbOptions();
 
-		if (conf.IsSqlite)
+		_ = dbOptions.Provider switch
 		{
-			services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseSqlite(
-					conf.ConnectionString,
+			DbProvider.Sqlite => services.AddDbContext<ApplicationDbContext>(o =>
+				o.UseSqlite(
+					dbOptions.ConnectionString,
 					sqlite => sqlite.MigrationsAssembly(migrationsAssembly)
 				)
-			);
-		}
-		else
-		{
-			services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseSqlServer(
-					conf.ConnectionString,
+			),
+			DbProvider.SqlServer => services.AddDbContext<ApplicationDbContext>(o =>
+				o.UseSqlServer(
+					dbOptions.ConnectionString,
 					sql => sql.MigrationsAssembly(migrationsAssembly)
 				)
-			);
-		}
+			),
+			_ => throw new InvalidOperationException("Unsupported database provider"),
+		};
 
 		services
-			.AddIdentity<User, IdentityRole<int>>(options =>
+			.AddIdentityCore<User>(options =>
 			{
 				options.User.RequireUniqueEmail = true;
 			})
+			.AddRoles<IdentityRole<int>>()
 			.AddEntityFrameworkStores<ApplicationDbContext>()
 			.AddDefaultTokenProviders();
 
