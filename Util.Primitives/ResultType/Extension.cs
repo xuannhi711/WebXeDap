@@ -30,4 +30,17 @@ public static class ResultExtensions
 			return errorHandler(ex);
 		}
 	}
+
+	public static async Task<Result> ToResult(this Task task, Func<Exception, Error> errorHandler)
+	{
+		try
+		{
+			await task;
+			return Result.Ok();
+		}
+		catch (Exception ex)
+		{
+			return errorHandler(ex);
+		}
+	}
 }

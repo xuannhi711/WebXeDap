@@ -11,6 +11,9 @@ public class Result<T> : OneOfBase<T, Error>
 	public bool IsOk => IsT0;
 	public bool IsErr => IsT1;
 
+	public T AsValue => AsT0;
+	public Error AsError => AsT1;
+
 	public bool TryPickValue(out T value, out Error error) => TryPickT0(out value, out error);
 
 	public bool TryPickValue(out T value) => TryPickT0(out value, out _);
