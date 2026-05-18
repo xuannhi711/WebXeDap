@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebXeDap.Application.Contracts.Persistence;
-using WebXeDap.Application.Tests.Infrastructure;
 
-namespace WebXeDap.Application.Tests.Fixtures;
+namespace WebXeDap.Application.Tests;
 
 public sealed class ApplicationTestFixture
 {
@@ -14,8 +14,8 @@ public sealed class ApplicationTestFixture
 
 		services.AddApplication();
 
-		services.AddScoped<IApplicationDbContext>(_ =>
-			TestApplicationDbContextFactory.CreateContext()
+		services.AddDbContext<IApplicationDbContext, TestApplicationDbContext>(o =>
+			o.UseInMemoryDatabase($"app-test-{Guid.NewGuid()}")
 		);
 
 		Provider = services.BuildServiceProvider();

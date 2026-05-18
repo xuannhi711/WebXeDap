@@ -3,7 +3,6 @@ using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Validators;
 using WebXeDap.Application.Tests.Extensions;
-using WebXeDap.Application.Tests.Fixtures;
 using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Tests.Catalog;

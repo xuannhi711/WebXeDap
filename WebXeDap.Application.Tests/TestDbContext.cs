@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests.Infrastructure;
+namespace WebXeDap.Application.Tests;
 
 public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
 {
@@ -22,17 +22,5 @@ public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
 	public override Task<int> SaveChangesAsync(CancellationToken cancellationToken)
 	{
 		return base.SaveChangesAsync(cancellationToken);
-	}
-}
-
-public static class TestApplicationDbContextFactory
-{
-	public static TestApplicationDbContext CreateContext()
-	{
-		var options = new DbContextOptionsBuilder<TestApplicationDbContext>()
-			.UseInMemoryDatabase($"test-db-{Guid.NewGuid()}")
-			.Options;
-
-		return new TestApplicationDbContext(options);
 	}
 }
