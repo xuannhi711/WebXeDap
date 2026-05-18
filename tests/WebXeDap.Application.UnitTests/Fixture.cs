@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebXeDap.Application.Contracts.Persistence;
 
-namespace WebXeDap.Application.Tests;
+namespace WebXeDap.Application.UnitTests;
 
 public sealed class ApplicationTestFixture
 {

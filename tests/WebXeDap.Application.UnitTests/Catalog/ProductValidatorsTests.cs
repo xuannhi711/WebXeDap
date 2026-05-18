@@ -2,11 +2,12 @@ using FluentValidation.TestHelper;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Validators;
-using WebXeDap.Application.Tests.Extensions;
+using WebXeDap.Application.UnitTests.Extensions;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests.Catalog;
+namespace WebXeDap.Application.UnitTests.Catalog;
 
+[Trait("Category", "Unit")]
 public sealed class CreateProductValidatorTests
 {
 	private readonly IApplicationDbContext _ctx;
@@ -57,6 +58,7 @@ public sealed class CreateProductValidatorTests
 	}
 }
 
+[Trait("Category", "Unit")]
 public sealed class UpdateProductValidatorTests
 {
 	private readonly IApplicationDbContext _ctx;
@@ -120,6 +122,7 @@ public sealed class UpdateProductValidatorTests
 	}
 }
 
+[Trait("Category", "Unit")]
 public sealed class DeleteProductValidatorTests
 {
 	private readonly IApplicationDbContext _ctx;

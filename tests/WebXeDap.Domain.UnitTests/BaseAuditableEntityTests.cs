@@ -1,7 +1,8 @@
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Domain.Tests;
+namespace WebXeDap.Domain.UnitTests;
 
+[Trait("Category", "Unit")]
 public sealed class BaseAuditableEntityTests
 {
 	private sealed class TestEntity : BaseAuditableEntity { }

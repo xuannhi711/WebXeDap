@@ -2,8 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Infrastructure.Tests;
+namespace WebXeDap.Infrastructure.UnitTests;
 
+[Trait("Category", "Unit")]
 public sealed class ApplicationDbContextIdentityTests
 {
 	private readonly IApplicationDbContext ctx;

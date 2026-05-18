@@ -1,7 +1,7 @@
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests.Extensions;
+namespace WebXeDap.Application.UnitTests.Extensions;
 
 public static class ProductCtxExtensions
 {

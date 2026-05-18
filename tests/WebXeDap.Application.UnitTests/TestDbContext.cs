@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests;
+namespace WebXeDap.Application.UnitTests;
 
 public sealed class TestApplicationDbContext : DbContext, IApplicationDbContext
 {

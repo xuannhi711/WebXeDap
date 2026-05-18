@@ -23,6 +23,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="../../WebXeDap.Application/WebXeDap.Application.csproj" />
+		<ProjectReference Include="../../WebXeDap.Application/WebXeDap.Application.csproj" />
 	</ItemGroup>
 </Project>

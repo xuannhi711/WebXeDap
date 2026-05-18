@@ -1,7 +1,8 @@
 using Util.Primitives.ResultType;
 
-namespace Util.Primitives.Tests;
+namespace Util.Primitives.UnitTests;
 
+[Trait("Category", "Unit")]
 public class CustomResultTypeTests
 {
 	[Fact]

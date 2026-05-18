@@ -1,11 +1,12 @@
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
-using WebXeDap.Application.Tests.Extensions;
+using WebXeDap.Application.UnitTests.Extensions;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests.Catalog;
+namespace WebXeDap.Application.UnitTests.Catalog;
 
+[Trait("Category", "Unit")]
 public class CategoryServiceCreateTests
 {
 	private readonly IApplicationDbContext _ctx;
@@ -34,6 +35,7 @@ public class CategoryServiceCreateTests
 	}
 }
 
+[Trait("Category", "Unit")]
 public class CategoryServiceReadTests
 {
 	private readonly IApplicationDbContext _ctx;
@@ -118,6 +120,7 @@ public class CategoryServiceReadTests
 	}
 }
 
+[Trait("Category", "Unit")]
 public class CategoryServiceUpdateTests
 {
 	private readonly IApplicationDbContext _ctx;
@@ -162,6 +165,7 @@ public class CategoryServiceUpdateTests
 	}
 }
 
+[Trait("Category", "Unit")]
 public class CategoryServiceDeleteTests
 {
 	private readonly IApplicationDbContext _ctx;

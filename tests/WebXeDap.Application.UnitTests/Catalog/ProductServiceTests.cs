@@ -3,11 +3,12 @@ using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Queries;
-using WebXeDap.Application.Tests.Extensions;
+using WebXeDap.Application.UnitTests.Extensions;
 using WebXeDap.Domain.Models;
 
-namespace WebXeDap.Application.Tests.Catalog;
+namespace WebXeDap.Application.UnitTests.Catalog;
 
+[Trait("Category", "Unit")]
 public class ProductServiceCreateTests
 {
 	private readonly IApplicationDbContext _ctx;

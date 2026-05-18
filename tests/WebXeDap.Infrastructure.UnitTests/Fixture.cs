@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebXeDap.Application.Contracts.Persistence;
 
-namespace WebXeDap.Infrastructure.Tests;
+namespace WebXeDap.Infrastructure.UnitTests;
 
 public sealed class InfraTestFixture
 {
