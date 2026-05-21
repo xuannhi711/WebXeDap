@@ -6,5 +6,5 @@ public class ProductImage
 	public required string Key { get; set; }
 	public int Order { get; set; }
 	public int ProductID { get; set; }
-	public required Product Product { get; set; }
+	public Product Product { get; set; } = null!;
 }

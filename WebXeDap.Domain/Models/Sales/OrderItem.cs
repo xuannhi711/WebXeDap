@@ -4,9 +4,9 @@ public class OrderItem
 {
 	public int ID { get; set; }
 	public int ProductID { get; set; }
-	public required Product Product { get; set; }
+	public Product Product { get; set; } = null!;
 	public int OrderID { get; set; }
-	public required Order Order { get; set; }
+	public Order Order { get; set; } = null!;
 	public int Quantity { get; set; }
 	public decimal UnitPrice { get; set; }
 }

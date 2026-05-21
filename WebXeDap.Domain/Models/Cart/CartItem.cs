@@ -4,8 +4,8 @@ public class CartItem
 {
 	public int ID { get; set; }
 	public int UserID { get; set; }
-	public required User User { get; set; }
+	public User User { get; set; } = null!;
 	public int ProductID { get; set; }
-	public required Product Product { get; set; }
+	public Product Product { get; set; } = null!;
 	public int Quantity { get; set; }
 }
