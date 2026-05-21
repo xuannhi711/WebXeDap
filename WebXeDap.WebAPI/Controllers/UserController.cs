@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using WebXeDap.Application.Contracts.Services;
-using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Domain.Models;
-using WebXeDap.WebAPI.Extensions;
 
 namespace WebXeDap.WebAPI.Controllers;
 
@@ -21,9 +18,36 @@ public sealed class UsersController : ControllerBase
 	}
 
 	[HttpGet("me")]
-	public async Task<ActionResult<User>> Me()
+	public async Task<ActionResult<UserProfileResponse>> Me()
 	{
 		var user = await userManager.GetUserAsync(User);
-		return Ok(user);
+		if (user is null)
+		{
+			return Unauthorized();
+		}
+		return Ok(ToProfileResponse(user));
 	}
+
+	[HttpGet("{id:int}")]
+	public async Task<ActionResult<UserProfileResponse>> GetById(int id)
+	{
+		var user = await userManager.FindByIdAsync(id.ToString());
+		if (user is null)
+		{
+			return NotFound(new { message = "User not found." });
+		}
+		return Ok(ToProfileResponse(user));
+	}
+
+	private static UserProfileResponse ToProfileResponse(User user)
+	{
+		return new UserProfileResponse(user.Id, user.Email, user.FullName, user.Avatar);
+	}
+
+	public sealed record UserProfileResponse(
+		int Id,
+		string? Email,
+		string? FullName,
+		string? Avatar
+	);
 }
