@@ -28,9 +28,11 @@ public partial class ProductMapper
 	}
 
 	[MapperIgnoreSource(nameof(Product.Categories))]
+	[MapperIgnoreSource(nameof(Product.SaleCampaigns))]
 	[MapProperty(nameof(Product.Images), nameof(SimpleProductResponse.Image))]
 	public partial SimpleProductResponse ToSimpleProductResponse(Product product);
 
+	[MapperIgnoreSource(nameof(Product.SaleCampaigns))]
 	public partial DetailedProductResponse ToDetailedProductResponse(Product product);
 
 	[MapperIgnoreTarget(nameof(Product.ID))]
@@ -39,11 +41,13 @@ public partial class ProductMapper
 	[MapperIgnoreTarget(nameof(Product.UpdatedAt))]
 	[MapperIgnoreTarget(nameof(Product.IsDeleted))]
 	[MapperIgnoreTarget(nameof(Product.DeletedAt))]
+	[MapperIgnoreTarget(nameof(Product.SaleCampaigns))]
 	[MapProperty(nameof(CreateProductCommand.CategoryIDs), nameof(Product.Categories))]
 	public partial Product ToProduct(CreateProductCommand request);
 
 	[MapperIgnoreTarget(nameof(Product.Images))]
 	[MapperIgnoreTarget(nameof(Product.ID))]
+	[MapperIgnoreTarget(nameof(Product.SaleCampaigns))]
 	[MapProperty(nameof(UpdateProductCommand.CategoryIDs), nameof(Product.Categories))]
 	public partial void PatchProduct(UpdateProductCommand cmd, [MappingTarget] Product product);
 }

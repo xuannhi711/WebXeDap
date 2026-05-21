@@ -15,9 +15,7 @@ public sealed class CreateSaleCampaignValidator : AbstractValidator<CreateSaleCa
 			.NotEmpty()
 			.WithMessage("Sale campaign name is required.");
 
-		RuleFor(cmd => cmd.DiscountType)
-			.IsInEnum()
-			.WithMessage("Discount type is invalid.");
+		RuleFor(cmd => cmd.DiscountType).IsInEnum().WithMessage("Discount type is invalid.");
 
 		RuleFor(cmd => cmd.DiscountValue)
 			.Cascade(CascadeMode.Stop)
@@ -71,9 +69,7 @@ public sealed class UpdateSaleCampaignValidator : AbstractValidator<UpdateSaleCa
 		RuleFor(cmd => cmd.DiscountValue)
 			.Cascade(CascadeMode.Stop)
 			.LessThanOrEqualTo(100)
-			.When(cmd =>
-				cmd.DiscountValue.HasValue && cmd.DiscountType == DiscountType.Percentage
-			)
+			.When(cmd => cmd.DiscountValue.HasValue && cmd.DiscountType == DiscountType.Percentage)
 			.WithMessage("Percentage discount must be <= 100.");
 
 		RuleFor(cmd => cmd.StartsAt)

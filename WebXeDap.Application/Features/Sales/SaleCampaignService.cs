@@ -33,13 +33,11 @@ public class SaleCampaignService : ISaleCampaignService
 	public async Task<List<SaleCampaignResponse>> ListAsync(bool activeOnly)
 	{
 		var now = DateTime.UtcNow;
-		IQueryable<SaleCampaign> query = ctx
-			.SaleCampaigns.AsNoTracking()
-			.Include(s => s.Products);
+		IQueryable<SaleCampaign> query = ctx.SaleCampaigns.AsNoTracking().Include(s => s.Products);
 
 		if (activeOnly)
 		{
-			query = query.Where(s => s.IsActive(now));
+			query = query.Where(s => !s.IsDeleted && s.StartsAt <= now && s.EndsAt >= now);
 		}
 
 		var campaigns = await query.OrderByDescending(s => s.StartsAt).ToListAsync(default);
@@ -114,13 +112,18 @@ public class SaleCampaignService : ISaleCampaignService
 
 	public async Task<Result> DeleteAsync(int id)
 	{
-		var campaign = await ctx.SaleCampaigns.FindAsync(id);
+		var campaign = await ctx.SaleCampaigns.FirstOrDefaultAsync(
+			s => s.ID == id && !s.IsDeleted,
+			default
+		);
 		if (campaign is null)
 		{
 			return new NotFoundError("Sale campaign not found.");
 		}
 
-		ctx.SaleCampaigns.Remove(campaign);
+		// ctx.SaleCampaigns.Remove(campaign);
+		campaign.MarkAsDeleted();
+		ctx.SaleCampaigns.Update(campaign);
 		var res = await ctx.SaveChangesAsync(default);
 		if (res == 0)
 		{

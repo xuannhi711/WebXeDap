@@ -29,7 +29,6 @@ public sealed class ProductPricingTests
 				DiscountValue = 10,
 				StartsAt = now.AddDays(-1),
 				EndsAt = now.AddDays(1),
-				IsEnabled = true,
 			}
 		);
 		product.SaleCampaigns.Add(
@@ -40,7 +39,6 @@ public sealed class ProductPricingTests
 				DiscountValue = 15,
 				StartsAt = now.AddDays(-1),
 				EndsAt = now.AddDays(1),
-				IsEnabled = true,
 			}
 		);
 
@@ -62,7 +60,6 @@ public sealed class ProductPricingTests
 				DiscountValue = 25,
 				StartsAt = now.AddDays(-10),
 				EndsAt = now.AddDays(-5),
-				IsEnabled = true,
 			}
 		);
 
@@ -84,7 +81,6 @@ public sealed class ProductPricingTests
 				DiscountValue = 50,
 				StartsAt = now.AddDays(-1),
 				EndsAt = now.AddDays(1),
-				IsEnabled = true,
 			}
 		);
 
