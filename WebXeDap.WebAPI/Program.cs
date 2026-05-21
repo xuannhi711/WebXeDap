@@ -23,8 +23,22 @@ builder
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy(
+		"frontend",
+		policy =>
+		{
+			policy
+				.WithOrigins("http://localhost:5173")
+				.AllowAnyHeader()
+				.AllowAnyMethod()
+				.AllowCredentials();
+		}
+	);
+});
+
 // required for MapIdentityApi
-builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -37,6 +51,7 @@ if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
 	app.UseSwaggerUI();
+	app.UseCors("frontend");
 }
 
 if (!app.Environment.IsEnvironment("Testing"))

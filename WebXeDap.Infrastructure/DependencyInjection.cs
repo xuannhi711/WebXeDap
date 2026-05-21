@@ -36,14 +36,13 @@ public static class DependencyInjection
 		};
 
 		services
-			.AddIdentityCore<User>(options =>
+			.AddIdentity<User, IdentityRole<int>>(options =>
 			{
 				options.User.RequireUniqueEmail = true;
 			})
-			.AddRoles<IdentityRole<int>>()
-			.AddSignInManager()
 			.AddEntityFrameworkStores<ApplicationDbContext>()
-			.AddDefaultTokenProviders();
+			.AddDefaultTokenProviders()
+			.AddApiEndpoints();
 
 		services.AddScoped<IApplicationDbContext>(sp =>
 			sp.GetRequiredService<ApplicationDbContext>()
