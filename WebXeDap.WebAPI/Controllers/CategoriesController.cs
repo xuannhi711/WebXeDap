@@ -6,7 +6,7 @@ using WebXeDap.WebAPI.Extensions;
 namespace WebXeDap.WebAPI.Controllers;
 
 [ApiController]
-[Route("catalog/categories")]
+[Route("api/categories")]
 public sealed class CategoriesController : ControllerBase
 {
 	private readonly ICategoryService _categories;
@@ -33,38 +33,34 @@ public sealed class CategoriesController : ControllerBase
 	[HttpGet("{id:int}")]
 	public async Task<ActionResult<CategoryResponse>> GetById(int id)
 	{
-		var category = await _categories.GetByIDAsync(id);
-		return this.ToActionResult(category);
+		var res = await _categories.GetByIDAsync(id);
+		return res.Match(Ok, this.MatchErrorResult);
 	}
 
 	[HttpPost]
 	public async Task<ActionResult<CategoryResponse>> Create(
-		[FromBody] CreateCategoryRequest request
+		[FromBody] CreateCategoryCommand request
 	)
 	{
-		var result = await _categories.CreateAsync(
-			new CreateCategoryCommand(request.Name, request.ParentCategoryID)
-		);
-		return this.ToActionResult(result);
+		var res = await _categories.CreateAsync(request);
+		return res.Match(val => Created(nameof(GetById), val), this.MatchErrorResult);
 	}
 
 	[HttpPut("{id:int}")]
 	public async Task<ActionResult<CategoryResponse>> Update(
 		int id,
-		[FromBody] UpdateCategoryRequest request
+		[FromBody] UpdateCategoryCommand request
 	)
 	{
-		var result = await _categories.UpdateAsync(
-			new UpdateCategoryCommand(id, request.Name, request.ParentCategoryID)
-		);
-		return this.ToActionResult(result);
+		var result = await _categories.UpdateAsync(id, request);
+		return result.Match(Ok, this.MatchErrorResult);
 	}
 
 	[HttpDelete("{id:int}")]
 	public async Task<IActionResult> Delete(int id)
 	{
 		var result = await _categories.DeleteAsync(id);
-		return this.ToActionResult(result);
+		return result.Match(_ => NoContent(), this.MatchErrorResult);
 	}
 
 	public sealed record CreateCategoryRequest(string Name, int? ParentCategoryID);

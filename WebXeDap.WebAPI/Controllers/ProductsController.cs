@@ -43,39 +43,20 @@ public sealed class ProductsController : ControllerBase
 
 	[HttpPost]
 	public async Task<ActionResult<SimpleProductResponse>> Create(
-		[FromBody] CreateProductRequest request
+		[FromBody] CreateProductCommand cmd
 	)
 	{
-		var result = await productService.CreateAsync(
-			new CreateProductCommand(
-				request.Name,
-				request.Description,
-				request.Price,
-				request.Quantity,
-				request.CategoryIDs,
-				request.CurrencySymbol
-			)
-		);
+		var result = await productService.CreateAsync(cmd);
 		return result.Match(val => Created(nameof(GetByID), val), this.MatchErrorResult);
 	}
 
 	[HttpPut("{id:int}")]
 	public async Task<ActionResult<DetailedProductResponse>> Update(
 		int id,
-		[FromBody] UpdateProductRequest request
+		[FromBody] UpdateProductCommand cmd
 	)
 	{
-		var result = await productService.UpdateAsync(
-			new UpdateProductCommand(
-				id,
-				request.Name,
-				request.Description,
-				request.Price,
-				request.Quantity,
-				request.CategoryIDs,
-				request.CurrencySymbol
-			)
-		);
+		var result = await productService.UpdateAsync(id, cmd);
 		return result.Match(Ok, this.MatchErrorResult);
 	}
 
@@ -85,22 +66,4 @@ public sealed class ProductsController : ControllerBase
 		var result = await productService.DeleteAsync(id);
 		return result.Match(_ => NoContent(), this.MatchErrorResult);
 	}
-
-	public sealed record CreateProductRequest(
-		string Name,
-		string? Description,
-		decimal Price,
-		int Quantity,
-		int[]? CategoryIDs,
-		string CurrencySymbol = "VNĐ"
-	);
-
-	public sealed record UpdateProductRequest(
-		string Name,
-		string? Description,
-		decimal Price,
-		int Quantity,
-		int[]? CategoryIDs,
-		string CurrencySymbol = "VNĐ"
-	);
 }
