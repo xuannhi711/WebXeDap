@@ -29,7 +29,7 @@ public sealed class ApplicationDbContextIdentityTests
 		ctx.Users.Add(user);
 		await ctx.SaveChangesAsync(CancellationToken.None);
 
-		var saved = await ctx.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == 123);
+		var saved = await ctx.Users.FindAsync(123);
 
 		Assert.NotNull(saved);
 		Assert.Equal("admin", saved!.UserName);

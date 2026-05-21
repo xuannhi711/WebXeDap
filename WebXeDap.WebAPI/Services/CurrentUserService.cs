@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Util.Primitives.ResultType;
 using WebXeDap.Application.Contracts;
 
 namespace WebXeDap.WebAPI.Services;
@@ -12,18 +13,18 @@ public sealed class CurrentUserService : ICurrentUserService
 		_httpContextAccessor = httpContextAccessor;
 	}
 
-	public int? UserId
+	public Result<int> UserID
 	{
 		get
 		{
-			var user = _httpContextAccessor.HttpContext?.User;
-			if (user is null)
+			var userIDStr = _httpContextAccessor
+				.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)
+				?.Value;
+			return int.TryParse(userIDStr, out var userID) switch
 			{
-				return null;
-			}
-
-			var nameIdentifier = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-			return int.TryParse(nameIdentifier, out var userId) ? userId : null;
+				true => userID,
+				false => new NotFoundError("User not found."),
+			};
 		}
 	}
 }

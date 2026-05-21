@@ -19,4 +19,14 @@ public static class CategoryCtxExtensions
 		await ctx.Categories.AddRangeAsync(categories);
 		await ctx.SaveChangesAsync(default);
 	}
+
+	public static async Task<Category> AddRandomCategoryAsync(this IApplicationDbContext ctx)
+	{
+		var category = new Category
+		{
+			Name = Guid.NewGuid().ToString(),
+		};
+		await ctx.AddCategoryAsync(category);
+		return category;
+	}
 }

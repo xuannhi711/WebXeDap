@@ -1,3 +1,4 @@
+using Util.Primitives.ResultType;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
@@ -27,11 +28,23 @@ public class CategoryServiceCreateTests
 		var request = new CreateCategoryCommand(Name: "Tires", ParentCategoryID: parentCategory.ID);
 
 		var result = await _service.CreateAsync(request);
+		Assert.True(result.TryPickValue(out var created));
+		Assert.NotEqual(0, created.ID);
+		Assert.Equal(request.Name, created.Name);
+		Assert.Equal(parentCategory.ID, created.ParentCategoryID);
+	}
 
-		Assert.NotNull(result);
-		Assert.NotEqual(0, result.ID);
-		Assert.Equal(request.Name, result.Name);
-		Assert.Equal(parentCategory.ID, result.ParentCategoryID);
+	[Fact]
+	public async Task CreateAsync_Fail_WhenRequestIsInvalid()
+	{
+		var cmd = new CreateCategoryCommand(Name: "", ParentCategoryID: Random.Shared.Next());
+		var result = await _service.CreateAsync(cmd);
+		Assert.True(result.TryPickError(out var error));
+		var validationError = Assert.IsType<ValidationError>(error);
+		Assert.True(validationError.Errors.ContainsKey(nameof(CreateCategoryCommand.Name)));
+		Assert.True(
+			validationError.Errors.ContainsKey(nameof(CreateCategoryCommand.ParentCategoryID))
+		);
 	}
 }
 
@@ -55,19 +68,18 @@ public class CategoryServiceReadTests
 		await _ctx.AddCategoryAsync(category);
 
 		var result = await _service.GetByIDAsync(category.ID);
-
-		Assert.NotNull(result);
-		Assert.Equal(category.ID, result.ID);
-		Assert.Equal(category.Name, result.Name);
-		Assert.Equal(category.ParentCategoryID, result.ParentCategoryID);
+		Assert.True(result.TryPickValue(out var found));
+		Assert.Equal(category.ID, found.ID);
+		Assert.Equal(category.Name, found.Name);
+		Assert.Equal(category.ParentCategoryID, found.ParentCategoryID);
 	}
 
 	[Fact]
 	public async Task GetByIDAsync_Fail_WhenCategoryDoesNotExist()
 	{
 		var result = await _service.GetByIDAsync(Random.Shared.Next());
-
-		Assert.Null(result);
+		Assert.True(result.TryPickError(out var error));
+		Assert.IsType<NotFoundError>(error);
 	}
 
 	[Fact]
@@ -100,7 +112,7 @@ public class CategoryServiceReadTests
 		await _ctx.AddCategoryAsync(grandchild1);
 
 		var resp = await _service.ListHierarchyAsync();
-		var rootResp = resp.FirstOrDefault(c => c.ID == root.ID);
+		var rootResp = resp.Find(c => c.ID == root.ID);
 		Assert.NotNull(rootResp);
 
 		Assert.Collection(
@@ -145,11 +157,10 @@ public class CategoryServiceUpdateTests
 			ParentCategoryID: null
 		);
 		var result = await _service.UpdateAsync(req);
-
-		Assert.NotNull(result);
-		Assert.Equal(req.ID, result.ID);
-		Assert.Equal(req.Name, result.Name);
-		Assert.Equal(req.ParentCategoryID, result.ParentCategoryID);
+		Assert.True(result.TryPickValue(out var updated));
+		Assert.Equal(req.ID, updated.ID);
+		Assert.Equal(req.Name, updated.Name);
+		Assert.Equal(req.ParentCategoryID, updated.ParentCategoryID);
 	}
 
 	[Fact]
@@ -161,7 +172,8 @@ public class CategoryServiceUpdateTests
 			ParentCategoryID: null
 		);
 		var result = await _service.UpdateAsync(req);
-		Assert.Null(result);
+		Assert.True(result.TryPickError(out var error));
+		Assert.IsType<ValidationError>(error);
 	}
 }
 
@@ -185,8 +197,7 @@ public class CategoryServiceDeleteTests
 		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
 
 		var result = await _service.DeleteAsync(EXISTING_CATEGORY.ID);
-
-		Assert.True(result);
+		Assert.True(result.IsOk);
 		var deletedCategory = await _ctx.Categories.FindAsync(EXISTING_CATEGORY.ID);
 		Assert.Null(deletedCategory);
 	}
@@ -195,6 +206,7 @@ public class CategoryServiceDeleteTests
 	public async Task DeleteAsync_Fail_When_CategoryDoesNotExist()
 	{
 		var result = await _service.DeleteAsync(Random.Shared.Next());
-		Assert.False(result);
+		Assert.True(result.TryPickError(out var error));
+		Assert.IsType<ValidationError>(error);
 	}
 }

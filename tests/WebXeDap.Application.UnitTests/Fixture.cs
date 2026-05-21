@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using WebXeDap.Application.Contracts;
 using WebXeDap.Application.Contracts.Persistence;
 
 namespace WebXeDap.Application.UnitTests;
@@ -13,6 +14,11 @@ public sealed class ApplicationTestFixture
 		var services = new ServiceCollection();
 
 		services.AddApplication();
+
+		services.AddScoped<TestCurrentUserService>();
+		services.AddScoped<ICurrentUserService>(sp =>
+			sp.GetRequiredService<TestCurrentUserService>()
+		);
 
 		services.AddDbContext<IApplicationDbContext, TestApplicationDbContext>(o =>
 			o.UseInMemoryDatabase($"app-test-{Guid.NewGuid()}")

@@ -14,7 +14,6 @@ builder.Services.AddInfrastructure();
 builder.Services.AddApplication();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddTransient<IEmailSender<User>, NoOpEmailSender>();
 
 builder
 	.Services.AddAuthorizationBuilder()
@@ -25,7 +24,7 @@ builder
 builder.Services.AddControllers();
 
 // required for MapIdentityApi
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.BearerScheme);
+builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -40,7 +39,10 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+	app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -48,3 +50,5 @@ app.MapGroup("/api/auth").MapIdentityApi<User>();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
