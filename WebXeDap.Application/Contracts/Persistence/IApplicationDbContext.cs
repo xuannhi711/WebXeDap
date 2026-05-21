@@ -11,6 +11,7 @@ public interface IApplicationDbContext
 	DbSet<CartItem> CartItems { get; }
 	DbSet<Order> Orders { get; }
 	DbSet<OrderItem> OrderItems { get; }
+	DbSet<SaleCampaign> SaleCampaigns { get; }
 	DbSet<User> Users { get; }
 	DbSet<Notification> Notifications { get; }
 	DbSet<Config> Configs { get; }
