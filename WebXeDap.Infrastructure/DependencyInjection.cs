@@ -41,6 +41,7 @@ public static class DependencyInjection
 				options.User.RequireUniqueEmail = true;
 			})
 			.AddRoles<IdentityRole<int>>()
+			.AddSignInManager()
 			.AddEntityFrameworkStores<ApplicationDbContext>()
 			.AddDefaultTokenProviders();
 
@@ -49,7 +50,7 @@ public static class DependencyInjection
 		);
 
 		services.AddSingleton(EmailOptions.LoadFromEnvironment());
-		services.AddScoped<IEmailSender<User>, EmailService>();
+		services.AddTransient<IEmailSender<User>, EmailService>();
 
 		return services;
 	}
