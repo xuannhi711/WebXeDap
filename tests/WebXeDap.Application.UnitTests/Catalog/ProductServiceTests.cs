@@ -141,7 +141,12 @@ public class ProductServiceFilterTests
 		await ctx.AddProductAsync(helmet);
 
 		var result = await service.FilterAsync(
-			new FilterProductCommand(Keyword: "Bike", CategoryIDs: null, MinPrice: null, MaxPrice: null),
+			new FilterProductCommand(
+				Keyword: "Bike",
+				CategoryIDs: null,
+				MinPrice: null,
+				MaxPrice: null
+			),
 			page: 1,
 			size: 10
 		);
@@ -282,7 +287,6 @@ public class ProductServiceUpdateTests
 		await ctx.AddProductAsync(product);
 
 		var request = new UpdateProductCommand(
-			ID: product.ID,
 			Name: "New Name",
 			Description: "New Desc",
 			Price: 250,
@@ -291,18 +295,18 @@ public class ProductServiceUpdateTests
 			CurrencySymbol: "$"
 		);
 
-		var result = await service.UpdateAsync(request);
+		var result = await service.UpdateAsync(product.ID, request);
 		Assert.True(result.TryPickValue(out var updated));
-		Assert.Equal(request.ID, updated.ID);
+		Assert.Equal(product.ID, updated.ID);
 		Assert.Equal(request.Name, updated.Name);
 		Assert.Equal(request.Description, updated.Description);
 		Assert.Equal(request.Price, updated.Price);
 		Assert.Equal(request.Quantity, updated.Quantity);
 		Assert.Equal(request.CurrencySymbol, updated.CurrencySymbol);
 
-		var stored = await ctx.Products.Include(p => p.Categories).FirstAsync(
-			p => p.ID == product.ID
-		);
+		var stored = await ctx
+			.Products.Include(p => p.Categories)
+			.FirstAsync(p => p.ID == product.ID);
 		Assert.Equal(request.Name, stored.Name);
 		Assert.Equal(request.Price, stored.Price);
 		Assert.Equal(request.Quantity, stored.Quantity);
@@ -314,7 +318,6 @@ public class ProductServiceUpdateTests
 	public async Task UpdateAsync_Fail_WhenIDIsInvalid()
 	{
 		var request = new UpdateProductCommand(
-			ID: Random.Shared.Next(),
 			Name: "Updated",
 			Description: null,
 			Price: 10,
@@ -323,10 +326,10 @@ public class ProductServiceUpdateTests
 			CurrencySymbol: null
 		);
 
-		var result = await service.UpdateAsync(request);
+		var result = await service.UpdateAsync(Random.Shared.Next(), request);
 		Assert.True(result.TryPickError(out var error));
-		var validationError = Assert.IsType<ValidationError>(error);
-		Assert.True(validationError.Errors.ContainsKey(nameof(UpdateProductCommand.ID)));
+		var notFoundErr = Assert.IsType<NotFoundError>(error);
+		Assert.Contains("Product not found", notFoundErr.Message);
 	}
 }
 
@@ -365,6 +368,6 @@ public class ProductServiceDeleteTests
 	{
 		var result = await service.DeleteAsync(Random.Shared.Next());
 		Assert.True(result.TryPickError(out var error));
-		Assert.IsType<ValidationError>(error);
+		Assert.IsType<NotFoundError>(error);
 	}
 }

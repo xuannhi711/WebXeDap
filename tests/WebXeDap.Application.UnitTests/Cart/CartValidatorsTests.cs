@@ -83,7 +83,7 @@ public sealed class UpdateCartItemValidatorTests
 		};
 		await ctx.AddCartItemAsync(toUpdateCartItem);
 
-		var req = new UpdateCartItemCommand(CartItemID: toUpdateCartItem.ID, Quantity: 233);
+		var req = new UpdateCartItemCommand(Quantity: 233);
 
 		var result = await validator.TestValidateAsync(req);
 
@@ -96,60 +96,10 @@ public sealed class UpdateCartItemValidatorTests
 		var user = await ctx.AddRandomUserAsync();
 		currentUser.UserID = user.Id;
 
-		var cmd = new UpdateCartItemCommand(CartItemID: Random.Shared.Next(), Quantity: 0);
+		var cmd = new UpdateCartItemCommand(Quantity: 0);
 		var result = await validator.TestValidateAsync(cmd);
 
 		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(r => r.CartItemID);
 		result.ShouldHaveValidationErrorFor(r => r.Quantity);
-	}
-}
-
-[Trait("Category", "Unit")]
-public sealed class DeleteCartItemValidatorTests
-{
-	private readonly DeleteCartItemValidator validator;
-	private readonly IApplicationDbContext ctx;
-	private readonly TestCurrentUserService currentUser;
-
-	public DeleteCartItemValidatorTests()
-	{
-		var fixture = new ApplicationTestFixture();
-		ctx = fixture.GetService<IApplicationDbContext>();
-		currentUser = fixture.GetService<TestCurrentUserService>();
-		validator = fixture.GetService<DeleteCartItemValidator>();
-	}
-
-	[Fact]
-	public async Task DeleteCartItemValidator_Pass_WhenItemExists()
-	{
-		var user = await ctx.AddRandomUserAsync();
-		currentUser.UserID = user.Id;
-		var product = await ctx.AddRandomProductAsync();
-		var cartItem = new CartItem
-		{
-			UserID = user.Id,
-			User = user,
-			ProductID = product.ID,
-			Product = product,
-			Quantity = 1,
-		};
-		await ctx.AddCartItemAsync(cartItem);
-
-		var result = await validator.TestValidateAsync(cartItem.ID);
-
-		result.ShouldNotHaveAnyValidationErrors();
-	}
-
-	[Fact]
-	public async Task DeleteCartItemValidator_Fail_WhenItemMissing()
-	{
-		var user = await ctx.AddRandomUserAsync();
-		currentUser.UserID = user.Id;
-
-		var result = await validator.TestValidateAsync(Random.Shared.Next());
-
-		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(r => r);
 	}
 }

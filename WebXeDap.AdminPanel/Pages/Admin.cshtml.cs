@@ -4,8 +4,5 @@ namespace WebXeDap.AdminPanel.Pages;
 
 public class EasyDataModel : PageModel
 {
-    public void OnGet()
-    {
-
-    }
+	public void OnGet() { }
 }

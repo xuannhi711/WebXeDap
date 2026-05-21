@@ -154,8 +154,8 @@ public class CartServiceUpdateTests
 		};
 		await ctx.AddCartItemAsync(cartItem);
 
-		var cmd = new UpdateCartItemCommand(cartItem.ID, 4);
-		var result = await service.UpdateAsync(cmd);
+		var cmd = new UpdateCartItemCommand(Quantity: 4);
+		var result = await service.UpdateAsync(cartItem.ID, cmd);
 
 		Assert.True(result.TryPickValue(out var item));
 		Assert.Equal(cartItem.ID, item.ID);

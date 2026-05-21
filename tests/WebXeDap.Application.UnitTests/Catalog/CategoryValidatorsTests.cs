@@ -75,7 +75,6 @@ public sealed class UpdateCategoryValidatorTests
 		Assert.NotEqual(toUpdateCategory.ID, toBeParentCategory.ID);
 
 		var req = new UpdateCategoryCommand(
-			ID: toUpdateCategory.ID,
 			Name: "Updated Category",
 			ParentCategoryID: toBeParentCategory.ID
 		);
@@ -83,11 +82,7 @@ public sealed class UpdateCategoryValidatorTests
 		var result = await _validator.TestValidateAsync(req);
 		result.ShouldNotHaveAnyValidationErrors();
 
-		req = new UpdateCategoryCommand(
-			ID: toUpdateCategory.ID,
-			Name: "Updated Category",
-			ParentCategoryID: null
-		);
+		req = new UpdateCategoryCommand(Name: "Updated Category", ParentCategoryID: null);
 		result = await _validator.TestValidateAsync(req);
 		result.ShouldNotHaveAnyValidationErrors();
 	}
@@ -95,64 +90,17 @@ public sealed class UpdateCategoryValidatorTests
 	[Fact]
 	public async Task UpdateCategoryValidator_Fail_WhenRequestIsInvalid()
 	{
-		var req = new UpdateCategoryCommand(
-			ID: Random.Shared.Next(),
-			Name: "",
-			ParentCategoryID: Random.Shared.Next()
-		);
+		var req = new UpdateCategoryCommand(Name: "", ParentCategoryID: Random.Shared.Next());
 
 		var result = await _validator.TestValidateAsync(req);
 		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(c => c.ID);
 		result.ShouldHaveValidationErrorFor(c => c.Name);
 		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
 
 		var duplicateID = Random.Shared.Next();
-		req = new UpdateCategoryCommand(
-			ID: duplicateID,
-			Name: "Valid Name",
-			ParentCategoryID: duplicateID
-		);
+		req = new UpdateCategoryCommand(Name: "Valid Name", ParentCategoryID: duplicateID);
 		result = await _validator.TestValidateAsync(req);
 		result.ShouldHaveValidationErrors();
 		result.ShouldHaveValidationErrorFor(c => c.ParentCategoryID);
-	}
-}
-
-[Trait("Category", "Unit")]
-public sealed class DeleteCategoryValidatorTests
-{
-	private readonly DeleteCategoryValidator _validator;
-	private readonly IApplicationDbContext _ctx;
-
-	public DeleteCategoryValidatorTests()
-	{
-		var fixture = new ApplicationTestFixture();
-		_ctx = fixture.GetService<IApplicationDbContext>();
-		_validator = fixture.GetService<DeleteCategoryValidator>();
-	}
-
-	[Fact]
-	public async Task DeleteCategoryValidator_Fail_When_ID_Does_Not_Exist()
-	{
-		var nonExistCategoryID = Random.Shared.Next();
-		var result = await _validator.TestValidateAsync(nonExistCategoryID);
-
-		result.ShouldHaveValidationErrors();
-	}
-
-	[Fact]
-	public async Task DeleteCategoryValidator_Pass_When_ID_Exists()
-	{
-		var existingCategory = new Category
-		{
-			ID = Random.Shared.Next(),
-			Name = "Existing Category",
-		};
-		await _ctx.AddCategoryAsync(existingCategory);
-
-		var result = await _validator.TestValidateAsync(existingCategory.ID);
-
-		result.ShouldNotHaveAnyValidationErrors();
 	}
 }

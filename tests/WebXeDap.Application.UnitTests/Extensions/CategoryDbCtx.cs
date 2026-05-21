@@ -22,10 +22,7 @@ public static class CategoryCtxExtensions
 
 	public static async Task<Category> AddRandomCategoryAsync(this IApplicationDbContext ctx)
 	{
-		var category = new Category
-		{
-			Name = Guid.NewGuid().ToString(),
-		};
+		var category = new Category { Name = Guid.NewGuid().ToString() };
 		await ctx.AddCategoryAsync(category);
 		return category;
 	}

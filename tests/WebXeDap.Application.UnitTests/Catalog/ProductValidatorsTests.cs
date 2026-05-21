@@ -74,19 +74,11 @@ public sealed class UpdateProductValidatorTests
 	[Fact]
 	public async Task UpdateProductValidator_Pass_WhenRequestIsValid()
 	{
-		var product = new Product
-		{
-			Name = "Existing Product",
-			Price = 10,
-			Quantity = 5,
-		};
-		await _ctx.AddProductAsync(product);
 		var cat1 = new Category { Name = "Category 1" };
 		var cat2 = new Category { Name = "Category 2" };
 		await _ctx.AddCategoriesAsync([cat1, cat2]);
 
 		var request = new UpdateProductCommand(
-			ID: product.ID,
 			Name: "Updated Product",
 			Description: "An updated product description",
 			Price: 20,
@@ -103,7 +95,6 @@ public sealed class UpdateProductValidatorTests
 	public async Task UpdateProductValidator_Fail_WhenRequestIsInvalid()
 	{
 		var request = new UpdateProductCommand(
-			ID: Random.Shared.Next(),
 			Name: "",
 			Description: null,
 			Price: -1,
@@ -114,49 +105,9 @@ public sealed class UpdateProductValidatorTests
 		var result = await _validator.TestValidateAsync(request);
 
 		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(p => p.ID);
 		result.ShouldHaveValidationErrorFor(p => p.Name);
 		result.ShouldHaveValidationErrorFor(p => p.Price);
 		result.ShouldHaveValidationErrorFor(p => p.Quantity);
 		result.ShouldHaveValidationErrorFor(p => p.CategoryIDs);
-	}
-}
-
-[Trait("Category", "Unit")]
-public sealed class DeleteProductValidatorTests
-{
-	private readonly IApplicationDbContext _ctx;
-	private readonly DeleteProductValidator _validator;
-
-	public DeleteProductValidatorTests()
-	{
-		var fixture = new ApplicationTestFixture();
-		_ctx = fixture.GetService<IApplicationDbContext>();
-		_validator = fixture.GetService<DeleteProductValidator>();
-	}
-
-	[Fact]
-	public async Task DeleteProductValidator_Pass_WhenRequestIsValid()
-	{
-		var product = new Product
-		{
-			Name = "Existing Product",
-			Price = 10,
-			Quantity = 5,
-		};
-		await _ctx.AddProductAsync(product);
-
-		var result = await _validator.TestValidateAsync(product.ID);
-
-		result.ShouldNotHaveAnyValidationErrors();
-	}
-
-	[Fact]
-	public async Task DeleteProductValidator_Fail_WhenRequestIsInvalid()
-	{
-		var result = await _validator.TestValidateAsync(Random.Shared.Next());
-
-		result.ShouldHaveValidationErrors();
-		result.ShouldHaveValidationErrorFor(r => r);
 	}
 }

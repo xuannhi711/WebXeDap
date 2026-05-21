@@ -151,14 +151,10 @@ public class CategoryServiceUpdateTests
 		var EXISTING_CATEGORY = new Category { Name = "Existing Category" };
 		await _ctx.AddCategoryAsync(EXISTING_CATEGORY);
 
-		var req = new UpdateCategoryCommand(
-			ID: EXISTING_CATEGORY.ID,
-			Name: "Updated Category",
-			ParentCategoryID: null
-		);
-		var result = await _service.UpdateAsync(req);
+		var req = new UpdateCategoryCommand(Name: "Updated Category", ParentCategoryID: null);
+		var result = await _service.UpdateAsync(EXISTING_CATEGORY.ID, req);
 		Assert.True(result.TryPickValue(out var updated));
-		Assert.Equal(req.ID, updated.ID);
+		Assert.Equal(EXISTING_CATEGORY.ID, updated.ID);
 		Assert.Equal(req.Name, updated.Name);
 		Assert.Equal(req.ParentCategoryID, updated.ParentCategoryID);
 	}
@@ -166,14 +162,10 @@ public class CategoryServiceUpdateTests
 	[Fact]
 	public async Task UpdateAsync_Fail_WhenIDIsInvalid()
 	{
-		var req = new UpdateCategoryCommand(
-			ID: Random.Shared.Next(),
-			Name: "Updated Category",
-			ParentCategoryID: null
-		);
-		var result = await _service.UpdateAsync(req);
+		var req = new UpdateCategoryCommand(Name: "Updated Category", ParentCategoryID: null);
+		var result = await _service.UpdateAsync(Random.Shared.Next(), req);
 		Assert.True(result.TryPickError(out var error));
-		Assert.IsType<ValidationError>(error);
+		Assert.IsType<NotFoundError>(error);
 	}
 }
 
@@ -207,6 +199,6 @@ public class CategoryServiceDeleteTests
 	{
 		var result = await _service.DeleteAsync(Random.Shared.Next());
 		Assert.True(result.TryPickError(out var error));
-		Assert.IsType<ValidationError>(error);
+		Assert.IsType<NotFoundError>(error);
 	}
 }
