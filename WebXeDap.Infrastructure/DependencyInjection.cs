@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using WebXeDap.Application.Contracts;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Domain.Models;
 using WebXeDap.Infrastructure.Enums;
@@ -50,6 +51,7 @@ public static class DependencyInjection
 
 		services.AddSingleton(EmailOptions.LoadFromEnvironment());
 		services.AddTransient<IEmailSender<User>, EmailService>();
+		services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 		return services;
 	}

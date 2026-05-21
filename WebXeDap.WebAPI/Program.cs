@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Identity;
 using WebXeDap.Application;
-using WebXeDap.Application.Contracts;
 using WebXeDap.Domain.Constants;
 using WebXeDap.Domain.Models;
 using WebXeDap.Infrastructure;
-using WebXeDap.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddInfrastructure();
 builder.Services.AddApplication();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder
 	.Services.AddAuthorizationBuilder()

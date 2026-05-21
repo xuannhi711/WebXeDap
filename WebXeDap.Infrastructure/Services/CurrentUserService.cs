@@ -1,8 +1,9 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Util.Primitives.ResultType;
 using WebXeDap.Application.Contracts;
 
-namespace WebXeDap.WebAPI.Services;
+namespace WebXeDap.Infrastructure.Services;
 
 public sealed class CurrentUserService : ICurrentUserService
 {
