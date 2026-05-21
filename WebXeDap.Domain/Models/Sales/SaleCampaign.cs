@@ -11,12 +11,11 @@ public class SaleCampaign : BaseAuditableEntity
 	public decimal DiscountValue { get; set; }
 	public DateTime StartsAt { get; set; }
 	public DateTime EndsAt { get; set; }
-	public bool IsEnabled { get; set; } = true;
 	public ICollection<Product> Products { get; set; } = [];
 
 	public bool IsActive(DateTime now)
 	{
-		return IsEnabled && StartsAt <= now && EndsAt >= now;
+		return !IsDeleted && StartsAt <= now && EndsAt >= now;
 	}
 
 	public decimal GetDiscountAmount(decimal basePrice)
