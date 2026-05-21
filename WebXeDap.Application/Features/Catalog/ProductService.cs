@@ -12,11 +12,11 @@ namespace WebXeDap.Application.Features.Catalog;
 
 public class ProductService : IProductService
 {
-	private readonly IApplicationDbContext _ctx;
-	private readonly ProductMapper _mapper;
-	private readonly CreateProductValidator _createProductValidator;
-	private readonly UpdateProductValidator _updateProductValidator;
-	private readonly DeleteProductValidator _deleteProductValidator;
+	private readonly IApplicationDbContext ctx;
+	private readonly ProductMapper mapper;
+	private readonly CreateProductValidator createProductValidator;
+	private readonly UpdateProductValidator updateProductValidator;
+	private readonly DeleteProductValidator deleteProductValidator;
 
 	public ProductService(
 		IApplicationDbContext ctx,
@@ -26,60 +26,50 @@ public class ProductService : IProductService
 		DeleteProductValidator deleteProductValidator
 	)
 	{
-		_ctx = ctx;
-		_mapper = mapper;
-		_createProductValidator = createProductValidator;
-		_updateProductValidator = updateProductValidator;
-		_deleteProductValidator = deleteProductValidator;
+		this.ctx = ctx;
+		this.mapper = mapper;
+		this.createProductValidator = createProductValidator;
+		this.updateProductValidator = updateProductValidator;
+		this.deleteProductValidator = deleteProductValidator;
 	}
 
 	public Task<int> CountAsync(FilterProductCommand cmd)
 	{
-		return _ctx.Products.Filter(cmd).CountAsync(default);
+		return ctx.Products.Filter(cmd).CountAsync(default);
 	}
 
 	public async Task<Result<SimpleProductResponse>> CreateAsync(CreateProductCommand cmd)
 	{
-		var validationRes = await _createProductValidator.ValidateAsync(cmd);
+		var validationRes = await createProductValidator.ValidateAsync(cmd);
 		if (!validationRes.IsValid)
 		{
 			return new ValidationError(validationRes.ToDictionary());
 		}
-		var product = _mapper.ToProduct(cmd);
-		await _ctx.Products.AddAsync(product);
-		var res = await _ctx.SaveChangesAsync(default);
+		var product = mapper.ToProduct(cmd);
+		await ctx.Products.AddAsync(product);
+		var res = await ctx.SaveChangesAsync(default);
 		if (res == 0)
 		{
 			return new UnknownError("Failed to create product.");
 		}
-		return _mapper.ToSimpleProductResponse(product);
+		return mapper.ToSimpleProductResponse(product);
 	}
 
 	public async Task<Result> DeleteAsync(int id)
 	{
-		var validationRes = await _deleteProductValidator.ValidateAsync(id);
+		var validationRes = await deleteProductValidator.ValidateAsync(id);
 		if (!validationRes.IsValid)
 		{
 			return new ValidationError(validationRes.ToDictionary());
 		}
-		var result = await _ctx
-			.Products.ByID(id)
-			.SingleAsync(default)
-			.ToResult(ex =>
-				ex switch
-				{
-					InvalidOperationException => new NotFoundError("Product not found."),
-					_ => new UnknownError(ex.Message),
-				}
-			);
-
-		if (result.TryPickError(out var error))
+		var product = await ctx.Products.FindAsync(id);
+		if (product is null)
 		{
-			return error;
+			return new NotFoundError("Product not found.");
 		}
 
-		_ctx.Products.Remove(result.AsT0);
-		var res = await _ctx.SaveChangesAsync(default);
+		ctx.Products.Remove(product);
+		var res = await ctx.SaveChangesAsync(default);
 		if (res == 0)
 		{
 			return new UnknownError("Failed to delete product.");
@@ -93,38 +83,43 @@ public class ProductService : IProductService
 		int size
 	)
 	{
-		var products = await _ctx
+		var products = await ctx
 			.Products.Filter(cmd)
 			.ApplySorting(cmd)
 			.Page(page, size)
 			.ToListAsync(default);
-		return [.. products.Select(_mapper.ToSimpleProductResponse)];
+		return [.. products.Select(mapper.ToSimpleProductResponse)];
 	}
 
 	public async Task<Result<DetailedProductResponse>> GetByIDAsync(int id)
 	{
-		var product = await _ctx.Products.ByID(id).SingleAsync(default);
+		var product = await ctx.Products.FindAsync(id);
 		if (product == null)
 		{
 			return new NotFoundError("Product not found.");
 		}
-		return _mapper.ToDetailedProductResponse(product);
+		return mapper.ToDetailedProductResponse(product);
 	}
 
-	public async Task<Result<DetailedProductResponse>> UpdateAsync(UpdateProductCommand req)
+	public async Task<Result<DetailedProductResponse>> UpdateAsync(UpdateProductCommand cmd)
 	{
-		var validationResult = await _updateProductValidator.ValidateAsync(req);
+		var validationResult = await updateProductValidator.ValidateAsync(cmd);
 		if (!validationResult.IsValid)
 		{
 			return new ValidationError(validationResult.ToDictionary());
 		}
-		var product = _mapper.ToProduct(req);
-		_ctx.Products.Update(product);
-		var result = await _ctx.SaveChangesAsync(default);
+		var product = await ctx
+			.Products.Include(p => p.Categories)
+			.Include(p => p.Images)
+			.FirstAsync(p => p.ID == cmd.ID, default);
+
+		mapper.PatchProduct(cmd, product);
+
+		var result = await ctx.SaveChangesAsync(default);
 		if (result == 0)
 		{
 			return new UnknownError("Failed to update product.");
 		}
-		return _mapper.ToDetailedProductResponse(product);
+		return mapper.ToDetailedProductResponse(product);
 	}
 }

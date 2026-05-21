@@ -11,4 +11,18 @@ public partial class ProductImageMapper
 	[MapperIgnoreSource(nameof(ProductImage.ProductID))]
 	[MapProperty(nameof(ProductImage.Key), nameof(ProductImageResponse.URL))]
 	public partial ProductImageResponse ToProductImageResponse(ProductImage img);
+
+	[UserMapping]
+	public ProductImageResponse? GetOpeningImage(ICollection<ProductImage> images)
+	{
+		if (images == null || images.Count == 0)
+		{
+			return null;
+		}
+		return images.OrderBy(i => i.Order).FirstOrDefault() switch
+		{
+			null => null,
+			var img => ToProductImageResponse(img),
+		};
+	}
 }

@@ -45,7 +45,7 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
 
 		RuleFor(updateReq => updateReq.ID)
 			.Cascade(CascadeMode.Stop)
-			.MustAsync(async (id, ct) => await _ctx.Categories.AnyAsync(c => c.ID == id, ct))
+			.MustAsync(async (id, ct) => await _ctx.Categories.ByID(id).AnyAsync(ct))
 			.WithMessage("Category does not exist.");
 
 		RuleFor(updateReq => updateReq.Name)

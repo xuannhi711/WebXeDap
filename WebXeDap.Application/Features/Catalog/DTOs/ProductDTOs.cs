@@ -5,23 +5,23 @@ public record CreateProductCommand(
 	string? Description,
 	decimal Price,
 	int Quantity,
-	int[]? CategoryIDs,
+	ICollection<int>? CategoryIDs,
 	string CurrencySymbol = "VNĐ"
 );
 
 public record UpdateProductCommand(
 	int ID,
-	string Name,
+	string? Name,
 	string? Description,
-	decimal Price,
-	int Quantity,
-	int[]? CategoryIDs,
-	string CurrencySymbol
+	decimal? Price,
+	int? Quantity,
+	ICollection<int>? CategoryIDs,
+	string? CurrencySymbol
 );
 
 public record FilterProductCommand(
 	string? Keyword,
-	int[]? CategoryIDs,
+	ICollection<int>? CategoryIDs,
 	decimal? MinPrice,
 	decimal? MaxPrice,
 	string SortBy = "id",
@@ -47,10 +47,10 @@ public record DetailedProductResponse(
 	string Name,
 	string? Description,
 	decimal Price,
-	int Quantity,
-	List<CategoryResponse> Categories,
-	List<ProductImageResponse> Images,
 	string CurrencySymbol,
+	int Quantity,
+	ICollection<CategoryResponse> Categories,
+	ICollection<ProductImageResponse> Images,
 	DateTime CreatedAt,
 	DateTime? UpdatedAt,
 	bool IsDeleted,

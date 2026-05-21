@@ -36,11 +36,11 @@ public class CreateProductValidator : AbstractValidator<CreateProductCommand>
 			.MustAsync(
 				async (categoryIDs, ct) =>
 				{
-					if (categoryIDs == null || categoryIDs.Length == 0)
+					if (categoryIDs == null || categoryIDs.Count == 0)
 						return true;
 					return await _ctx
 							.Categories.Where(c => categoryIDs.Contains(c.ID))
-							.CountAsync(ct) == categoryIDs.Length;
+							.CountAsync(ct) == categoryIDs.Count;
 				}
 			)
 			.WithMessage("One or more selected categories are invalid.");
@@ -82,11 +82,11 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
 			.MustAsync(
 				async (categoryIDs, ct) =>
 				{
-					if (categoryIDs == null || categoryIDs.Length == 0)
+					if (categoryIDs == null || categoryIDs.Count == 0)
 						return true;
 					return await _ctx
 							.Categories.Where(c => categoryIDs.Contains(c.ID))
-							.CountAsync(ct) == categoryIDs.Length;
+							.CountAsync(ct) == categoryIDs.Count;
 				}
 			)
 			.WithMessage("One or more selected categories are invalid.");

@@ -5,16 +5,26 @@ using WebXeDap.Domain.Models;
 
 namespace WebXeDap.Application.Features.Catalog.Mapper;
 
-[Mapper]
+[Mapper(AllowNullPropertyAssignment = false)]
 public partial class ProductMapper
 {
-	private readonly IApplicationDbContext _ctx;
-	private readonly ProductImageMapper _productImageMapper;
+	private readonly IApplicationDbContext ctx;
 
-	public ProductMapper(IApplicationDbContext ctx)
+	[UseMapper]
+	private readonly ProductImageMapper productImageMapper;
+
+	[UseMapper]
+	private readonly CategoryMapper categoryMapper;
+
+	public ProductMapper(
+		IApplicationDbContext ctx,
+		ProductImageMapper productImageMapper,
+		CategoryMapper categoryMapper
+	)
 	{
-		_ctx = ctx;
-		_productImageMapper = new ProductImageMapper();
+		this.ctx = ctx;
+		this.productImageMapper = productImageMapper;
+		this.categoryMapper = categoryMapper;
 	}
 
 	[MapperIgnoreSource(nameof(Product.Categories))]
@@ -34,38 +44,5 @@ public partial class ProductMapper
 
 	[MapperIgnoreTarget(nameof(Product.Images))]
 	[MapProperty(nameof(UpdateProductCommand.CategoryIDs), nameof(Product.Categories))]
-	public partial Product ToProduct(UpdateProductCommand request);
-
-	[UserMapping]
-	public ICollection<Category> CategoryIDsToCategories(int[]? categoryIDs)
-	{
-		if (categoryIDs == null)
-		{
-			return [];
-		}
-		return [.. _ctx.Categories.Where(c => categoryIDs.Contains(c.ID))];
-	}
-
-	[UserMapping]
-	public CategoryResponse CategoryToCategoryResponse(Category category)
-	{
-		return new CategoryResponse(category.ID, category.Name, category.ParentCategoryID);
-	}
-
-	[UserMapping]
-	public ProductImageResponse ProductImageToProductImageResponse(ProductImage image)
-	{
-		return new ProductImageResponse(image.ID, image.Key, image.Order);
-	}
-
-	[UserMapping]
-	public ProductImageResponse? GetOpeningImage(ICollection<ProductImage> images)
-	{
-		if (!images.Any())
-		{
-			return null;
-		}
-		var openingImg = images.OrderBy(i => i.Order).First();
-		return _productImageMapper.ToProductImageResponse(openingImg);
-	}
+	public partial void PatchProduct(UpdateProductCommand cmd, [MappingTarget] Product product);
 }

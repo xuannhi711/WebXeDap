@@ -1,18 +1,19 @@
+using Util.Primitives.ResultType;
 using WebXeDap.Application.Features.Catalog.DTOs;
 
 namespace WebXeDap.Application.Contracts.Services;
 
 public interface ICategoryService
 {
-	Task<CategoryResponse?> GetByIDAsync(int id);
+	Task<Result<CategoryResponse>> GetByIDAsync(int id);
 
 	Task<List<CategoryResponse>> ListAsync();
 
 	Task<List<HierarchyCategoryResponse>> ListHierarchyAsync();
 
-	Task<CategoryResponse?> CreateAsync(CreateCategoryCommand request);
+	Task<Result<CategoryResponse>> CreateAsync(CreateCategoryCommand request);
 
-	Task<CategoryResponse?> UpdateAsync(UpdateCategoryCommand request);
+	Task<Result<CategoryResponse>> UpdateAsync(UpdateCategoryCommand request);
 
-	Task<bool> DeleteAsync(int id);
+	Task<Result> DeleteAsync(int id);
 }

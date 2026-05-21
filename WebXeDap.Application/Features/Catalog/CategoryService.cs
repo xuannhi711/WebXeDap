@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Util.Primitives.ResultType;
 using WebXeDap.Application.Contracts.Persistence;
 using WebXeDap.Application.Contracts.Services;
+using WebXeDap.Application.Extensions;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Application.Features.Catalog.Mapper;
+using WebXeDap.Application.Features.Catalog.Queries;
 using WebXeDap.Application.Features.Catalog.Validators;
 
 namespace WebXeDap.Application.Features.Catalog;
@@ -30,12 +33,12 @@ public class CategoryService : ICategoryService
 		_deleteValidator = deleteValidator;
 	}
 
-	public async Task<CategoryResponse?> CreateAsync(CreateCategoryCommand request)
+	public async Task<Result<CategoryResponse>> CreateAsync(CreateCategoryCommand request)
 	{
 		var validationResult = await _createValidator.ValidateAsync(request);
 		if (!validationResult.IsValid)
 		{
-			return null;
+			return validationResult.ToValidationError();
 		}
 
 		var category = _mapper.ToCategory(request);
@@ -43,40 +46,40 @@ public class CategoryService : ICategoryService
 		var res = await _ctx.SaveChangesAsync(default);
 		if (res == 0)
 		{
-			return null;
+			return new UnknownError("Failed to create category.");
 		}
 		return _mapper.ToCategoryResponse(category);
 	}
 
-	public async Task<bool> DeleteAsync(int id)
+	public async Task<Result> DeleteAsync(int id)
 	{
 		var validationResult = await _deleteValidator.ValidateAsync(id);
 		if (!validationResult.IsValid)
 		{
-			return false;
+			return validationResult.ToValidationError();
 		}
-		var category = await _ctx.Categories.FindAsync(id);
-		if (category == null)
-		{
-			return false;
-		}
+		var category = await _ctx.Categories.ByID(id).SingleAsync();
 		_ctx.Categories.Remove(category);
 		var result = await _ctx.SaveChangesAsync(default);
-		return result == 1;
+		if (result == 0)
+		{
+			return new UnknownError("Failed to delete category.");
+		}
+		return Result.Ok();
 	}
 
 	public async Task<List<CategoryResponse>> ListAsync()
 	{
-		var categories = await _ctx.Categories.AsNoTracking().ToListAsync();
+		var categories = await _ctx.Categories.ToListAsync();
 		return [.. categories.Select(_mapper.ToCategoryResponse)];
 	}
 
-	public async Task<CategoryResponse?> GetByIDAsync(int id)
+	public async Task<Result<CategoryResponse>> GetByIDAsync(int id)
 	{
 		var category = await _ctx.Categories.FindAsync(id);
 		if (category == null)
 		{
-			return null;
+			return new NotFoundError("Category not found.");
 		}
 		return _mapper.ToCategoryResponse(category);
 	}
@@ -107,30 +110,21 @@ public class CategoryService : ICategoryService
 		return roots;
 	}
 
-	public async Task<CategoryResponse?> UpdateAsync(UpdateCategoryCommand request)
+	public async Task<Result<CategoryResponse>> UpdateAsync(UpdateCategoryCommand request)
 	{
 		var validationResult = await _updateValidator.ValidateAsync(request);
 		if (!validationResult.IsValid)
 		{
-			return null;
+			return validationResult.ToValidationError();
 		}
 
-		var category = await _ctx.Categories.FirstOrDefaultAsync(x => x.ID == request.ID);
-
-		if (category is null)
-		{
-			return null;
-		}
-
+		var category = await _ctx.Categories.ByID(request.ID).SingleAsync();
 		_mapper.PatchCategory(request, category);
-
-		try
+		_ctx.Categories.Update(category);
+		var res = await _ctx.SaveChangesAsync(default);
+		if (res == 0)
 		{
-			await _ctx.SaveChangesAsync(default);
-		}
-		catch (DbUpdateConcurrencyException)
-		{
-			return null;
+			return new UnknownError("Failed to update category.");
 		}
 
 		return _mapper.ToCategoryResponse(category);

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Domain.Models;
 
@@ -52,10 +53,10 @@ public static class ProductQueries
 			query = query.Where(p => p.Name.Contains(req.Keyword));
 		}
 
-		if (req.CategoryIDs is { Length: > 0 })
+		if (req.CategoryIDs is { Count: > 0 })
 		{
-			query = query.Where(product =>
-				product.Categories.Any(category => req.CategoryIDs.Contains(category.ID))
+			query = query.Include(p => p.Categories).Where(product =>
+				product.Categories!.Any(category => req.CategoryIDs.Contains(category.ID))
 			);
 		}
 

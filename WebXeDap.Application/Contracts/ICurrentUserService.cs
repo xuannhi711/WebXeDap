@@ -1,6 +1,8 @@
+using Util.Primitives.ResultType;
+
 namespace WebXeDap.Application.Contracts;
 
 public interface ICurrentUserService
 {
-	int? UserId { get; }
+	Result<int> UserID { get; }
 }
