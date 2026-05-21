@@ -7,14 +7,14 @@ export const client = ky.create({
 	credentials: "include",
 	timeout: REQUEST_TIMEOUT,
 	hooks: {
-		beforeRequest: [
-			({ request }) => {
-				const accessToken = useStore.getState().accessToken;
-				if (!accessToken) {
-					return;
-				}
-				request.headers.set("Authorization", `Bearer ${accessToken}`);
-			},
-		],
+		// beforeRequest: [
+		// 	({ request }) => {
+		// 		const accessToken = useStore.getState().accessToken;
+		// 		if (!accessToken) {
+		// 			return;
+		// 		}
+		// 		request.headers.set("Authorization", `Bearer ${accessToken}`);
+		// 	},
+		// ],
 	},
 });

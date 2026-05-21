@@ -1,6 +1,7 @@
 import { HTTPError } from "ky";
 import { ResultAsync } from "neverthrow";
 import { match, P } from "ts-pattern";
+import { ENDPOINTS } from "~/config/app";
 import { client } from "~/lib/httpClient";
 
 interface MeResponse {
@@ -15,7 +16,7 @@ export type MeError = { type: "unknown_error"; message: string };
 
 function getMe(): ResultAsync<MeResponse, MeError> {
 	return ResultAsync.fromPromise(
-		client.get("/auth/me").json<MeResponse>(),
+		client.get(ENDPOINTS.ME).json<MeResponse>(),
 
 		(error): MeError =>
 			match(error)

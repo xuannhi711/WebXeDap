@@ -4,15 +4,16 @@ import { match, P } from "ts-pattern";
 import { client } from "~/lib/httpClient";
 import { useStore } from "~/store/store";
 import { useMe } from "./use-me";
+import { ENDPOINTS } from "~/config/app";
 
 interface LoginPayload {
-	username: string;
+	email: string;
 	password: string;
 }
 
 interface LoginResponse {
-	accessToken: string;
-	refreshToken: string;
+	// accessToken: string;
+	// refreshToken: string;
 }
 
 export type LoginError =
@@ -21,11 +22,9 @@ export type LoginError =
 
 async function login(payload: LoginPayload) {
 	return ResultAsync.fromPromise(
-		client
-			.post("/auth/login", {
-				json: payload,
-			})
-			.json<LoginResponse>(),
+		client.post(ENDPOINTS.LOGIN, {
+			json: payload,
+		}),
 
 		(error) =>
 			match(error)
@@ -56,9 +55,10 @@ export function useLogin() {
 		if (loginResult.isErr()) {
 			return err(loginResult.error);
 		}
+		console.log("pass");
 
-		const { accessToken, refreshToken } = loginResult.value;
-		setToken(accessToken, refreshToken);
+		// const { accessToken, refreshToken } = loginResult.value;
+		// setToken(accessToken, refreshToken);
 
 		const meResult = await me.mutateAsync();
 		if (meResult.isErr()) {

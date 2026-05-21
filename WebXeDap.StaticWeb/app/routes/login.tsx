@@ -27,7 +27,7 @@ export default function LoginPage() {
 
 	async function onSubmitValidHandler(params: LoginFormOnSubmitValidParams) {
 		const loginResult = await login.mutateAsync({
-			username: params.value.email,
+			email: params.value.email,
 			password: params.value.password,
 		});
 
