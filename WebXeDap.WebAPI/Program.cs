@@ -34,7 +34,13 @@ builder.Services.AddCors(options =>
 	);
 });
 
-// required for MapIdentityApi
+builder
+	.Services.AddAuthentication()
+	.AddGoogle(opts =>
+	{
+		opts.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")!;
+		opts.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")!;
+	});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

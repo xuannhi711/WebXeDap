@@ -58,8 +58,9 @@ API_ENV := \
 	SMTP_USER=$(SMTP_USER) \
 	SMTP_PASS=$(SMTP_PASS) \
 	SMTP_FROM_EMAIL=$(SMTP_FROM_EMAIL) \
-	SMTP_FROM_NAME=$(SMTP_FROM_NAME)
-
+	SMTP_FROM_NAME=$(SMTP_FROM_NAME) \
+	GOOGLE_CLIENT_ID=$(GOOGLE_CLIENT_ID) \
+	GOOGLE_CLIENT_SECRET=$(GOOGLE_CLIENT_SECRET)
 # -----------------------------------------------------------------------------
 # SERVICES
 # -----------------------------------------------------------------------------
