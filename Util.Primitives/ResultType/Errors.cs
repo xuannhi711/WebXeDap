@@ -29,3 +29,27 @@ public record ValidationError(IDictionary<string, string[]> Errors) : Error
 		return $"Validation errors: {JsonSerializer.Serialize(Errors, JsonOptions)}";
 	}
 }
+
+public record InternalError(string Message) : Error
+{
+	public override string ToString()
+	{
+		return $"Internal error: {Message}";
+	}
+}
+
+public record ForbiddenError(string Message) : Error
+{
+	public override string ToString()
+	{
+		return $"Forbidden: {Message}";
+	}
+}
+
+public record UnauthorizedError(string Message) : Error
+{
+	public override string ToString()
+	{
+		return $"Unauthorized: {Message}";
+	}
+}
