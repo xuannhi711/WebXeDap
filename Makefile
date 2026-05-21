@@ -18,10 +18,18 @@ MSSQL_SA_PASSWORD ?= 2Secure@Password2
 MSSQL_TRUST_SERVER_CERTIFICATE ?= True
 MSSQL_ENCRYPT ?= False
 
+SMTP_HOST ?= localhost
+SMTP_PORT ?= 1025
+SMTP_USER ?= "username"
+SMTP_PASS ?= "password"
+SMTP_FROM_EMAIL ?= "admin@localhost.com"
+SMTP_FROM_NAME ?= "dfdd"
+
 API_PROJECT := WebXeDap.WebAPI
 INFRA_PROJECT := WebXeDap.Infrastructure
 SEED_PROJECT := WebXeDap.Seeder
 STATIC_PROJECT := WebXeDap.StaticWeb
+ADMIN_PROJECT := WebXeDap.AdminPanel
 
 # -----------------------------------------------------------------------------
 # Helpers
@@ -44,7 +52,13 @@ endif
 API_ENV := \
 	ASPNETCORE_ENVIRONMENT=$(ASPNETCORE_ENVIRONMENT) \
 	DB_PROVIDER=$(DB_PROVIDER) \
-	CONNECTION_STRING="$(CONNECTION_STRING)"
+	CONNECTION_STRING="$(CONNECTION_STRING)" \
+	SMTP_HOST=$(SMTP_HOST) \
+	SMTP_PORT=$(SMTP_PORT) \
+	SMTP_USER=$(SMTP_USER) \
+	SMTP_PASS=$(SMTP_PASS) \
+	SMTP_FROM_EMAIL=$(SMTP_FROM_EMAIL) \
+	SMTP_FROM_NAME=$(SMTP_FROM_NAME)
 
 # -----------------------------------------------------------------------------
 # SERVICES
@@ -57,6 +71,10 @@ api:
 .PHONY: static
 static:
 	@cd $(STATIC_PROJECT) && pnpm dev
+
+.PHONY: admin
+admin:
+	@$(API_ENV) dotnet watch --project $(ADMIN_PROJECT)
 
 # -----------------------------------------------------------------------------
 # EXTERNAL SERVICES
