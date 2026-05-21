@@ -16,21 +16,18 @@ public class ProductService : IProductService
 	private readonly ProductMapper mapper;
 	private readonly CreateProductValidator createProductValidator;
 	private readonly UpdateProductValidator updateProductValidator;
-	private readonly DeleteProductValidator deleteProductValidator;
 
 	public ProductService(
 		IApplicationDbContext ctx,
 		ProductMapper mapper,
 		CreateProductValidator createProductValidator,
-		UpdateProductValidator updateProductValidator,
-		DeleteProductValidator deleteProductValidator
+		UpdateProductValidator updateProductValidator
 	)
 	{
 		this.ctx = ctx;
 		this.mapper = mapper;
 		this.createProductValidator = createProductValidator;
 		this.updateProductValidator = updateProductValidator;
-		this.deleteProductValidator = deleteProductValidator;
 	}
 
 	public Task<int> CountAsync(FilterProductCommand cmd)
@@ -57,11 +54,6 @@ public class ProductService : IProductService
 
 	public async Task<Result> DeleteAsync(int id)
 	{
-		var validationRes = await deleteProductValidator.ValidateAsync(id);
-		if (!validationRes.IsValid)
-		{
-			return new ValidationError(validationRes.ToDictionary());
-		}
 		var product = await ctx.Products.FindAsync(id);
 		if (product is null)
 		{
@@ -101,17 +93,21 @@ public class ProductService : IProductService
 		return mapper.ToDetailedProductResponse(product);
 	}
 
-	public async Task<Result<DetailedProductResponse>> UpdateAsync(UpdateProductCommand cmd)
+	public async Task<Result<DetailedProductResponse>> UpdateAsync(int id, UpdateProductCommand cmd)
 	{
+		var product = await ctx
+			.Products.Include(p => p.Categories)
+			.Include(p => p.Images)
+			.FirstOrDefaultAsync(p => p.ID == id);
+		if (product == null)
+		{
+			return new NotFoundError("Product not found.");
+		}
 		var validationResult = await updateProductValidator.ValidateAsync(cmd);
 		if (!validationResult.IsValid)
 		{
 			return new ValidationError(validationResult.ToDictionary());
 		}
-		var product = await ctx
-			.Products.Include(p => p.Categories)
-			.Include(p => p.Images)
-			.FirstAsync(p => p.ID == cmd.ID, default);
 
 		mapper.PatchProduct(cmd, product);
 

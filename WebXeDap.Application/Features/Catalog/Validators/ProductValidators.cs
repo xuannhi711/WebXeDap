@@ -55,13 +55,6 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
 	{
 		_ctx = ctx;
 
-		// RuleLevelCascadeMode = CascadeMode.Stop;
-
-		RuleFor(updateReq => updateReq.ID)
-			.Cascade(CascadeMode.Stop)
-			.MustAsync(async (id, ct) => await _ctx.Products.ByID(id).AnyAsync(ct))
-			.WithMessage("Product does not exist.");
-
 		RuleFor(updateReq => updateReq.Name)
 			.Cascade(CascadeMode.Stop)
 			.NotEmpty()
@@ -90,18 +83,5 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
 				}
 			)
 			.WithMessage("One or more selected categories are invalid.");
-	}
-}
-
-public class DeleteProductValidator : AbstractValidator<int>
-{
-	private readonly IApplicationDbContext _ctx;
-
-	public DeleteProductValidator(IApplicationDbContext ctx)
-	{
-		_ctx = ctx;
-		RuleFor(id => id)
-			.MustAsync(async (id, ct) => await _ctx.Products.ByID(id).AnyAsync(ct))
-			.WithMessage("Product does not exist.");
 	}
 }

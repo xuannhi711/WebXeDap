@@ -8,12 +8,8 @@ namespace WebXeDap.Application.Features.Catalog.Validators;
 
 public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
 {
-	private readonly IApplicationDbContext _ctx;
-
 	public CreateCategoryValidator(IApplicationDbContext ctx)
 	{
-		_ctx = ctx;
-
 		// RuleLevelCascadeMode = CascadeMode.Stop;
 
 		RuleFor(createReq => createReq.Name)
@@ -25,7 +21,7 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
 			.MustAsync(
 				async (parentCategoryID, ct) =>
 				{
-					return await _ctx.Categories.ByID(parentCategoryID!.Value).AnyAsync(ct);
+					return await ctx.Categories.ByID(parentCategoryID!.Value).AnyAsync(ct);
 				}
 			)
 			.When(createReq => createReq.ParentCategoryID.HasValue)
@@ -35,18 +31,9 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategoryCommand>
 
 public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
 {
-	private readonly IApplicationDbContext _ctx;
-
 	public UpdateCategoryValidator(IApplicationDbContext ctx)
 	{
-		_ctx = ctx;
-
 		// RuleLevelCascadeMode = CascadeMode.Stop;
-
-		RuleFor(updateReq => updateReq.ID)
-			.Cascade(CascadeMode.Stop)
-			.MustAsync(async (id, ct) => await _ctx.Categories.ByID(id).AnyAsync(ct))
-			.WithMessage("Category does not exist.");
 
 		RuleFor(updateReq => updateReq.Name)
 			.Cascade(CascadeMode.Stop)
@@ -55,28 +42,15 @@ public class UpdateCategoryValidator : AbstractValidator<UpdateCategoryCommand>
 
 		RuleFor(updateReq => updateReq.ParentCategoryID)
 			.Cascade(CascadeMode.Stop)
-			.NotEqual(updateReq => updateReq.ID)
-			.WithMessage("A category cannot be its own parent.")
+			// .NotEqual(updateReq => updateReq.ID)
+			// .WithMessage("A category cannot be its own parent.")
 			.MustAsync(
 				async (req, parentCategoryID, ct) =>
 				{
-					return await _ctx.Categories.ByID(parentCategoryID!.Value).AnyAsync(ct);
+					return await ctx.Categories.ByID(parentCategoryID!.Value).AnyAsync(ct);
 				}
 			)
 			.When(updateReq => updateReq.ParentCategoryID.HasValue)
 			.WithMessage("Parent category does not exist or is invalid.");
-	}
-}
-
-public class DeleteCategoryValidator : AbstractValidator<int>
-{
-	private readonly IApplicationDbContext _ctx;
-
-	public DeleteCategoryValidator(IApplicationDbContext ctx)
-	{
-		_ctx = ctx;
-		RuleFor(id => id)
-			.MustAsync(async (id, ct) => await _ctx.Categories.ByID(id).AnyAsync(ct))
-			.WithMessage("Category does not exist.");
 	}
 }

@@ -17,15 +17,13 @@ public class CartService : ICartService
 	private readonly CartMapper mapper;
 	private readonly IValidator<AddCartItemCommand> addValidator;
 	private readonly IValidator<UpdateCartItemCommand> updateValidator;
-	private readonly IValidator<int> deleteValidator;
 
 	public CartService(
 		IApplicationDbContext ctx,
 		CartMapper mapper,
 		ICurrentUserService currentUserService,
 		IValidator<AddCartItemCommand> addValidator,
-		IValidator<UpdateCartItemCommand> updateValidator,
-		IValidator<int> deleteValidator
+		IValidator<UpdateCartItemCommand> updateValidator
 	)
 	{
 		this.ctx = ctx;
@@ -33,7 +31,6 @@ public class CartService : ICartService
 		this.currentUserService = currentUserService;
 		this.addValidator = addValidator;
 		this.updateValidator = updateValidator;
-		this.deleteValidator = deleteValidator;
 	}
 
 	public async Task<Result<List<CartItemResponse>>> ListAsync()
@@ -81,11 +78,19 @@ public class CartService : ICartService
 		return mapper.ToCartItemResponse(newCartItem);
 	}
 
-	public async Task<Result<CartItemResponse>> UpdateAsync(UpdateCartItemCommand cmd)
+	public async Task<Result<CartItemResponse>> UpdateAsync(int id, UpdateCartItemCommand cmd)
 	{
 		if (!currentUserService.UserID.TryPickValue(out var userID))
 		{
 			return new UnauthorizedError("User is not authenticated.");
+		}
+
+		var cartItem = await ctx
+			.CartItems.Include(i => i.Product)
+			.FirstOrDefaultAsync(i => i.UserID == userID && i.ID == id, default);
+		if (cartItem is null)
+		{
+			return new NotFoundError("Cart item not found.");
 		}
 
 		var validationResult = await updateValidator.ValidateAsync(cmd);
@@ -93,10 +98,6 @@ public class CartService : ICartService
 		{
 			return validationResult.ToValidationError();
 		}
-
-		var cartItem = await ctx
-			.CartItems.Include(i => i.Product)
-			.FirstAsync(i => i.UserID == userID && i.ID == cmd.CartItemID, default);
 
 		mapper.PatchCartItem(cmd, cartItem);
 		ctx.CartItems.Update(cartItem);
@@ -110,16 +111,16 @@ public class CartService : ICartService
 		{
 			return new UnauthorizedError("User is not authenticated.");
 		}
-		var validationResult = await deleteValidator.ValidateAsync(cartItemID);
-		if (!validationResult.IsValid)
-		{
-			return validationResult.ToValidationError();
-		}
 
-		var cartItem = await ctx.CartItems.FirstAsync(
+		var cartItem = await ctx.CartItems.FirstOrDefaultAsync(
 			i => i.UserID == userID && i.ID == cartItemID,
 			default
 		);
+
+		if (cartItem is null)
+		{
+			return new NotFoundError("Cart item not found.");
+		}
 
 		ctx.CartItems.Remove(cartItem);
 		await ctx.SaveChangesAsync(default);

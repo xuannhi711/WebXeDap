@@ -16,21 +16,18 @@ public class CategoryService : ICategoryService
 	private readonly CategoryMapper _mapper;
 	private readonly CreateCategoryValidator _createValidator;
 	private readonly UpdateCategoryValidator _updateValidator;
-	private readonly DeleteCategoryValidator _deleteValidator;
 
 	public CategoryService(
 		IApplicationDbContext ctx,
 		CategoryMapper mapper,
 		CreateCategoryValidator createValidator,
-		UpdateCategoryValidator updateValidator,
-		DeleteCategoryValidator deleteValidator
+		UpdateCategoryValidator updateValidator
 	)
 	{
 		_ctx = ctx;
 		_mapper = mapper;
 		_createValidator = createValidator;
 		_updateValidator = updateValidator;
-		_deleteValidator = deleteValidator;
 	}
 
 	public async Task<Result<CategoryResponse>> CreateAsync(CreateCategoryCommand request)
@@ -53,12 +50,11 @@ public class CategoryService : ICategoryService
 
 	public async Task<Result> DeleteAsync(int id)
 	{
-		var validationResult = await _deleteValidator.ValidateAsync(id);
-		if (!validationResult.IsValid)
+		var category = await _ctx.Categories.FindAsync(id);
+		if (category == null)
 		{
-			return validationResult.ToValidationError();
+			return new NotFoundError("Category not found.");
 		}
-		var category = await _ctx.Categories.ByID(id).SingleAsync();
 		_ctx.Categories.Remove(category);
 		var result = await _ctx.SaveChangesAsync(default);
 		if (result == 0)
@@ -110,15 +106,20 @@ public class CategoryService : ICategoryService
 		return roots;
 	}
 
-	public async Task<Result<CategoryResponse>> UpdateAsync(UpdateCategoryCommand request)
+	public async Task<Result<CategoryResponse>> UpdateAsync(int id, UpdateCategoryCommand request)
 	{
+		var category = await _ctx.Categories.FindAsync(id);
+		if (category == null)
+		{
+			return new NotFoundError("Category not found.");
+		}
+
 		var validationResult = await _updateValidator.ValidateAsync(request);
 		if (!validationResult.IsValid)
 		{
 			return validationResult.ToValidationError();
 		}
 
-		var category = await _ctx.Categories.ByID(request.ID).SingleAsync();
 		_mapper.PatchCategory(request, category);
 		_ctx.Categories.Update(category);
 		var res = await _ctx.SaveChangesAsync(default);

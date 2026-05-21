@@ -25,14 +25,12 @@ public static class DependencyInjection
 
 		services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
 		services.AddValidatorsFromAssemblyContaining<UpdateCategoryValidator>();
-		services.AddValidatorsFromAssemblyContaining<DeleteCategoryValidator>();
 
 		services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
 		services.AddValidatorsFromAssemblyContaining<UpdateProductValidator>();
-		services.AddValidatorsFromAssemblyContaining<DeleteProductValidator>();
+
 		services.AddValidatorsFromAssemblyContaining<AddCartItemValidator>();
 		services.AddValidatorsFromAssemblyContaining<UpdateCartItemValidator>();
-		services.AddValidatorsFromAssemblyContaining<DeleteCartItemValidator>();
 
 		return services;
 	}

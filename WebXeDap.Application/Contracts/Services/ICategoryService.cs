@@ -13,7 +13,7 @@ public interface ICategoryService
 
 	Task<Result<CategoryResponse>> CreateAsync(CreateCategoryCommand request);
 
-	Task<Result<CategoryResponse>> UpdateAsync(UpdateCategoryCommand request);
+	Task<Result<CategoryResponse>> UpdateAsync(int id, UpdateCategoryCommand request);
 
 	Task<Result> DeleteAsync(int id);
 }

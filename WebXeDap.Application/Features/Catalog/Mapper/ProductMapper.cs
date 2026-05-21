@@ -43,6 +43,7 @@ public partial class ProductMapper
 	public partial Product ToProduct(CreateProductCommand request);
 
 	[MapperIgnoreTarget(nameof(Product.Images))]
+	[MapperIgnoreTarget(nameof(Product.ID))]
 	[MapProperty(nameof(UpdateProductCommand.CategoryIDs), nameof(Product.Categories))]
 	public partial void PatchProduct(UpdateProductCommand cmd, [MappingTarget] Product product);
 }

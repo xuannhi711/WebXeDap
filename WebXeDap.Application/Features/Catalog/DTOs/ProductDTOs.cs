@@ -10,7 +10,6 @@ public record CreateProductCommand(
 );
 
 public record UpdateProductCommand(
-	int ID,
 	string? Name,
 	string? Description,
 	decimal? Price,

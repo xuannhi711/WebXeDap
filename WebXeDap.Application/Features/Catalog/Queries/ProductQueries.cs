@@ -55,9 +55,11 @@ public static class ProductQueries
 
 		if (req.CategoryIDs is { Count: > 0 })
 		{
-			query = query.Include(p => p.Categories).Where(product =>
-				product.Categories!.Any(category => req.CategoryIDs.Contains(category.ID))
-			);
+			query = query
+				.Include(p => p.Categories)
+				.Where(product =>
+					product.Categories!.Any(category => req.CategoryIDs.Contains(category.ID))
+				);
 		}
 
 		if (req.MinPrice.HasValue)

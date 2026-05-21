@@ -34,21 +34,6 @@ public sealed class UpdateCartItemValidator : AbstractValidator<UpdateCartItemCo
 		ICurrentUserService currentUserService
 	)
 	{
-		RuleFor(cmd => cmd.CartItemID)
-			.MustAsync(
-				async (cartItemID, ct) =>
-				{
-					if (!currentUserService.UserID.TryPickValue(out var userID))
-					{
-						return false;
-					}
-					return await ctx
-						.CartItems.AsNoTracking()
-						.AnyAsync(i => i.ID == cartItemID && i.UserID == userID, ct);
-				}
-			)
-			.WithMessage("Cart item not found.");
-
 		RuleFor(cmd => cmd.Quantity)
 			.Cascade(CascadeMode.Stop)
 			.GreaterThan(0)

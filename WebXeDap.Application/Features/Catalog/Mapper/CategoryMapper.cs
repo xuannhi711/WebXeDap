@@ -30,6 +30,7 @@ public partial class CategoryMapper
 	[MapperIgnoreTarget(nameof(Category.Products))]
 	public partial Category ToCategory(CreateCategoryCommand request);
 
+	[MapperIgnoreTarget(nameof(Category.ID))]
 	[MapperIgnoreTarget(nameof(Category.ParentCategory))]
 	[MapperIgnoreTarget(nameof(Category.Children))]
 	[MapperIgnoreTarget(nameof(Category.Products))]

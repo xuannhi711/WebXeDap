@@ -28,10 +28,10 @@ public partial class CartMapper
 	[MapperIgnoreTarget(nameof(CartItem.Product))]
 	public partial CartItem ToCartItem(AddCartItemCommand cmd, int userID);
 
+	[MapperIgnoreTarget(nameof(CartItem.ID))]
 	[MapperIgnoreTarget(nameof(CartItem.User))]
 	[MapperIgnoreTarget(nameof(CartItem.Product))]
 	[MapperIgnoreTarget(nameof(CartItem.UserID))]
 	[MapperIgnoreTarget(nameof(CartItem.ProductID))]
-	[MapProperty(nameof(UpdateCartItemCommand.CartItemID), nameof(CartItem.ID))]
 	public partial void PatchCartItem(UpdateCartItemCommand cmd, [MappingTarget] CartItem item);
 }

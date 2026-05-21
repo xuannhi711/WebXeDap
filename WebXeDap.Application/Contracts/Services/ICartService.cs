@@ -9,7 +9,7 @@ public interface ICartService
 
 	Task<Result<CartItemResponse>> AddAsync(AddCartItemCommand cmd);
 
-	Task<Result<CartItemResponse>> UpdateAsync(UpdateCartItemCommand cmd);
+	Task<Result<CartItemResponse>> UpdateAsync(int cartItemID, UpdateCartItemCommand cmd);
 
 	Task<Result> DeleteAsync(int cartItemID);
 }

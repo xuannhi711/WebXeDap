@@ -13,7 +13,7 @@ public interface IProductService
 
 	Task<int> CountAsync(FilterProductCommand cmd);
 
-	Task<Result<DetailedProductResponse>> UpdateAsync(UpdateProductCommand cmd);
+	Task<Result<DetailedProductResponse>> UpdateAsync(int id, UpdateProductCommand cmd);
 
 	Task<Result> DeleteAsync(int id);
 }
