@@ -21,30 +21,11 @@ export function useMe() {
 		return ok(userData);
 	}
 
-	async function updateAsync(payload: UpdateMePayload) {
-		const res = await updateMe(payload);
-		if (res.isErr()) {
-			return err(res.error);
-		}
-		const updatedUserData = res.value;
-		setUser(updatedUserData);
-		return ok(updatedUserData);
-	}
-
-	async function changePasswordAsync(payload: ChangePasswordPayload) {
-		const res = await changePassword(payload);
-		if (res.isErr()) {
-			return err(res.error);
-		}
-		return ok();
-	}
-
-	return { mutateAsync, updateAsync, changePasswordAsync };
+	return { mutateAsync };
 }
 
 export type MeError =
 	| { type: "user_not_found"; message: string }
-	| { type: "validation_error"; message: unknown }
 	| { type: "unknown_error"; message: string };
 
 interface MeResponse {
@@ -60,57 +41,6 @@ function fetchMe() {
 
 		(error): MeError =>
 			match(error as HTTPError)
-				.with({ response: { status: 404 } }, () => ({
-					type: "user_not_found" as const,
-					message: "User not found",
-				}))
-				.otherwise(() => ({
-					type: "unknown_error" as const,
-					message: "Unexpected error occurred",
-				})),
-	);
-}
-
-interface UpdateMePayload {
-	fullName?: string;
-	avatar?: string;
-}
-
-async function updateMe(payload: UpdateMePayload) {
-	return ResultAsync.fromPromise(
-		client.put(ENDPOINTS.ME, { json: payload }).json<MeResponse>(),
-
-		(error): MeError =>
-			match(error as HTTPError)
-				.with({ response: { status: 404 } }, () => ({
-					type: "user_not_found" as const,
-					message: "User not found",
-				}))
-				.with({ response: { status: 400 } }, (err) => ({
-					type: "validation_error" as const,
-					message: err.data,
-				}))
-				.otherwise(() => ({
-					type: "unknown_error" as const,
-					message: "Unexpected error occurred",
-				})),
-	);
-}
-
-interface ChangePasswordPayload {
-	oldPassword: string;
-	newPassword: string;
-}
-
-async function changePassword(payload: ChangePasswordPayload) {
-	return ResultAsync.fromPromise(
-		client.post(ENDPOINTS.AUTH_INFO, { json: payload }),
-		(error) =>
-			match(error as HTTPError)
-				.with({ response: { status: 400 } }, (err) => ({
-					type: "validation_error" as const,
-					message: err.data,
-				}))
 				.with({ response: { status: 404 } }, () => ({
 					type: "user_not_found" as const,
 					message: "User not found",

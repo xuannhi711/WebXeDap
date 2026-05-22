@@ -10,4 +10,6 @@ export const ENDPOINTS = {
 	AUTH_INFO: "/api/auth/manage/info",
 	// REFRESH_TOKEN: "/api/auth/refresh",
 	ME: "/api/users/me",
+
+	PRODUCTS: "/api/products",
 };

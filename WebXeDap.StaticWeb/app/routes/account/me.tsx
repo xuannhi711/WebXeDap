@@ -21,6 +21,10 @@ import {
 	PasswordForm,
 	type PasswordFormOnSubmitValidParams,
 } from "~/components/forms/form-password";
+import { useChangePassword } from "~/hooks/users/use-change-password";
+import { useUpdateMe } from "~/hooks/users/use-update-me";
+import { HTTPError } from "ky";
+import { ResultAsync } from "neverthrow";
 
 export function meta() {
 	return [{ title: "Wheelie | Account" }];
@@ -59,20 +63,22 @@ export default function Me() {
 }
 
 function SecurityTab() {
-	const me = useMe();
+	const { mutateAsync } = useChangePassword();
 
 	async function onSubmitValidPasswordHandler(
 		params: PasswordFormOnSubmitValidParams,
 	) {
-		const changePasswordResult = await me.changePasswordAsync({
-			oldPassword: params.value.oldPassword,
-			newPassword: params.value.newPassword,
-		});
-
-		if (changePasswordResult.isErr()) {
-			const err = changePasswordResult.error.message as { errors: any };
+		try {
+			await mutateAsync({
+				oldPassword: params.value.oldPassword,
+				newPassword: params.value.newPassword,
+			});
+			params.formApi.reset();
+		} catch (error) {
+			const err = error as HTTPError;
+			const { errors } = err.data as { errors: any };
 			return {
-				form: `Change password failed: ${JSON.stringify(err.errors)}`,
+				form: `Change password failed: ${JSON.stringify(errors)}`,
 			};
 		}
 	}
@@ -101,22 +107,24 @@ function AccountDetailsTab() {
 	);
 	const [isEditing, setIsEditing] = useState(false);
 	const logout = useLogout();
-	const me = useMe();
+	const { mutateAsync } = useUpdateMe();
 
 	async function onSubmitValidProfileHandler(
 		params: ProfileFormOnSubmitValidParams,
 	) {
-		const updateResult = await me.updateAsync({
-			fullName: params.value.fullName,
-			avatar: params.value.avatar,
-		});
-
-		if (updateResult.isErr()) {
+		try {
+			await mutateAsync({
+				fullName: params.value.fullName,
+				avatar: params.value.avatar,
+			});
+			setIsEditing(false);
+		} catch (error) {
+			const err = error as HTTPError;
+			const { errors } = err.data as { errors: any };
 			return {
-				form: `Update failed: ${JSON.stringify(updateResult.error.message)}`,
+				form: `Update failed: ${JSON.stringify(errors)}`,
 			};
 		}
-		setIsEditing(false);
 	}
 
 	return (

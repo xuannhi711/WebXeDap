@@ -12,17 +12,22 @@ export function SiteHeader() {
 
 	return (
 		<header className="sticky top-0 z-50 flex w-full items-center border-b bg-background">
-			<div className="flex h-(--header-height) w-full items-center gap-4 px-4">
-				<Button
-					className="h-8 w-8"
-					variant="ghost"
-					size="icon"
-					onClick={toggleSidebar}
-				>
-					<PanelLeftIcon />
-				</Button>
-				<SiteBrand />
-				<div className="ml-auto">
+			<div className="grid grid-cols-3 h-(--header-height) items-center w-full gap-4 px-4">
+				<div className="flex items-center gap-6 text-sm font-medium">
+					<Button
+						className="h-8 w-8"
+						variant="ghost"
+						size="icon"
+						onClick={toggleSidebar}
+					>
+						<PanelLeftIcon />
+					</Button>
+					<Link to={ROUTES.BIKES}>Bikes</Link>
+					<Link to={ROUTES.GEAR}>Gear</Link>
+					<Link to={ROUTES.ACCESSORIES}>Accessories</Link>
+				</div>
+				<SiteBrand className="mx-auto" />
+				<div className="w-fit ml-auto">
 					<UserMenu />
 				</div>
 			</div>

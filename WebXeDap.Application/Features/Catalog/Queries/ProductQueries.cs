@@ -28,8 +28,8 @@ public static class ProductQueries
 			("price", true) => query.OrderBy(p => p.Price),
 			("price", false) => query.OrderByDescending(p => p.Price),
 
-			("created_at", true) => query.OrderBy(p => p.CreatedAt),
-			("created_at", false) => query.OrderByDescending(p => p.CreatedAt),
+			("createdAt", true) => query.OrderBy(p => p.CreatedAt),
+			("createdAt", false) => query.OrderByDescending(p => p.CreatedAt),
 
 			_ => isAscending ? query.OrderBy(x => x.ID) : query.OrderByDescending(x => x.ID),
 		};

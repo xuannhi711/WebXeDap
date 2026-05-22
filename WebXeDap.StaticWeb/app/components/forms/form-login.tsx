@@ -83,7 +83,7 @@ export function LoginForm({
 							<FieldLabel htmlFor={field.name}>Email</FieldLabel>
 							<Input
 								id={field.name}
-								// type="email"
+								type="email"
 								placeholder="johndoe@example.com"
 								value={field.state.value}
 								onBlur={field.handleBlur}

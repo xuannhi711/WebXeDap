@@ -17,4 +17,8 @@ export const ROUTES = {
 	LOGIN: "/login",
 	REGISTER: "/register",
 	FORGOT_PASSWORD: "/forgot-password",
+
+	BIKES: "/products?category=bikes",
+	GEAR: "/products?category=gear",
+	ACCESSORIES: "/products?category=accessories",
 } as const;

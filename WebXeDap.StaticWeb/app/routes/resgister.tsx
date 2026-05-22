@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ResultAsync } from "neverthrow";
 import { useRegister } from "~/hooks/users/use-register";
 
@@ -7,9 +7,10 @@ import {
 	RegisterForm,
 	type RegisterFormOnSubmitValidParams,
 } from "~/components/forms/form-register";
-import { buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { FieldSeparator } from "~/components/ui/field";
 import { ROUTES } from "~/routes";
+import { useLogin } from "~/hooks/users/use-login";
 
 interface UserService {
 	register: (params: {
@@ -36,25 +37,37 @@ const OATH2_OPTIONS = [
 ];
 
 export default function RegisterPage() {
-	const [formError, setFormError] = useState<string | null>(null);
 	const { mutateAsync: register } = useRegister();
+	const navigate = useNavigate();
 
 	async function onSubmitValidHandler(params: RegisterFormOnSubmitValidParams) {
-		setFormError(null);
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		const registerResult = await ResultAsync.fromPromise(
-			register(params.value),
-			(error) => "An unexpected error occurred",
-		);
-
-		if (registerResult.isOk()) {
-			const data = registerResult.value;
-			console.log("Registered user:", data);
-		} else {
-			const errorMessage = registerResult.error;
-			params.formApi.setErrorMap({ onSubmit: String(errorMessage) });
+		const registerResult = await register({
+			email: params.value.email,
+			password: params.value.password,
+		});
+		if (registerResult.isErr()) {
+			const { errors } = registerResult.error.message as { errors: {} };
+			return {
+				form: `Registration failed: ${JSON.stringify(errors)}`,
+			};
 		}
+
+		navigate(ROUTES.LOGIN);
+		// setFormError(null);
+		// await new Promise((resolve) => setTimeout(resolve, 1000));
+
+		// const registerResult = await ResultAsync.fromPromise(
+		// 	register(params.value),
+		// 	(error) => "An unexpected error occurred",
+		// );
+
+		// if (registerResult.isOk()) {
+		// 	const data = registerResult.value;
+		// 	console.log("Registered user:", data);
+		// } else {
+		// 	const errorMessage = registerResult.error;
+		// 	params.formApi.setErrorMap({ onSubmit: String(errorMessage) });
+		// }
 	}
 
 	return (
@@ -73,11 +86,6 @@ export default function RegisterPage() {
 					</span>
 				</div>
 				<RegisterForm onSubmitValid={onSubmitValidHandler} />
-				{formError && (
-					<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
-						{formError}
-					</div>
-				)}
 				<FieldSeparator>Or continue with</FieldSeparator>
 				<Oauth2LoginOptions />
 				<p className="text-muted-foreground text-center">
@@ -92,25 +100,34 @@ export default function RegisterPage() {
 }
 
 function Oauth2LoginOptions() {
+	const login = useLogin();
+
 	return (
 		<div className="grid grid-cols-2 gap-4">
-			{OATH2_OPTIONS.map((option) => (
-				<Link
-					key={option.name}
-					to={option.url}
-					className={buttonVariants({
-						variant: "outline",
-					})}
-				>
-					<img
-						loading="lazy"
-						src={option.icon}
-						alt={option.name}
-						className="h-5 w-5"
-					/>
-					{option.name}
-				</Link>
-			))}
+			<Button
+				variant="outline"
+				onClick={() => login.mutateAsync({ type: "google" })}
+			>
+				<img
+					loading="lazy"
+					src="https://www.svgrepo.com/show/303108/google-icon-logo.svg"
+					alt="Google"
+					className="h-5 w-5"
+				/>
+				Google
+			</Button>
+			<Button
+				variant="outline"
+				onClick={() => login.mutateAsync({ type: "google" })}
+			>
+				<img
+					loading="lazy"
+					src="https://www.svgrepo.com/show/431792/meta.svg"
+					alt="Meta"
+					className="h-5 w-5"
+				/>
+				Meta
+			</Button>
 		</div>
 	);
 }

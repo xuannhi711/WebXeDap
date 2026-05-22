@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
 using WebXeDap.Domain.Constants;
+using WebXeDap.WebAPI.Exchange;
 using WebXeDap.WebAPI.Extensions;
 
 namespace WebXeDap.WebAPI.Controllers;
@@ -19,14 +20,15 @@ public sealed class ProductsController : ControllerBase
 	}
 
 	[HttpGet]
-	public async Task<ActionResult<List<SimpleProductResponse>>> List(
+	public async Task<ActionResult<PagedProductResponse>> List(
 		[FromQuery] FilterProductCommand filter,
 		[FromQuery] int page = 1,
 		[FromQuery] int size = 20
 	)
 	{
 		var products = await productService.FilterAsync(filter, page, size);
-		return Ok(products);
+		var total = await productService.CountAsync(filter);
+		return Ok(new PagedProductResponse(total, page, size, products));
 	}
 
 	[HttpGet("{id:int}")]

@@ -22,9 +22,6 @@ export default function LoginPage() {
 		if (loginResult.isErr()) {
 			return {
 				form: `Login failed: ${JSON.stringify(loginResult.error.message)}`,
-				// fields: {
-				// 	email: "Invalid email address",
-				// },
 			};
 		}
 		navigate(ROUTES.HOME);

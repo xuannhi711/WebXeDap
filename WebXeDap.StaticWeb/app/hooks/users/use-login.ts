@@ -62,9 +62,9 @@ async function login(payload: Except<CredentialLogin, "type">) {
 
 		(error) =>
 			match(error as HTTPError)
-				.with({ response: { status: 400 } }, (err) => ({
+				.with({ response: { status: 401 } }, (err) => ({
 					type: "invalid_credentials" as const,
-					message: err.data,
+					message: "Invalid email or password",
 				}))
 				.otherwise(() => ({
 					type: "unknown_error" as const,

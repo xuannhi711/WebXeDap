@@ -39,12 +39,18 @@ type RegisterFormValues = z.infer<typeof REGISTER_FORM_SCHEMA>;
 
 export type RegisterFormOnSubmitValidParams = {
 	value: RegisterFormValues;
-	formApi: AnyFormApi;
+};
+
+type InvalidRegisterFormError = {
+	fields?: Partial<Record<keyof RegisterFormValues, string>>;
+	form?: string;
 };
 
 interface RegisterFormProps extends React.ComponentProps<"form"> {
 	className?: string;
-	onSubmitValid?: (params: RegisterFormOnSubmitValidParams) => Promise<void>;
+	onSubmitValid?: (
+		params: RegisterFormOnSubmitValidParams,
+	) => Promise<void | InvalidRegisterFormError>;
 }
 
 const REGISTER_FORM_DEFAULT_VALUES: RegisterFormValues = {
@@ -159,6 +165,16 @@ export function RegisterForm({
 							))}
 					</Button>
 				)}
+			</form.Subscribe>
+
+			<form.Subscribe selector={(state) => [state.errorMap.onSubmit]}>
+				{([formError]) =>
+					formError && (
+						<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
+							{formError.form as string}
+						</div>
+					)
+				}
 			</form.Subscribe>
 		</form>
 	);
