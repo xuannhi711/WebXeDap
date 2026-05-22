@@ -22,11 +22,14 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "~/components/ui/sidebar";
+import { useLogout } from "~/hooks/users/use-logout";
 import { useStore } from "~/store/store";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
-	const { email, firstName, lastName, avatar } = useStore((state) => state);
+	const { email, fullName, avatar } = useStore((state) => state);
+	const logout = useLogout();
+	const displayName = fullName || email || "User";
 
 	return (
 		<SidebarMenu>
@@ -41,13 +44,11 @@ export function NavUser() {
 						}
 					>
 						<Avatar>
-							<AvatarImage src={avatar} alt={lastName} />
+							<AvatarImage src={avatar} alt={displayName} />
 							<AvatarFallback>CN</AvatarFallback>
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight">
-							<span className="truncate font-medium">
-								{firstName} {lastName}
-							</span>
+							<span className="truncate font-medium">{displayName}</span>
 							<span className="truncate text-xs">{email}</span>
 						</div>
 						<ChevronsUpDownIcon className="ml-auto size-4" />
@@ -62,13 +63,11 @@ export function NavUser() {
 							<DropdownMenuLabel className="p-0 font-normal">
 								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 									<Avatar>
-										<AvatarImage src={avatar} alt={lastName} />
+										<AvatarImage src={avatar} alt={displayName} />
 										<AvatarFallback>CN</AvatarFallback>
 									</Avatar>
 									<div className="grid flex-1 text-left text-sm leading-tight">
-										<span className="truncate font-medium">
-											{firstName} {lastName}
-										</span>
+										<span className="truncate font-medium">{displayName}</span>
 										<span className="truncate text-xs">{email}</span>
 									</div>
 								</div>
@@ -98,7 +97,7 @@ export function NavUser() {
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
+							<DropdownMenuItem onClick={() => logout.mutateAsync()}>
 								<LogOutIcon />
 								Log out
 							</DropdownMenuItem>

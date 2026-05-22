@@ -3,23 +3,10 @@ import {
 	LoginForm,
 	type LoginFormOnSubmitValidParams,
 } from "~/components/forms/form-login";
-import { buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { FieldSeparator } from "~/components/ui/field";
-import { useLogin } from "~/hooks/users/use-login";
+import { useLogin, type LoginOption } from "~/hooks/users/use-login";
 import { ROUTES } from "~/routes";
-
-const OATH2_OPTIONS = [
-	{
-		name: "Google",
-		url: "/",
-		icon: "https://www.svgrepo.com/show/303108/google-icon-logo.svg",
-	},
-	{
-		name: "Meta",
-		url: "/",
-		icon: "https://www.svgrepo.com/show/431792/meta.svg",
-	},
-];
 
 export default function LoginPage() {
 	const login = useLogin();
@@ -27,6 +14,7 @@ export default function LoginPage() {
 
 	async function onSubmitValidHandler(params: LoginFormOnSubmitValidParams) {
 		const loginResult = await login.mutateAsync({
+			type: "credentials",
 			email: params.value.email,
 			password: params.value.password,
 		});
@@ -72,25 +60,34 @@ export default function LoginPage() {
 }
 
 function Oauth2LoginOptions() {
+	const login = useLogin();
+
 	return (
 		<div className="grid grid-cols-2 gap-4">
-			{OATH2_OPTIONS.map((option) => (
-				<Link
-					key={option.name}
-					to={option.url}
-					className={buttonVariants({
-						variant: "outline",
-					})}
-				>
-					<img
-						loading="lazy"
-						src={option.icon}
-						alt={option.name}
-						className="h-5 w-5"
-					/>
-					{option.name}
-				</Link>
-			))}
+			<Button
+				variant="outline"
+				onClick={() => login.mutateAsync({ type: "google" })}
+			>
+				<img
+					loading="lazy"
+					src="https://www.svgrepo.com/show/303108/google-icon-logo.svg"
+					alt="Google"
+					className="h-5 w-5"
+				/>
+				Google
+			</Button>
+			<Button
+				variant="outline"
+				onClick={() => login.mutateAsync({ type: "google" })}
+			>
+				<img
+					loading="lazy"
+					src="https://www.svgrepo.com/show/431792/meta.svg"
+					alt="Meta"
+					className="h-5 w-5"
+				/>
+				Meta
+			</Button>
 		</div>
 	);
 }

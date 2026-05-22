@@ -4,7 +4,9 @@ export const API_HOST = "http://localhost:5279";
 
 export const ENDPOINTS = {
 	LOGIN: "/api/auth/login?useCookies=true",
+	LOGIN_W_GGL: "/api/auth/login/google",
 	REGISTER: "/api/auth/register",
-	REFRESH_TOKEN: "/api/auth/refresh",
+	LOGOUT: "/api/users/logout",
+	// REFRESH_TOKEN: "/api/auth/refresh",
 	ME: "/api/users/me",
 };

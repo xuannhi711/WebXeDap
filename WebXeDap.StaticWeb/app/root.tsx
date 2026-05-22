@@ -12,6 +12,8 @@ import { AppSidebar } from "./components/app-sidebar";
 import { SiteHeader } from "./components/site-header";
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
 import { useTheme } from "./hooks/use-theme";
+import { useMe } from "./hooks/users/use-me";
+import { useEffect } from "react";
 
 export const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`;
 
@@ -50,6 +52,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
 	useTheme();
+	const me = useMe();
+
+	useEffect(() => {
+		me.mutateAsync();
+	}, []);
 
 	return (
 		<main className="[--header-height:calc(--spacing(14))]">

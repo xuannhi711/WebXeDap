@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { ResultAsync } from "neverthrow";
+import { useRegister } from "~/hooks/users/use-register";
 
 import {
 	RegisterForm,
@@ -36,27 +37,24 @@ const OATH2_OPTIONS = [
 
 export default function RegisterPage() {
 	const [formError, setFormError] = useState<string | null>(null);
-	const userService: UserService = {} as any;
+	const { mutateAsync: register } = useRegister();
 
 	async function onSubmitValidHandler(params: RegisterFormOnSubmitValidParams) {
 		setFormError(null);
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		const registerResult = await ResultAsync.fromPromise(
-			userService.register(params.value),
+			register(params.value),
 			(error) => "An unexpected error occurred",
 		);
 
-		registerResult.match({
-			ok: (data: { id: number; accessToken: string }) => {
-				console.log("Registered user:", data);
-			},
-			err: (errorMessage) => {
-				params.formApi.setErrorMap({
-					onSubmit: errorMessage,
-				});
-			},
-		});
+		if (registerResult.isOk()) {
+			const data = registerResult.value;
+			console.log("Registered user:", data);
+		} else {
+			const errorMessage = registerResult.error;
+			params.formApi.setErrorMap({ onSubmit: String(errorMessage) });
+		}
 	}
 
 	return (
