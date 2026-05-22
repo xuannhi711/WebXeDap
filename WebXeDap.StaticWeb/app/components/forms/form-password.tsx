@@ -5,16 +5,15 @@ import { LoaderPinwheel } from "lucide-react";
 import { match } from "ts-pattern";
 import { z } from "zod";
 import { Field, FieldError, FieldLabel } from "~/components/ui/field";
-import { Input } from "~/components/ui/input";
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "~/config/authn";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { InputPassword } from "../ui/input-password";
 
-const REGISTER_FORM_SCHEMA = z
+const PASSWORD_FORM_SCHEMA = z
 	.object({
-		email: z.email({ message: "Invalid email address" }),
-		password: z
+		oldPassword: z.string(),
+		newPassword: z
 			.string()
 			.min(PASSWORD_MIN_LENGTH, {
 				message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
@@ -25,7 +24,7 @@ const REGISTER_FORM_SCHEMA = z
 		confirmPassword: z.string(),
 	})
 	.superRefine((data, ctx) => {
-		if (data.password === data.confirmPassword) {
+		if (data.newPassword === data.confirmPassword) {
 			return;
 		}
 		ctx.addIssue({
@@ -35,33 +34,40 @@ const REGISTER_FORM_SCHEMA = z
 		});
 	});
 
-type RegisterFormValues = z.infer<typeof REGISTER_FORM_SCHEMA>;
+type PasswordFormValues = z.infer<typeof PASSWORD_FORM_SCHEMA>;
 
-export type RegisterFormOnSubmitValidParams = {
-	value: RegisterFormValues;
+export type PasswordFormOnSubmitValidParams = {
+	value: PasswordFormValues;
 	formApi: AnyFormApi;
 };
 
-interface RegisterFormProps extends React.ComponentProps<"form"> {
+type InvalidPasswordFormError = {
+	fields?: Partial<Record<keyof PasswordFormValues, string>>;
+	form?: string;
+};
+
+interface PasswordFormProps extends React.ComponentProps<"form"> {
 	className?: string;
-	onSubmitValid?: (params: RegisterFormOnSubmitValidParams) => Promise<void>;
+	onSubmitValid?: (
+		params: PasswordFormOnSubmitValidParams,
+	) => Promise<undefined | InvalidPasswordFormError>;
 }
 
-const REGISTER_FORM_DEFAULT_VALUES: RegisterFormValues = {
-	email: "",
-	password: "",
+const PASSWORD_FORM_DEFAULT_VALUES: PasswordFormValues = {
+	oldPassword: "",
+	newPassword: "",
 	confirmPassword: "",
 };
 
-export function RegisterForm({
+export function PasswordForm({
 	className,
 	onSubmitValid,
 	...props
-}: RegisterFormProps) {
+}: PasswordFormProps) {
 	const form = useForm({
-		defaultValues: REGISTER_FORM_DEFAULT_VALUES,
+		defaultValues: PASSWORD_FORM_DEFAULT_VALUES,
 		validators: {
-			onSubmit: REGISTER_FORM_SCHEMA,
+			onSubmit: PASSWORD_FORM_SCHEMA,
 			onSubmitAsync: onSubmitValid,
 		},
 	});
@@ -79,17 +85,15 @@ export function RegisterForm({
 			}}
 			{...props}
 		>
-			<form.Field name="email">
+			<form.Field name="oldPassword">
 				{(field) => {
 					const isInvalid =
 						field.state.meta.isTouched && !field.state.meta.isValid;
 					return (
 						<Field data-invalid={isInvalid}>
-							<FieldLabel htmlFor={field.name}>Email</FieldLabel>
-							<Input
+							<FieldLabel htmlFor={field.name}>Old Password</FieldLabel>
+							<InputPassword
 								id={field.name}
-								type="email"
-								placeholder="johndoe@example.com"
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
@@ -102,13 +106,13 @@ export function RegisterForm({
 				}}
 			</form.Field>
 
-			<form.Field name="password">
+			<form.Field name="newPassword">
 				{(field) => {
 					const isInvalid =
 						field.state.meta.isTouched && !field.state.meta.isValid;
 					return (
 						<Field data-invalid={isInvalid}>
-							<FieldLabel htmlFor={field.name}>Password</FieldLabel>
+							<FieldLabel htmlFor={field.name}>New Password</FieldLabel>
 							<InputPassword
 								id={field.name}
 								value={field.state.value}
@@ -151,14 +155,24 @@ export function RegisterForm({
 							.with(true, () => (
 								<>
 									<LoaderPinwheel className="animate-spin" />
-									Registering
+									Updating
 								</>
 							))
 							.otherwise(() => (
-								<>Register</>
+								<>Update</>
 							))}
 					</Button>
 				)}
+			</form.Subscribe>
+
+			<form.Subscribe selector={(state) => [state.errorMap.onSubmit]}>
+				{([formError]) =>
+					formError && (
+						<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
+							{formError.form as string}
+						</div>
+					)
+				}
 			</form.Subscribe>
 		</form>
 	);

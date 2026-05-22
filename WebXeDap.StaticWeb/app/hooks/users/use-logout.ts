@@ -1,5 +1,6 @@
 import { HTTPError } from "ky";
 import { err, ok, ResultAsync } from "neverthrow";
+import { useNavigate } from "react-router";
 import { match } from "ts-pattern";
 import { ENDPOINTS } from "~/config/app";
 import { client } from "~/lib/httpClient";
@@ -11,6 +12,7 @@ export type LogoutError =
 
 export function useLogout() {
 	const { clearAuthnState, clearUser } = useStore();
+	const navigate = useNavigate();
 
 	async function mutateAsync() {
 		const res = await logout();
@@ -19,7 +21,7 @@ export function useLogout() {
 		}
 		clearAuthnState();
 		clearUser();
-		return ok();
+		return navigate("/");
 	}
 
 	return { mutateAsync };

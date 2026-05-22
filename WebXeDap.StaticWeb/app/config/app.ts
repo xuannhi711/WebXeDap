@@ -7,6 +7,7 @@ export const ENDPOINTS = {
 	LOGIN_W_GGL: "/api/auth/login/google",
 	REGISTER: "/api/auth/register",
 	LOGOUT: "/api/users/logout",
+	AUTH_INFO: "/api/auth/manage/info",
 	// REFRESH_TOKEN: "/api/auth/refresh",
 	ME: "/api/users/me",
 };

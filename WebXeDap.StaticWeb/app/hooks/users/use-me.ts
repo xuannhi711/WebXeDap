@@ -31,7 +31,15 @@ export function useMe() {
 		return ok(updatedUserData);
 	}
 
-	return { mutateAsync, updateAsync };
+	async function changePasswordAsync(payload: ChangePasswordPayload) {
+		const res = await changePassword(payload);
+		if (res.isErr()) {
+			return err(res.error);
+		}
+		return ok();
+	}
+
+	return { mutateAsync, updateAsync, changePasswordAsync };
 }
 
 export type MeError =
@@ -81,6 +89,31 @@ async function updateMe(payload: UpdateMePayload) {
 				.with({ response: { status: 400 } }, (err) => ({
 					type: "validation_error" as const,
 					message: err.data,
+				}))
+				.otherwise(() => ({
+					type: "unknown_error" as const,
+					message: "Unexpected error occurred",
+				})),
+	);
+}
+
+interface ChangePasswordPayload {
+	oldPassword: string;
+	newPassword: string;
+}
+
+async function changePassword(payload: ChangePasswordPayload) {
+	return ResultAsync.fromPromise(
+		client.post(ENDPOINTS.AUTH_INFO, { json: payload }),
+		(error) =>
+			match(error as HTTPError)
+				.with({ response: { status: 400 } }, (err) => ({
+					type: "validation_error" as const,
+					message: err.data,
+				}))
+				.with({ response: { status: 404 } }, () => ({
+					type: "user_not_found" as const,
+					message: "User not found",
 				}))
 				.otherwise(() => ({
 					type: "unknown_error" as const,

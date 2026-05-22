@@ -10,58 +10,44 @@ import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "~/config/authn";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { InputPassword } from "../ui/input-password";
+import { useEffect } from "react";
 
-const REGISTER_FORM_SCHEMA = z
-	.object({
-		email: z.email({ message: "Invalid email address" }),
-		password: z
-			.string()
-			.min(PASSWORD_MIN_LENGTH, {
-				message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
-			})
-			.max(PASSWORD_MAX_LENGTH, {
-				message: `Password must be at most ${PASSWORD_MAX_LENGTH} characters`,
-			}),
-		confirmPassword: z.string(),
-	})
-	.superRefine((data, ctx) => {
-		if (data.password === data.confirmPassword) {
-			return;
-		}
-		ctx.addIssue({
-			code: "custom",
-			path: ["confirmPassword"],
-			message: "Passwords do not match",
-		});
-	});
+const PROFILE_FORM_SCHEMA = z.object({
+	email: z.email({ message: "Invalid email address" }),
+	fullName: z.string().nonempty({ message: "Full name is required" }),
+	avatar: z.url({ message: "Invalid URL" }).optional(),
+});
 
-type RegisterFormValues = z.infer<typeof REGISTER_FORM_SCHEMA>;
+type ProfileFormValues = z.infer<typeof PROFILE_FORM_SCHEMA>;
 
-export type RegisterFormOnSubmitValidParams = {
-	value: RegisterFormValues;
+export type ProfileFormOnSubmitValidParams = {
+	value: ProfileFormValues;
 	formApi: AnyFormApi;
 };
 
-interface RegisterFormProps extends React.ComponentProps<"form"> {
-	className?: string;
-	onSubmitValid?: (params: RegisterFormOnSubmitValidParams) => Promise<void>;
-}
-
-const REGISTER_FORM_DEFAULT_VALUES: RegisterFormValues = {
-	email: "",
-	password: "",
-	confirmPassword: "",
+type InvalidProfileFormError = {
+	fields?: Partial<Record<keyof ProfileFormValues, string>>;
+	form?: string;
 };
 
-export function RegisterForm({
+interface ProfileFormProps extends React.ComponentProps<"form"> {
+	className?: string;
+	onSubmitValid?: (
+		params: ProfileFormOnSubmitValidParams,
+	) => Promise<undefined | InvalidProfileFormError>;
+	defaultValues: ProfileFormValues;
+}
+
+export function ProfileForm({
 	className,
 	onSubmitValid,
+	defaultValues,
 	...props
-}: RegisterFormProps) {
+}: ProfileFormProps) {
 	const form = useForm({
-		defaultValues: REGISTER_FORM_DEFAULT_VALUES,
+		defaultValues: defaultValues,
 		validators: {
-			onSubmit: REGISTER_FORM_SCHEMA,
+			onSubmit: PROFILE_FORM_SCHEMA,
 			onSubmitAsync: onSubmitValid,
 		},
 	});
@@ -102,14 +88,14 @@ export function RegisterForm({
 				}}
 			</form.Field>
 
-			<form.Field name="password">
+			<form.Field name="fullName">
 				{(field) => {
 					const isInvalid =
 						field.state.meta.isTouched && !field.state.meta.isValid;
 					return (
 						<Field data-invalid={isInvalid}>
-							<FieldLabel htmlFor={field.name}>Password</FieldLabel>
-							<InputPassword
+							<FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
+							<Input
 								id={field.name}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -123,14 +109,14 @@ export function RegisterForm({
 				}}
 			</form.Field>
 
-			<form.Field name="confirmPassword">
+			<form.Field name="avatar">
 				{(field) => {
 					const isInvalid =
 						field.state.meta.isTouched && !field.state.meta.isValid;
 					return (
 						<Field data-invalid={isInvalid}>
-							<FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
-							<InputPassword
+							<FieldLabel htmlFor={field.name}>Avatar</FieldLabel>
+							<Input
 								id={field.name}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -151,14 +137,24 @@ export function RegisterForm({
 							.with(true, () => (
 								<>
 									<LoaderPinwheel className="animate-spin" />
-									Registering
+									Updating
 								</>
 							))
 							.otherwise(() => (
-								<>Register</>
+								<>Update</>
 							))}
 					</Button>
 				)}
+			</form.Subscribe>
+
+			<form.Subscribe selector={(state) => [state.errorMap.onSubmit]}>
+				{([formError]) =>
+					formError && (
+						<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
+							{formError.form as string}
+						</div>
+					)
+				}
 			</form.Subscribe>
 		</form>
 	);

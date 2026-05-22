@@ -6,6 +6,7 @@ import {
 	LogOutIcon,
 	SparklesIcon,
 } from "lucide-react";
+import { Link } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -82,10 +83,12 @@ export function NavUser() {
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<BadgeCheckIcon />
-								Account
-							</DropdownMenuItem>
+							<Link to="/account/me">
+								<DropdownMenuItem>
+									<BadgeCheckIcon />
+									Account
+								</DropdownMenuItem>
+							</Link>
 							<DropdownMenuItem>
 								<CreditCardIcon />
 								Billing
