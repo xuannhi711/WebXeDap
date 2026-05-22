@@ -1,4 +1,3 @@
-import { ArrowRight } from "lucide-react";
 import type { ComponentProps } from "react";
 import { Link } from "react-router";
 import type { SimpleProductResponse } from "~/hooks/catalogs/use-product";
@@ -36,9 +35,6 @@ export function CardProduct(props: CardProductProps) {
 				>
 					{isInStock ? "In Stock" : "Out of Stock"}
 				</span>
-				<p className="ml-auto flex gap-1 items-center">
-					Learn more <ArrowRight />
-				</p>
 			</div>
 		</Link>
 	);

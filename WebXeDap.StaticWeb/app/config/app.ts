@@ -12,4 +12,5 @@ export const ENDPOINTS = {
 	ME: "/api/users/me",
 
 	PRODUCTS: "/api/products",
+	CART: "/api/cart",
 };

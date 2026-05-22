@@ -126,4 +126,15 @@ public class CartService : ICartService
 		await ctx.SaveChangesAsync(default);
 		return Result.Ok();
 	}
+
+	public async Task<Result<int>> CountAsync()
+	{
+		if (!currentUserService.UserID.TryPickValue(out var userID))
+		{
+			return new UnauthorizedError("User is not authenticated.");
+		}
+
+		var count = await ctx.CartItems.CountAsync(i => i.UserID == userID);
+		return count;
+	}
 }

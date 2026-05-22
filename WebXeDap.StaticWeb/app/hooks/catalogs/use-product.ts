@@ -35,6 +35,7 @@ export interface FilterQuery {
 	page?: number;
 	size?: number;
 }
+
 function filterProduct(query: FilterQuery) {
 	const searchParams = new URLSearchParams();
 	if (query.keyword) searchParams.append("keyword", query.keyword);
@@ -43,9 +44,9 @@ function filterProduct(query: FilterQuery) {
 	if (query.maxPrice)
 		searchParams.append("maxPrice", query.maxPrice.toString());
 	if (query.categoryIDs && query.categoryIDs.length > 0)
-		query.categoryIDs.forEach((id) =>
-			searchParams.append("categoryIDs", id.toString()),
-		);
+		query.categoryIDs.forEach((id) => {
+			searchParams.append("categoryIDs", id.toString());
+		});
 	if (query.sortBy) searchParams.append("sortBy", query.sortBy);
 	if (query.isAscending !== undefined)
 		searchParams.append("isAscending", query.isAscending.toString());

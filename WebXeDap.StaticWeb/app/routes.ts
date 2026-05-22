@@ -1,8 +1,8 @@
 import {
 	index,
+	prefix,
 	type RouteConfig,
 	route,
-	prefix,
 } from "@react-router/dev/routes";
 
 export default [
@@ -10,6 +10,10 @@ export default [
 	route("login", "routes/login.tsx"),
 	route("register", "routes/resgister.tsx"),
 	...prefix("account", [route("me", "routes/account/me.tsx")]),
+	...prefix("products", [
+		index("routes/products/index.tsx"),
+		route(":productId", "routes/products/product.tsx"),
+	]),
 ] satisfies RouteConfig;
 
 export const ROUTES = {

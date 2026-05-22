@@ -18,6 +18,13 @@ public sealed class CartController : ControllerBase
 		_cartService = cartService;
 	}
 
+	[HttpGet("count")]
+	public async Task<ActionResult<int>> GetCount()
+	{
+		var result = await _cartService.CountAsync();
+		return result.Match(c => Ok(c), this.MatchErrorResult);
+	}
+
 	[HttpGet]
 	public async Task<ActionResult<List<CartItemResponse>>> Get()
 	{

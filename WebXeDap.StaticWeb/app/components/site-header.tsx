@@ -6,6 +6,7 @@ import { ROUTES } from "~/routes";
 import { NavUser } from "./sidebar-navs/nav-user";
 import { SiteBrand } from "./site-brand";
 import { useStore } from "~/store/store";
+import { NavCart } from "./sidebar-navs/nav-cart";
 
 export function SiteHeader() {
 	const { toggleSidebar } = useSidebar();
@@ -27,7 +28,7 @@ export function SiteHeader() {
 					<Link to={ROUTES.ACCESSORIES}>Accessories</Link>
 				</div>
 				<SiteBrand className="mx-auto" />
-				<div className="w-fit ml-auto">
+				<div className="w-fit ml-auto flex items-center gap-5">
 					<UserMenu />
 				</div>
 			</div>
@@ -62,5 +63,10 @@ function UserMenu() {
 			</div>
 		);
 	}
-	return <NavUser />;
+	return (
+		<>
+			<NavCart />
+			<NavUser />
+		</>
+	);
 }

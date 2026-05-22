@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { HTTPError } from "ky";
 import { ResultAsync } from "neverthrow";
-import { useState } from "react";
-import { match, P } from "ts-pattern";
+import { match } from "ts-pattern";
 import { ENDPOINTS } from "~/config/app";
 import { client } from "~/lib/httpClient";
 

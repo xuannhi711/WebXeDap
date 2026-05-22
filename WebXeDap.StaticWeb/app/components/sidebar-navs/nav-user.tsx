@@ -26,6 +26,19 @@ import {
 import { useLogout } from "~/hooks/users/use-logout";
 import { useStore } from "~/store/store";
 
+function truncateString(
+	str: string | undefined,
+	startChars: number = 6,
+	endChars: number = 4,
+) {
+	if (!str || str.length <= startChars + endChars) {
+		return str;
+	}
+	const start = str.slice(0, startChars);
+	const end = str.slice(-endChars);
+	return `${start}...${end}`;
+}
+
 export function NavUser() {
 	const { isMobile } = useSidebar();
 	const { email, fullName, avatar } = useStore((state) => state);
@@ -49,8 +62,12 @@ export function NavUser() {
 							<AvatarFallback>CN</AvatarFallback>
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight">
-							<span className="truncate font-medium">{displayName}</span>
-							<span className="truncate text-xs">{email}</span>
+							<span className="truncate font-medium">
+								{truncateString(displayName, 15)}
+							</span>
+							<span className="truncate text-xs">
+								{truncateString(email, 20)}
+							</span>
 						</div>
 						<ChevronsUpDownIcon className="ml-auto size-4" />
 					</DropdownMenuTrigger>
