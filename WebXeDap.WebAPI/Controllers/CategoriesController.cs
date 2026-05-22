@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
+using WebXeDap.Domain.Constants;
 using WebXeDap.WebAPI.Extensions;
 
 namespace WebXeDap.WebAPI.Controllers;
@@ -38,6 +40,7 @@ public sealed class CategoriesController : ControllerBase
 	}
 
 	[HttpPost]
+	[Authorize(Roles = ROLES.ADMIN)]
 	public async Task<ActionResult<CategoryResponse>> Create(
 		[FromBody] CreateCategoryCommand request
 	)
@@ -47,6 +50,7 @@ public sealed class CategoriesController : ControllerBase
 	}
 
 	[HttpPut("{id:int}")]
+	[Authorize(Roles = ROLES.ADMIN)]
 	public async Task<ActionResult<CategoryResponse>> Update(
 		int id,
 		[FromBody] UpdateCategoryCommand request
@@ -57,6 +61,7 @@ public sealed class CategoriesController : ControllerBase
 	}
 
 	[HttpDelete("{id:int}")]
+	[Authorize(Roles = ROLES.ADMIN)]
 	public async Task<IActionResult> Delete(int id)
 	{
 		var result = await _categories.DeleteAsync(id);

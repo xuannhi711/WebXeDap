@@ -5,29 +5,6 @@ namespace WebXeDap.WebAPI.Extensions;
 
 public static class ResultExtensions
 {
-	public static ActionResult<T> ToActionResult<T>(
-		this ControllerBase controller,
-		Result<T> result
-	)
-	{
-		if (result.TryPickValue(out var value))
-		{
-			return controller.Ok(value);
-		}
-
-		return controller.MatchErrorResult(result.AsError);
-	}
-
-	public static IActionResult ToActionResult(this ControllerBase controller, Result result)
-	{
-		if (result.IsOk)
-		{
-			return controller.NoContent();
-		}
-
-		return controller.MatchErrorResult(result.AsError);
-	}
-
 	public static ActionResult MatchErrorResult(this ControllerBase controller, Error error)
 	{
 		return error switch

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using WebXeDap.Application;
 using WebXeDap.Domain.Constants;
 using WebXeDap.Domain.Models;
@@ -40,6 +41,8 @@ builder
 	{
 		opts.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")!;
 		opts.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET")!;
+		opts.Scope.Add("profile");
+		opts.ClaimActions.MapJsonKey("picture", "picture", "url");
 	});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
+using WebXeDap.Domain.Constants;
 using WebXeDap.WebAPI.Extensions;
 
 namespace WebXeDap.WebAPI.Controllers;
@@ -42,6 +44,7 @@ public sealed class ProductsController : ControllerBase
 	}
 
 	[HttpPost]
+	[Authorize(Roles = ROLES.ADMIN)]
 	public async Task<ActionResult<SimpleProductResponse>> Create(
 		[FromBody] CreateProductCommand cmd
 	)
@@ -51,6 +54,7 @@ public sealed class ProductsController : ControllerBase
 	}
 
 	[HttpPut("{id:int}")]
+	[Authorize(Roles = ROLES.ADMIN)]
 	public async Task<ActionResult<DetailedProductResponse>> Update(
 		int id,
 		[FromBody] UpdateProductCommand cmd
@@ -61,6 +65,7 @@ public sealed class ProductsController : ControllerBase
 	}
 
 	[HttpDelete("{id:int}")]
+	[Authorize(Roles = ROLES.ADMIN)]
 	public async Task<IActionResult> Delete(int id)
 	{
 		var result = await productService.DeleteAsync(id);

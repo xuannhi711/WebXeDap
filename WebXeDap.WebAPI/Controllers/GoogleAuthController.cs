@@ -18,11 +18,10 @@ public class GoogleAuthController : ControllerBase
 		_userManager = userManager;
 	}
 
-	[HttpGet("google-login")]
-	public IActionResult GoogleLogin()
+	[HttpGet("login/google")]
+	public IActionResult GoogleLogin([FromQuery] string? origin = null)
 	{
-		var redirectUrl = Url.Action(nameof(GoogleCallback));
-
+		var redirectUrl = Url.Action(nameof(GoogleCallback), values: new { origin });
 		var properties = _signInManager.ConfigureExternalAuthenticationProperties(
 			"Google",
 			redirectUrl
@@ -31,8 +30,8 @@ public class GoogleAuthController : ControllerBase
 		return Challenge(properties, "Google");
 	}
 
-	[HttpGet("signin-google")]
-	public async Task<IActionResult> GoogleCallback()
+	[HttpGet("google-callback")]
+	public async Task<IActionResult> GoogleCallback([FromQuery] string? origin = null)
 	{
 		var info = await _signInManager.GetExternalLoginInfoAsync();
 
@@ -42,27 +41,36 @@ public class GoogleAuthController : ControllerBase
 		var result = await _signInManager.ExternalLoginSignInAsync(
 			info.LoginProvider,
 			info.ProviderKey,
-			false
+			true
 		);
-
-		if (!result.Succeeded)
+		if (result.Succeeded)
 		{
-			var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-
-			var user = new User
-			{
-				UserName = email,
-				Email = email,
-				EmailConfirmed = true,
-			};
-
-			await _userManager.CreateAsync(user);
-
-			await _userManager.AddLoginAsync(user, info);
-
-			await _signInManager.SignInAsync(user, false);
+			return Redirect(origin ?? "/");
 		}
 
-		return Ok("Logged in");
+		var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+		var avatar = info.Principal.FindFirstValue("picture");
+		if (string.IsNullOrWhiteSpace(avatar))
+		{
+			return BadRequest("Google account does not have a profile picture.");
+		}
+		var name = info.Principal.FindFirstValue(ClaimTypes.Name);
+
+		var user = new User
+		{
+			FullName = name,
+			UserName = email,
+			Email = email,
+			EmailConfirmed = true,
+			Avatar = avatar,
+		};
+
+		await _userManager.CreateAsync(user);
+
+		await _userManager.AddLoginAsync(user, info);
+
+		await _signInManager.SignInAsync(user, true);
+
+		return Redirect(origin ?? "/");
 	}
 }
