@@ -8,8 +8,10 @@ import {
 	useDeleteCartItem,
 	useUpdateCartItem,
 } from "~/hooks/catalogs/use-cart";
+import { useNavigate } from "react-router";
 
 export default function CartPage() {
+	const navigate = useNavigate();
 	const { items, isLoading } = useCartItems();
 	const checkout = useCheckoutCart();
 	const updateCartItem = useUpdateCartItem();
@@ -108,9 +110,7 @@ export default function CartPage() {
 				: `Payment created for order #${result.orderID}.`,
 		);
 
-		if (result.providerPaymentUrl) {
-			window.location.href = result.providerPaymentUrl;
-		}
+		navigate(`/payments/${result.id}`);
 	}
 
 	const total = useMemo(() => {

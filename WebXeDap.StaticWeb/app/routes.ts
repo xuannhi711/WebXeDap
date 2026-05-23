@@ -15,6 +15,7 @@ export default [
 		route(":productId", "routes/products/product.tsx"),
 	]),
 	route("cart", "routes/cart.tsx"),
+	route("payments/:paymentId", "routes/payments.$paymentId.tsx"),
 ] satisfies RouteConfig;
 
 export const ROUTES = {
@@ -26,4 +27,5 @@ export const ROUTES = {
 	BIKES: "/products?category=bikes",
 	GEAR: "/products?category=gear",
 	ACCESSORIES: "/products?category=accessories",
+	PAYMENT: (paymentId: number | string) => `/payments/${paymentId}`,
 } as const;
