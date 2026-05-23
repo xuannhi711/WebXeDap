@@ -23,6 +23,7 @@ import {
 } from "~/components/forms/form-password";
 import { useChangePassword } from "~/hooks/users/use-change-password";
 import { useUpdateMe } from "~/hooks/users/use-update-me";
+import { useOrders } from "~/hooks/orders/use-orders";
 import { HTTPError } from "ky";
 import { ResultAsync } from "neverthrow";
 
@@ -172,12 +173,45 @@ function AccountDetailsTab() {
 }
 
 function OrdersTab() {
+	const { data, isLoading } = useOrders();
+
 	return (
 		<>
 			<CardHeader>
 				<CardTitle className="text-2xl font-bold">ORDERS</CardTitle>
 			</CardHeader>
-			<CardContent>saysum</CardContent>
+			<CardContent>
+				{isLoading && <div>Loading...</div>}
+				{!isLoading && (!data || data.length === 0) && (
+					<div>No orders found</div>
+				)}
+				{!isLoading && data && (
+					<div className="space-y-4">
+						{data.map((o: any) => (
+							<Card key={o.id}>
+								<CardHeader>
+									<CardTitle>Order #{o.id}</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div>Placed: {new Date(o.orderDate).toLocaleString()}</div>
+									<div>Total: {o.total}</div>
+									<div>Status: {o.status}</div>
+									<div className="mt-2">
+										{o.items.map((it: any, idx: number) => (
+											<div key={idx} className="flex justify-between">
+												<div>
+													{it.name} x{it.qty}
+												</div>
+												<div>{it.unitPrice}</div>
+											</div>
+										))}
+									</div>
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				)}
+			</CardContent>
 		</>
 	);
 }

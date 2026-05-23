@@ -13,4 +13,6 @@ export const ENDPOINTS = {
 
 	PRODUCTS: "/api/products",
 	CART: "/api/cart",
+	CATEGORIES: "/api/categories",
+	PAYMENTS: "/api/payments",
 };

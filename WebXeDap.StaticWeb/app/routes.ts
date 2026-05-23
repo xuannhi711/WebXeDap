@@ -14,6 +14,7 @@ export default [
 		index("routes/products/index.tsx"),
 		route(":productId", "routes/products/product.tsx"),
 	]),
+	route("cart", "routes/cart.tsx"),
 ] satisfies RouteConfig;
 
 export const ROUTES = {

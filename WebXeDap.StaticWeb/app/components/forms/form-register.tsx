@@ -168,13 +168,14 @@ export function RegisterForm({
 			</form.Subscribe>
 
 			<form.Subscribe selector={(state) => [state.errorMap.onSubmit]}>
-				{([formError]) =>
-					formError && (
+				{([formError]) => {
+					if (!formError) return null;
+					return (
 						<div className="text-destructive bg-destructive/10 rounded-md p-2 text-sm">
 							{formError.form as string}
 						</div>
-					)
-				}
+					);
+				}}
 			</form.Subscribe>
 		</form>
 	);

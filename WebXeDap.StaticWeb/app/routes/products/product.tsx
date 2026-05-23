@@ -20,6 +20,7 @@ import {
 } from "~/components/ui/collapsible";
 import { Input } from "~/components/ui/input";
 import { useProductID } from "~/hooks/catalogs/use-product-id";
+import { API_HOST } from "~/config/app";
 import type { Route } from "./+types/product";
 import { useAddToCart } from "~/hooks/catalogs/use-cart";
 
@@ -48,15 +49,29 @@ export default function ProductPage({ params }: Route.ComponentProps) {
 							modules={[Pagination, Navigation]}
 							className="max-w-md"
 						>
-							{Array.from({ length: 5 }).map((_, index) => (
-								<SwiperSlide key={Math.random()}>
-									<img
-										src={`https://picsum.photos/500/500?random=${index + 1}`}
-										alt="Product"
-										className="w-full"
-									/>
-								</SwiperSlide>
-							))}
+							{product.images && product.images.length > 0
+								? product.images.map((img) => (
+										<SwiperSlide key={img.id}>
+											<img
+												src={
+													img.url.startsWith("/")
+														? `${API_HOST}${img.url}`
+														: img.url
+												}
+												alt="Product"
+												className="w-full"
+											/>
+										</SwiperSlide>
+									))
+								: Array.from({ length: 5 }).map((_, index) => (
+										<SwiperSlide key={Math.random()}>
+											<img
+												src={`https://picsum.photos/500/500?random=${index + 1}`}
+												alt="Product"
+												className="w-full"
+											/>
+										</SwiperSlide>
+									))}
 						</Swiper>
 					</div>
 
