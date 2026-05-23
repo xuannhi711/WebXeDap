@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Statistics.DTOs;
+using WebXeDap.Domain.Constants;
 
 namespace WebXeDap.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/statistics")]
+[Authorize(Roles = ROLES.ADMIN)]
 public sealed class StatisticsController : ControllerBase
 {
 	private readonly IStatisticsService statisticsService;

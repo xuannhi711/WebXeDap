@@ -50,7 +50,13 @@ public static class ProductQueries
 	{
 		if (!string.IsNullOrWhiteSpace(req.Keyword))
 		{
-			query = query.Where(p => p.Name.Contains(req.Keyword));
+			var keyword = req.Keyword.ToLower();
+
+			query = query.Where(p =>
+				EF.Functions.Like(
+					p.Name.ToLower(),
+					$"%{keyword}%"
+				));
 		}
 
 		if (req.CategoryIDs is { Count: > 0 })

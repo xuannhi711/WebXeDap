@@ -10,7 +10,7 @@ type CardProductProps = {
 export function CardProduct(props: CardProductProps) {
 	const product = props.product;
 	const isInStock = product.quantity > 0;
-	const price = `${product.price.toLocaleString("en-US")} ${product.currencySymbol}`;
+	const price = `${product.price.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ${product.currencySymbol}`;
 
 	return (
 		<Link

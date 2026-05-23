@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { CardProduct } from "~/components/cards/card-product";
 import { useProducts } from "~/hooks/catalogs/use-product";
 import { useDebounce } from "~/hooks/use-debounce";
@@ -40,6 +40,7 @@ function renderCategoryTree(
 
 export default function ProductsIndex() {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const { page, size, setPaged } = usePagedQuery(1, PRODUCTS_PER_PAGE);
 	const [keyword, setKeyword] = useState("");
 
@@ -80,23 +81,12 @@ export default function ProductsIndex() {
 
 		const params = new URLSearchParams(location.search);
 		params.delete("categoryIDs");
-		// append each selected id as repeated pair
 		for (const v of Array.from(next)) {
 			params.append("categoryIDs", String(v));
 		}
-		// ensure page param preserved/reset as needed
-		// navigate via setPaged to preserve behavior; setPaged will replace page and size
-		// but we want to keep the new category params as well – so directly navigate
-		const newSearch = params.toString();
-		// use history replace via location
-		window.history.replaceState(
-			{},
-			"",
-			`${location.pathname}${newSearch ? `?${newSearch}` : ""}`,
-		);
+		params.set("page", "1");
+		navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
 		setSelectedCategories(next);
-		// reset page to 1
-		setPaged(1);
 	}
 
 	return (

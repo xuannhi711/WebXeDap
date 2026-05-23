@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Application.Features.Catalog.DTOs;
@@ -13,10 +14,12 @@ namespace WebXeDap.WebAPI.Controllers;
 public sealed class ProductsController : ControllerBase
 {
 	private readonly IProductService productService;
+	private readonly IFileStorage fileStorage;
 
-	public ProductsController(IProductService productService)
+	public ProductsController(IProductService productService, IFileStorage fileStorage)
 	{
 		this.productService = productService;
+		this.fileStorage = fileStorage;
 	}
 
 	[HttpGet]
@@ -37,6 +40,53 @@ public sealed class ProductsController : ControllerBase
 		var result = await productService.GetByIDAsync(id);
 		return result.Match(Ok, this.MatchErrorResult);
 	}
+
+	[HttpGet("{id:int}/images")]
+	public async Task<ActionResult<List<ProductImageResponse>>> ListImages(int id)
+	{
+		var images = await productService.ListImagesAsync(id);
+		return Ok(images);
+	}
+
+	[HttpPost("{id:int}/images")]
+	[Authorize(Roles = ROLES.ADMIN)]
+	public async Task<IActionResult> UploadImage(int id, IFormFile file, [FromForm] int? order)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest("File is required.");
+		using var stream = file.OpenReadStream();
+		var key = await fileStorage.SaveFileAsync(stream, file.FileName, file.ContentType);
+		var result = await productService.AddImageAsync(
+			new CreateProductImageCommand(id, key, order ?? 0)
+		);
+		return result.Match(
+			val => CreatedAtAction(nameof(ListImages), new { id }, val),
+			err => this.MatchErrorResult(err)
+		);
+	}
+
+	// [HttpDelete("{id:int}/images/{imageId:int}")]
+	// [Authorize(Roles = ROLES.ADMIN)]
+	// public async Task<IActionResult> DeleteImage(int id, int imageId)
+	// {
+	// 	var res = await productService.DeleteImageAsync(id, imageId);
+	// 	return await res.MatchAsync(
+	// 		async key =>
+	// 		{
+	// 			// attempt to delete file from storage
+	// 			try
+	// 			{
+	// 				await fileStorage.DeleteFileAsync(key);
+	// 			}
+	// 			catch
+	// 			{
+	// 				// swallow storage deletion errors to avoid failing the request
+	// 			}
+	// 			return NoContent();
+	// 		},
+	// 		err => Task.FromResult(this.MatchErrorResult(err))
+	// 	);
+	// }
 
 	[HttpGet("count")]
 	public async Task<ActionResult<int>> Count([FromQuery] FilterProductCommand filter)

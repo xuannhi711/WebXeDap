@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { HTTPError } from "ky";
 import { ResultAsync } from "neverthrow";
 import { match } from "ts-pattern";
@@ -55,6 +55,36 @@ export function useAddToCart() {
 	return mutation;
 }
 
+export function useUpdateCartItem() {
+	const queryClient = useQueryClient();
+	const { mutateAsync: refreshCartCount } = useCountCartItems();
+
+	return useMutation({
+		mutationFn: async (payload: UpdateCartItemPayload) => {
+			return await updateCartItem(payload);
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["cartItems"] });
+			await refreshCartCount();
+		},
+	});
+}
+
+export function useDeleteCartItem() {
+	const queryClient = useQueryClient();
+	const { mutateAsync: refreshCartCount } = useCountCartItems();
+
+	return useMutation({
+		mutationFn: async (cartItemID: number) => {
+			await deleteCartItem(cartItemID);
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: ["cartItems"] });
+			await refreshCartCount();
+		},
+	});
+}
+
 export function useCountCartItems() {
 	const { setCartCount } = useStore((state) => state);
 	const mutation = useMutation({
@@ -109,6 +139,11 @@ type AddToCartPayload = {
 	quantity: number;
 };
 
+type UpdateCartItemPayload = {
+	cartItemID: number;
+	quantity: number;
+};
+
 async function addToCart(payload: AddToCartPayload) {
 	return ResultAsync.fromPromise(
 		client.post(ENDPOINTS.CART, { json: payload }).json(), // Assuming the response is not used
@@ -120,6 +155,18 @@ async function addToCart(payload: AddToCartPayload) {
 				}))
 				.otherwise(() => ({ type: "unknown_error" as const })),
 	);
+}
+
+async function updateCartItem(payload: UpdateCartItemPayload) {
+	return client
+		.patch(`${ENDPOINTS.CART}/${payload.cartItemID}`, {
+			json: { quantity: payload.quantity },
+		})
+		.json<CartItemResponse>();
+}
+
+async function deleteCartItem(cartItemID: number) {
+	return client.delete(`${ENDPOINTS.CART}/${cartItemID}`);
 }
 
 async function listCartItems() {
