@@ -1,4 +1,5 @@
 using EasyData.Services;
+using WebXeDap.Application;
 using WebXeDap.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // // Add services to the container.
 builder.Services.AddRazorPages();
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddSingleton(TimeProvider.System);
 var app = builder.Build();

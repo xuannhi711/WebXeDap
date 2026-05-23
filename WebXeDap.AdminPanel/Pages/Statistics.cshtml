@@ -1,0 +1,109 @@
+@page
+@model WebXeDap.AdminPanel.Pages.StatisticsModel
+@using System.Globalization
+@{
+	ViewData["Title"] = "Statistics";
+}
+
+<div class="d-flex flex-column gap-4">
+	<div>
+		<h1 class="h3 mb-1">Statistics Dashboard</h1>
+		<p class="text-muted mb-0">Overview metrics and top selling products.</p>
+	</div>
+
+	<form method="get" class="row g-3 align-items-end">
+		<div class="col-md-3">
+			<label class="form-label" for="days">Time range</label>
+			<select class="form-select" id="days" name="Days">
+				<option value="" selected="@(Model.Days is null)">All time</option>
+				<option value="7" selected="@(Model.Days == 7)">Last 7 days</option>
+				<option value="30" selected="@(Model.Days == 30)">Last 30 days</option>
+				<option value="90" selected="@(Model.Days == 90)">Last 90 days</option>
+			</select>
+		</div>
+		<div class="col-md-3">
+			<label class="form-label" for="top">Top products</label>
+			<input class="form-control" type="number" id="top" name="Top" min="1" max="50" value="@Model.Top" />
+		</div>
+		<div class="col-md-2">
+			<button class="btn btn-primary w-100" type="submit">Apply</button>
+		</div>
+	</form>
+
+	@if (Model.Overview is not null)
+	{
+		<div class="row g-3">
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100">
+					<div class="card-body">
+						<div class="text-muted small">Total users</div>
+						<div class="display-6">@Model.Overview.TotalUsers</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100">
+					<div class="card-body">
+						<div class="text-muted small">Total products</div>
+						<div class="display-6">@Model.Overview.TotalProducts</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100">
+					<div class="card-body">
+						<div class="text-muted small">Total orders</div>
+						<div class="display-6">@Model.Overview.TotalOrders</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-lg-3">
+				<div class="card h-100">
+					<div class="card-body">
+						<div class="text-muted small">Revenue</div>
+						<div class="display-6">@Model.Overview.TotalRevenue.ToString("C0", CultureInfo.GetCultureInfo("vi-VN"))</div>
+						<div class="text-muted small mt-1">Active campaigns: @Model.Overview.ActiveSaleCampaigns</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+
+	<div class="card">
+		<div class="card-header">
+			Top products by quantity sold
+		</div>
+		<div class="table-responsive">
+			<table class="table table-striped mb-0">
+				<thead>
+					<tr>
+						<th scope="col">Product ID</th>
+						<th scope="col">Product name</th>
+						<th scope="col" class="text-end">Quantity sold</th>
+						<th scope="col" class="text-end">Revenue</th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (Model.TopProducts.Count == 0)
+					{
+						<tr>
+							<td colspan="4" class="text-center text-muted py-4">No product sales found.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var p in Model.TopProducts)
+						{
+							<tr>
+								<td>@p.ProductID</td>
+								<td>@p.ProductName</td>
+								<td class="text-end">@p.QuantitySold</td>
+								<td class="text-end">@p.Revenue.ToString("C0", CultureInfo.GetCultureInfo("vi-VN"))</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
