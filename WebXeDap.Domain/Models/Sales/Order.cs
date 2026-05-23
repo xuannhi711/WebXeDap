@@ -9,4 +9,5 @@ public class Order : BaseAuditableEntity
 	public decimal SubTotal { get; set; }
 	public decimal TotalAmount { get; set; }
 	public ICollection<OrderItem> OrderItems { get; set; } = [];
+	public ICollection<Payment> Payments { get; set; } = [];
 }
