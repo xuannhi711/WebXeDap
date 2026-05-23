@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebXeDap.Application.Contracts;
 using WebXeDap.Application.Contracts.Persistence;
+using WebXeDap.Application.Contracts.Services;
 using WebXeDap.Domain.Models;
 using WebXeDap.Infrastructure.Enums;
 using WebXeDap.Infrastructure.Options;
@@ -48,6 +49,9 @@ public static class DependencyInjection
 		services.AddScoped<IApplicationDbContext>(sp =>
 			sp.GetRequiredService<ApplicationDbContext>()
 		);
+
+		// file storage (disk by default)
+		services.AddSingleton<IFileStorage, DiskFileStorage>();
 
 		services.AddSingleton(EmailOptions.LoadFromEnvironment());
 		services.AddTransient<IEmailSender<User>, EmailService>();

@@ -19,6 +19,7 @@ public sealed class ApplicationDbContext
 	public DbSet<CartItem> CartItems => Set<CartItem>();
 	public DbSet<Order> Orders => Set<Order>();
 	public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+	public DbSet<Payment> Payments => Set<Payment>();
 	public DbSet<SaleCampaign> SaleCampaigns => Set<SaleCampaign>();
 	public DbSet<Notification> Notifications => Set<Notification>();
 	public DbSet<Config> Configs => Set<Config>();
