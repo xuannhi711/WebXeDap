@@ -137,7 +137,11 @@ migrate:
 
 .PHONY: createadmin
 createadmin:
-	@$(API_ENV) dotnet run --project $(SEED_PROJECT)
+	@$(API_ENV) dotnet run --project $(SEED_PROJECT) -- createadmin
+
+.PHONY: seeddb
+seeddb:
+	@$(API_ENV) dotnet run --project $(SEED_PROJECT) -- db
 
 .PHONY: build
 build:
