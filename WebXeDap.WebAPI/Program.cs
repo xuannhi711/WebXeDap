@@ -70,5 +70,3 @@ app.MapGroup("/api/auth").MapIdentityApi<User>();
 app.MapControllers();
 
 app.Run();
-
-public partial class Program { }
