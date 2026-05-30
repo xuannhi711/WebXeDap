@@ -52,11 +52,7 @@ public static class ProductQueries
 		{
 			var keyword = req.Keyword.ToLower();
 
-			query = query.Where(p =>
-				EF.Functions.Like(
-					p.Name.ToLower(),
-					$"%{keyword}%"
-				));
+			query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{keyword}%"));
 		}
 
 		if (req.CategoryIDs is { Count: > 0 })

@@ -7,6 +7,6 @@ namespace WebXeDap.Application.Features.Payments.Mapper;
 [Mapper(AllowNullPropertyAssignment = false)]
 public partial class PaymentMapper
 {
-    [MapperRequiredMapping(RequiredMappingStrategy.Target)]
-    public partial PaymentResponse ToPaymentResponse(Payment payment);
+	[MapperRequiredMapping(RequiredMappingStrategy.Target)]
+	public partial PaymentResponse ToPaymentResponse(Payment payment);
 }
