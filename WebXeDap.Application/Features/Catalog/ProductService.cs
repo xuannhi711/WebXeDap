@@ -90,7 +90,7 @@ public class ProductService : IProductService
 	public async Task<Result<DetailedProductResponse>> GetByIDAsync(int id)
 	{
 		var product = await ctx
-			.Products.Include(p => p.Images)
+			.Products.Include(p => p.Images).Include(p => p.Categories)
 			.FirstOrDefaultAsync(p => p.ID == id);
 		if (product == null)
 		{

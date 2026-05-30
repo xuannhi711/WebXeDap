@@ -11,31 +11,31 @@ namespace WebXeDap.WebAPI.Controllers;
 [Route("api/categories")]
 public sealed class CategoriesController : ControllerBase
 {
-	private readonly ICategoryService _categories;
+	private readonly ICategoryService categoriesService;
 
-	public CategoriesController(ICategoryService categories)
+	public CategoriesController(ICategoryService categoriesService)
 	{
-		_categories = categories;
+		this.categoriesService = categoriesService;
 	}
 
 	[HttpGet]
 	public async Task<ActionResult<List<CategoryResponse>>> List()
 	{
-		var categories = await _categories.ListAsync();
+		var categories = await categoriesService.ListAsync();
 		return Ok(categories);
 	}
 
 	[HttpGet("hierarchy")]
 	public async Task<ActionResult<List<HierarchyCategoryResponse>>> Hierarchy()
 	{
-		var categories = await _categories.ListHierarchyAsync();
+		var categories = await categoriesService.ListHierarchyAsync();
 		return Ok(categories);
 	}
 
 	[HttpGet("{id:int}")]
 	public async Task<ActionResult<CategoryResponse>> GetById(int id)
 	{
-		var res = await _categories.GetByIDAsync(id);
+		var res = await categoriesService.GetByIDAsync(id);
 		return res.Match(Ok, this.MatchErrorResult);
 	}
 
@@ -45,7 +45,7 @@ public sealed class CategoriesController : ControllerBase
 		[FromBody] CreateCategoryCommand request
 	)
 	{
-		var res = await _categories.CreateAsync(request);
+		var res = await categoriesService.CreateAsync(request);
 		return res.Match(val => Created(nameof(GetById), val), this.MatchErrorResult);
 	}
 
@@ -56,7 +56,7 @@ public sealed class CategoriesController : ControllerBase
 		[FromBody] UpdateCategoryCommand request
 	)
 	{
-		var result = await _categories.UpdateAsync(id, request);
+		var result = await categoriesService.UpdateAsync(id, request);
 		return result.Match(Ok, this.MatchErrorResult);
 	}
 
@@ -64,11 +64,7 @@ public sealed class CategoriesController : ControllerBase
 	[Authorize(Roles = ROLES.ADMIN)]
 	public async Task<IActionResult> Delete(int id)
 	{
-		var result = await _categories.DeleteAsync(id);
+		var result = await categoriesService.DeleteAsync(id);
 		return result.Match(_ => NoContent(), this.MatchErrorResult);
 	}
-
-	public sealed record CreateCategoryRequest(string Name, int? ParentCategoryID);
-
-	public sealed record UpdateCategoryRequest(string Name, int? ParentCategoryID);
 }

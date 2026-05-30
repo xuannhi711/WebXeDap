@@ -18,8 +18,6 @@ public static class DependencyInjection
 		var migrationsAssembly = typeof(ApplicationDbContext).Assembly.FullName;
 		var dbOptions = DbOptions.LoadFromEnvironment();
 
-		services.AddSingleton(dbOptions);
-
 		_ = dbOptions.Provider switch
 		{
 			DbProvider.Sqlite => services.AddDbContext<ApplicationDbContext>(o =>
